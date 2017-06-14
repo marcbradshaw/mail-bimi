@@ -8,13 +8,19 @@ use Test::More;
 use Mail::BIMI;
 use Mail::BIMI::Record;
 
+use Mail::DMARC::PurePerl;
+
 plan tests => 3;
 
 my $BIMI = Mail::BIMI->new();
 
+my $DMARC = Mail::DMARC::PurePerl->new();
+$DMARC->result()->result( 'pass' );
+$DMARC->result()->disposition( 'reject' );
+$BIMI->set_dmarc_object( $DMARC->result() );
+
 $BIMI->set_from_domain( 'gallifreyburning.com' );
 $BIMI->set_selector( 'foobar' );
-$BIMI->set_dmarc_object( undef );
 $BIMI->validate();
 
 my $Record = $BIMI->record();
