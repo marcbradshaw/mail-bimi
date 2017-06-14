@@ -17,7 +17,7 @@ process_bimi( 'test.example.com', 'default', 'v=bimi1; f=png,svg; z=256x256,512x
 process_bimi( 'test.example.com', 'default', 'v=bimi1; f=png,svg; z=256x256,512x512,1024x1024; l=https://bimi.example.com/marks/', 'fail', 'reject',
     'bimi=skipped (DMARC fail)', 'DMARC Fail');
 process_bimi( 'test.example.com', 'default', 'v=foobar; f=png,svg; z=256x256,512x512,1024x1024; l=https://bimi.example.com/marks/', 'pass', 'reject',
-    'bimi=fail (Invalid BIMI Record)', 'Skipped Incalid');
+    'bimi=fail (Invalid BIMI Record)', 'Skipped Invalid');
 
 sub process_bimi {
     my ( $Domain, $Selector, $Entry, $DMARC_Result, $DMARC_Disposition, $ExpectedResult, $Test ) = @_;
