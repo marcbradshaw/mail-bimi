@@ -149,3 +149,7 @@ sub get_dns_rr {
 }
 
 1;
+
+# ABSTRACT: BIMI parser
+__END__
+
