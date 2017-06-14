@@ -12,15 +12,17 @@ use Data::Dumper;
 use Net::DNS::Resolver;
 
 use Mail::BIMI::Record;
+use Mail::BIMI::Result;
 
 sub new {
     my ( $Class ) = @_;
     my $Self = {
         'from_domain'  => undef,
         'selector'     => 'default',
-        'dmarc_result' => undef,
+        'dmarc_object' => undef,
         'resolver'     => undef,
         'record'       => undef,
+        'result'       => undef,
     };
     bless $Self, ref($Class) || $Class;
     return $Self;
@@ -38,9 +40,10 @@ sub set_selector {
     return;
 }
 
-sub set_dmarc_result {
+sub set_dmarc_object {
     my ( $Self, $DMARC ) = @_;
-    $Self->{ 'dmarc_result' } = $DMARC;
+    ## Check type of passed object here
+    $Self->{ 'dmarc_object' } = $DMARC;
     return;
 }
 
@@ -71,12 +74,42 @@ sub config {
 sub validate {
     my ( $Self ) = @_;
 
-    # do we have DMARC
-    # does DMARC align
+    my $Result = Mail::BIMI::Result->new();
+    $Self->{ 'result' } = $Result;
+
+    $Result->set_domain( $Self->{ 'from_domain' } );
+    $Result->set_selector( $Self->{ 'selector' } );
+
     # does DMARC pass
+    my $DMARC = $Self->{ 'dmarc_object' };
+    if ( ! $DMARC ) {
+        $Result->set_result( 'skipped', 'no DMARC' );
+        return;
+    }
+    if ( $DMARC->result() ne 'pass' ) {
+        $Result->set_result( 'skipped', 'DMARC ' . $DMARC->result() );
+        return;
+    }
 
     # Lookup, parse, and validate BIMI record
-    $Self->discover_bimi_record();
+    # ONLY discover is we have an authenticated message
+    if ( ! defined $Self->{ 'record' } ) {
+        $Self->discover_bimi_record();
+    }
+
+    my $Record = $Self->record();
+
+    if ( ! $Record ) {
+        $Result->set_result( 'none', 'No BIMI Record' );
+        return;
+    }
+
+    if ( ! $Record->is_valid() ) {
+        $Result->set_result( 'fail', 'Invalid BIMI Record' );
+        return;
+    }
+
+    $Result->set_result( 'pass' );
 
     # Build results object
 }
@@ -118,6 +151,11 @@ sub discover_bimi_record {
 sub record {
     my ( $Self ) = @_;
     return $Self->{ 'record' };
+}
+
+sub result {
+    my ( $Self ) = @_;
+    return $Self->{ 'result' };
 }
 
 sub get_org_domain {
