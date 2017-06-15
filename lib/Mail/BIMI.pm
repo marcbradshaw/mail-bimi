@@ -160,8 +160,9 @@ sub result {
 
 sub get_org_domain {
     my ( $Self, $Domain ) = @_;
-    ## NYI;
-    return $Domain;
+    my $DMARC = $Self->{ 'dmarc_object' };
+    my $OrgDomain = $DMARC->get_organizational_domain( $Domain );
+    return $OrgDomain;
 }
 
 sub get_dns_rr {
