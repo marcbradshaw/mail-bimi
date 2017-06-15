@@ -160,7 +160,7 @@ sub result {
 
 sub get_org_domain {
     my ( $Self, $Domain ) = @_;
-    my $DMARC = $Self->{ 'dmarc_object' };
+    my $DMARC = Mail::DMARC::PurePerl->new();
     my $OrgDomain = $DMARC->get_organizational_domain( $Domain );
     return $OrgDomain;
 }
