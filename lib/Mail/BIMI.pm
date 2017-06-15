@@ -14,6 +14,8 @@ use Net::DNS::Resolver;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
 
+use constant NO_BIMI_RECORD => 'no BIMI records found';
+
 sub new {
     my ( $Class ) = @_;
     my $Self = {
@@ -105,7 +107,13 @@ sub validate {
     }
 
     if ( ! $Record->is_valid() ) {
-        $Result->set_result( 'fail', 'Invalid BIMI Record' );
+        my $LookFor = NO_BIMI_RECORD;
+        if ( $Record->error() =~ /$LookFor/ ) {
+            $Result->set_result( 'none', 'Domain is not BIMI enabled' );
+        }
+        else {
+            $Result->set_result( 'fail', 'Invalid BIMI Record' );
+        }
         return;
     }
 
@@ -128,7 +136,7 @@ sub discover_bimi_record {
         my $FallbackDomain   = $Self->get_org_domain( $Domain );
         if ( $FallbackSelector eq $Selector && $FallbackDomain eq $Domain ) {
             $Self->{ 'record' } = Mail::BIMI::Record->new();
-            $Self->{ 'record' }->error( 'no BIMI records found' );
+            $Self->{ 'record' }->error( NO_BIMI_RECORD );
             # Set result none
             #
             return;

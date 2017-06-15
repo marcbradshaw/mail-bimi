@@ -33,7 +33,7 @@ sub process_bimi {
 
     my $Result = $BIMI->result();
     my $AuthResults = $Result->get_authentication_results();
-    is( $ExpectedResult, $AuthResults, $Test );
+    is( $AuthResults, $ExpectedResult, $Test );
 }
 
 sub get_dmarc_result {

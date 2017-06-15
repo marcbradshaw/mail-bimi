@@ -40,6 +40,11 @@ sub set_result {
     return;
 }
 
+sub result {
+    my ( $Self ) = @_;
+    return $Self->{ 'result' };
+}
+
 sub get_authentication_results {
     my ( $Self ) = @_;
     my @Result;
