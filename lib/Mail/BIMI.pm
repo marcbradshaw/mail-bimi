@@ -128,7 +128,12 @@ sub discover_bimi_record {
     $Domain   = $Self->{ 'from_domain' } if ! $Domain;
     $Selector = $Self->{ 'selector' }    if ! $Selector;
     my $LookupRecord = $Selector. '._bimi.' . $Domain;
-    my @Records = $Self->get_dns_rr( 'TXT', $LookupRecord );
+    my @Records = eval { $Self->get_dns_rr( 'TXT', $LookupRecord ); };
+    if ( my $Error = $@ ) {
+        $Self->{ 'record' } = Mail::BIMI::Record->new({ 'domain' => $Domain, 'selector' => $Selector });
+        $Self->{ 'record' }->error( 'error querying DNS' );
+        return;
+    }
     # Filter records
     @Records = grep { $_ =~ /^v=bimi1;/i } @Records;
     if ( scalar @Records == 0 ) {
