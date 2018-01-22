@@ -1,3 +1,8 @@
 {{$NEXT}}
+
+ - Declare Mail::DMARC in dependencies
+
+1.20170626 2017-06-26 Australia/Melbourne
+
  - First release
 
