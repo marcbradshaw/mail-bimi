@@ -32,15 +32,6 @@ is_deeply(
 );
 
 my $ExpectedData = {
-    'z' => [
-        '256x256',
-        '512x512',
-        '1024x1024'
-    ],
-    'f' => [
-        'png',
-        'jpg'
-    ],
     'l' => [
         'https://bimi.example.com/marks/baz/'
     ],
@@ -50,12 +41,7 @@ my $ExpectedData = {
 is_deeply( $Record->data(), $ExpectedData, 'Parsed data' );
 
 my $ExpectedUrlList = [
-    'https://bimi.example.com/marks/baz/256x256.png',
-    'https://bimi.example.com/marks/baz/256x256.jpg',
-    'https://bimi.example.com/marks/baz/512x512.png',
-    'https://bimi.example.com/marks/baz/512x512.jpg',
-    'https://bimi.example.com/marks/baz/1024x1024.png',
-    'https://bimi.example.com/marks/baz/1024x1024.jpg'
+    'https://bimi.example.com/marks/baz/',
 ];
 
 is_deeply( $Record->url_list(), $ExpectedUrlList, 'URL list' );

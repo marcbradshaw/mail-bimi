@@ -69,7 +69,7 @@ sub parse_record {
         if ( $Key eq 'v' || $Key eq 'a' ) {
             $Data->{ $Key } = $Value;
         }
-        elsif ( $Key eq 'f' || $Key eq 'l' || $Key eq 'z' ) {
+        elsif ( $Key eq 'l' ) {
             my @Values = split ',', $Value;
             $Data->{ $Key } = \@Values;
         }
@@ -86,30 +86,12 @@ sub data {
     return $Self->{ 'data' };
 }
 
-sub is_vector {
-    my ( $Self, $Type ) = @_;
-    return 1 if lc $Type eq 'svg';
-    return 0;
-}
-
 sub construct_url_list {
     my ( $Self ) = @_;
     my @UrlList;
     # Need to decode , and ; as per spec
     foreach my $Location ( @{ $Self->{ 'data' }->{ 'l' } } ) {
-        foreach my $Size ( @{ $Self->{ 'data' }->{ 'z' } } ) {
-            foreach my $Type ( @{ $Self->{ 'data' }->{ 'f' } } ) {
-                if ( $Self->is_vector( $Type ) ) {
-                    last unless (
-                        $Size eq @{ $Self->{ 'data' }->{ 'z' } }[0]
-                        ||
-                        $Size eq @{ $Self->{ 'data' }->{ 'z' } }[-1]
-                    );
-                }
-                my $Url = $Location . $Size . '.' . $Type;
-                push @UrlList, $Url;
-            }
-        }
+        push @UrlList, $Location; ## TODO, should this have '.svg' appended?
     }
     $Self->{ 'url_list' } = \@UrlList;
     return;
@@ -148,78 +130,12 @@ sub validate_record {
                 $Self->error( 'Empty l tag' ) if $l eq '';
                 if ( ! ( $l =~ /^https:\/\// ) ) {
                     $Self->error( 'Invalid transport in l tag' );
+                }
             }
-        }
         }
     }
 
-    # Missing z (indicates opt out)
     # Validate a auth
-
-    # Missing f
-    if ( ! exists ( $Data->{ 'f' } ) ) {
-        # png is the default
-        $Data->{ 'f' } = [ 'png' ];
-    }
-    elsif ( scalar @{ $Data->{ 'f' } } == 0 ) {
-        $Self->error( 'Empty f entry' );
-    }
-    else {
-        # Unknown f png tiff tif jpg jpeg svg
-        foreach my $f ( @{ $Data->{ 'f' } } ) {
-            if ( $f eq '' ) {
-                $Self->error( 'Empty f entry' );
-                next;
-            }
-            next if ( $f eq 'png' );
-            next if ( $f eq 'tif' );
-            next if ( $f eq 'tiff' );
-            next if ( $f eq 'jpg' );
-            next if ( $f eq 'jpeg' );
-            next if ( $f eq 'svg' );
-            $Self->error( 'Unknown value in f tag' );
-        }
-    }
-
-    # Missing z
-    # Empty z indicates no image
-    # z is not a WxH size
-    # z is < minimum of 32
-    # z is > maximum of 1024
-    if ( ! exists ( $Data->{ 'z' } ) ) {
-        # Undefined result?
-        $Self->error( 'Missing z tag' );
-    }
-    else {
-        foreach my $z ( @{ $Data->{ 'z' } } ) {
-            if ( $z eq '' ) {
-                $Self->error( 'Empty z entry' );
-                ## ToDo this is not an error if the entire tag is empty
-                next;
-            }
-            my ( $x, $y ) = split 'x', $z, 2;
-            if ( ! $x ) {
-                $Self->error( 'Invalid z tag' );
-            }
-            elsif ( ! ( $x =~ /^\d+$/ ) ) {
-                $Self->error( 'Invalid z tag' );
-            }
-            else {
-                $Self->error( 'Invalid dimension in z tag' ) if $x < 32;
-                $Self->error( 'Invalid dimension in z tag' ) if $x > 1024;
-            }
-            if ( ! $y ) {
-                $Self->error( 'Invalid z tag' );
-            }
-            elsif ( ! ( $y =~ /^\d+$/ ) ) {
-                $Self->error( 'Invalid z tag' );
-            }
-            else {
-                $Self->error( 'Invalid dimension in z tag' ) if $y < 32;
-                $Self->error( 'Invalid dimension in z tag' ) if $y >1024;
-            }
-        }
-    }
 
     return;
 }
