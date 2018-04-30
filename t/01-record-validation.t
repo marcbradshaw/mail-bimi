@@ -1,4 +1,3 @@
-#!perl
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
@@ -11,29 +10,29 @@ use Mail::BIMI::Record;
 plan tests => 9;
 
 is_deeply(
-    test_record( 'v=bimi1; l=https://bimi.example.com/marks/', 'example.com', 'default' ),
+    test_record( 'v=bimi1; l=https://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
     [ 1, '' ],
     'Valid record'
 );
 
 is_deeply(
-    test_record( 'v=bimi1; v=bimi2; l=https://bimi.example.com/marks/', 'example.com', 'default' ),
+    test_record( 'v=bimi1; v=bimi2; l=https://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
     [ 0, 'Duplicate key in record, Invalid v tag' ],
     'Dupliacte key'
 );
 
 is_deeply(
-    test_record( 'l=https://bimi.example.com/marks/', 'example.com', 'default' ),
+    test_record( 'l=https://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
     [ 0, 'Missing v tag' ],
     'Missing v tag'
 );
 is_deeply(
-    test_record( 'v=; l=https://bimi.example.com/marks/', 'example.com', 'default' ),
+    test_record( 'v=; l=https://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
     [ 0, 'Empty v tag, Invalid v tag' ],
     'Empty v tag'
 );
 is_deeply(
-    test_record( 'v=foobar; l=https://bimi.example.com/marks/', 'example.com', 'default' ),
+    test_record( 'v=foobar; l=https://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
     [ 0, 'Invalid v tag' ],
     'Invalid v tag'
 );
@@ -44,7 +43,7 @@ is_deeply(
     'Missing l tag'
 );
 is_deeply(
-    test_record( 'v=bimi1; l=http://bimi.example.com/marks/', 'example.com', 'default' ),
+    test_record( 'v=bimi1; l=http://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
     [ 0, 'Invalid transport in l tag' ],
     'Invalid transport in l tag'
 );
@@ -65,3 +64,4 @@ sub test_record {
     return [ $Record->is_valid(), $Record->error() ];;
 }
 
+#!perl
