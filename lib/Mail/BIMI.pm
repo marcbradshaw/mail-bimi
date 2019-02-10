@@ -33,7 +33,7 @@ sub _build_result($self) {
     return $result;
   }
   if ( $self->dmarc_object->result ne 'pass' ) {
-      $result->set_result( 'skipped', 'DMARC ' . $self->dmarc_object->result() );
+      $result->set_result( 'skipped', 'DMARC ' . $self->dmarc_object->result );
       return $result;
   }
 

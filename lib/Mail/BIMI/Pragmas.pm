@@ -9,8 +9,8 @@ require feature;
 use open ':std', ':encoding(UTF-8)';
 
 sub import {
-  strict->import();
-  warnings->import();
+  strict->import;
+  warnings->import;
   feature->import($_) for ( qw{ postderef signatures } );
   warnings->unimport($_) for ( qw{ experimental::postderef experimental::signatures } );
 }
