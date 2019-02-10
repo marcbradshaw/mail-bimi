@@ -10,39 +10,38 @@ use Mail::BIMI::Record;
 
 use Mail::DMARC::PurePerl;
 
-plan tests => 3;
+my $bimi = Mail::BIMI->new();
 
-my $BIMI = Mail::BIMI->new();
+my $dmarc = Mail::DMARC::PurePerl->new();
+$dmarc->result()->result( 'pass' );
+$dmarc->result()->disposition( 'reject' );
+$bimi->dmarc_object( $dmarc->result() );
 
-my $DMARC = Mail::DMARC::PurePerl->new();
-$DMARC->result()->result( 'pass' );
-$DMARC->result()->disposition( 'reject' );
-$BIMI->set_dmarc_object( $DMARC->result() );
+$bimi->domain( 'gallifreyburning.com' );
+$bimi->selector( 'foobar' );
 
-$BIMI->set_from_domain( 'gallifreyburning.com' );
-$BIMI->set_selector( 'foobar' );
-$BIMI->validate();
-
-my $Record = $BIMI->record();
+my $record = $bimi->record();
 
 is_deeply(
-    [ $Record->is_valid(), $Record->error() ],
-    [ 1, '' ],
+    [ $record->is_valid(), $record->error() ],
+    [ 1, [] ],
     'Test record validates'
 );
 
-my $ExpectedData = {
-    'l' => [
-        'https://bimi.example.com/marks/baz/'
-    ],
+my $expected_data = {
+    'l' => 'https://bimi.example.com/marks/baz/',
     'v' => 'bimi1'
 };
 
-is_deeply( $Record->data(), $ExpectedData, 'Parsed data' );
+is_deeply( $record->record, $expected_data, 'Parsed data' );
 
-my $ExpectedUrlList = [
-    'https://bimi.example.com/marks/baz/',
-];
+my $expected_url_list = ['https://bimi.example.com/marks/baz/'];
+is_deeply( $record->locations->location, $expected_url_list, 'URL list' );
 
-is_deeply( $Record->url_list(), $ExpectedUrlList, 'URL list' );
+my $result = $bimi->result;
+my $auth_results = $result->get_authentication_results;
+my $expected_result = 'bimi=pass header.d=gallifreyburning.com selector=foobar';
+is( $auth_results, $expected_result, 'Auth results correcct' );
+
+done_testing;
 
