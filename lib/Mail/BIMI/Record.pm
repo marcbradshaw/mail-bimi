@@ -28,7 +28,17 @@ sub _build_authorities($self) {
 }
 
 sub _build_locations($self) {
-  my $record = $self->record->{l} // '';
+  my $record = '';
+  if ( ! exists $self->record->{l} ) {
+    $self->add_error( 'Missing l tag' );
+  }
+  else {
+    $record = $self->record->{l} // '';
+    if ( $record eq '' ) {
+      $self->add_error( 'Empty l tag' );
+    }
+  }
+
   # TODO better parser here
     # Need to decode , and ; as per spec
     # TODO, should this have '.svg' appended?

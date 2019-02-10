@@ -38,18 +38,18 @@ is_deeply(
 );
 
 is_deeply(
-  test_record( 'v=bimi1; z=256x256,512x512,1024x1024', 'example.com', 'default' ),
+  test_record( 'v=bimi1', 'example.com', 'default' ),
   [ 0, ['Missing l tag'] ],
   'Missing l tag'
 );
 is_deeply(
   test_record( 'v=bimi1; l=http://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
-  [ 0, ['Invalid transport in l tag'] ],
-  'Invalid transport in l tag'
+  [ 0, ['Invalid transport in locations'] ],
+  'Invalid transport in locations'
 );
 is_deeply(
   test_record( 'v=bimi1; l=foo,,bar', 'example.com', 'default' ),
-  [ 0, ['Invalid transport in l tag', 'Empty l tag', 'Invalid transport in l tag', 'Invalid transport in l tag'] ],
+  [  0, ['Invalid transport in locations', 'Empty l tag', 'Invalid transport in locations'] ],
   'Empty l entry'
 );
 is_deeply(
@@ -62,7 +62,9 @@ sub test_record {
   my ( $entry, $domain, $selector ) = @_;
   my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
   $record->record( $record->_parse_record( $entry ) );
-  return [ $record->is_valid(), $record->error() ];;
+  $record->is_valid;
+  my @errors = ( $record->error->@*, $record->authorities->error->@*, $record->locations->error->@* );
+  return [ $record->is_valid(), \@errors ];
 }
 
 #!perl

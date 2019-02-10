@@ -12,16 +12,17 @@ use Mail::BIMI::Pragmas;
 
 sub _build_is_valid($self) {
 
-  $self->add_error( 'No locations' ) if ! $self->location->@*;
   foreach my $location ( $self->location->@* ) {
-    if ( ! ( $location =~ /^https:\/\// ) ) {
-      $self->error( 'Invalid transport in l tag' );
+    if ( $location eq '' ) {
+      $self->add_error( 'Empty l tag' );
+    }
+    elsif ( ! ( $location =~ /^https:\/\// ) ) {
+      $self->add_error( 'Invalid transport in locations' );
     }
   }
 
   return 0 if $self->error->@*;
   return 1;
 }
-
 
 1;
