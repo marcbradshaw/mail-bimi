@@ -4,26 +4,24 @@ use strict;
 use warnings FATAL => 'all';
 use lib 't';
 use Test::More;
-
 use Mail::BIMI;
 use Mail::BIMI::Record;
-
 use Mail::DMARC::PurePerl;
 
 my $bimi = Mail::BIMI->new();
 
-my $dmarc = Mail::DMARC::PurePerl->new();
-$dmarc->result()->result( 'pass' );
-$dmarc->result()->disposition( 'reject' );
-$bimi->dmarc_object( $dmarc->result() );
+my $dmarc = Mail::DMARC::PurePerl->new;
+$dmarc->result->result( 'pass' );
+$dmarc->result->disposition( 'reject' );
+$bimi->dmarc_object( $dmarc->result );
 
 $bimi->domain( 'gallifreyburning.com' );
 $bimi->selector( 'foobar' );
 
-my $record = $bimi->record();
+my $record = $bimi->record;
 
 is_deeply(
-    [ $record->is_valid(), $record->error() ],
+    [ $record->is_valid, $record->error ],
     [ 1, [] ],
     'Test record validates'
 );
@@ -44,4 +42,3 @@ my $expected_result = 'bimi=pass header.d=gallifreyburning.com selector=foobar';
 is( $auth_results, $expected_result, 'Auth results correcct' );
 
 done_testing;
-

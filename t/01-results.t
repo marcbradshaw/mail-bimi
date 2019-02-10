@@ -4,8 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 use lib 't';
 use Test::More;
-    use Data::Dumper;
-
 use Mail::BIMI;
 use Mail::BIMI::Record;
 use Mail::DMARC::PurePerl;
@@ -24,17 +22,17 @@ sub process_bimi {
   $record->record( $record->_parse_record( $entry ) );
   my $bimi = Mail::BIMI->new( domain => $domain, selector => $selector, record => $record, dmarc_object => get_dmarc_result( $dmarc_result, $dmarc_disposition ) );
 
-  my $result = $bimi->result();
-  my $auth_results = $result->get_authentication_results();
+  my $result = $bimi->result;
+  my $auth_results = $result->get_authentication_results;
   is( $auth_results, $expected_result, $test );
 }
 
 sub get_dmarc_result {
   my ( $result, $disposition ) = @_;
-  my $dmarc = Mail::DMARC::PurePerl->new();
+  my $dmarc = Mail::DMARC::PurePerl->new;
   $dmarc->result()->result( $result );
   $dmarc->result()->disposition( $disposition );
-  return $dmarc->result();
+  return $dmarc->result;
 }
 
 done_testing;

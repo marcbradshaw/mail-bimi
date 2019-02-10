@@ -4,14 +4,11 @@ use strict;
 use warnings FATAL => 'all';
 use lib 't';
 use Test::More;
-
 use Mail::BIMI;
 use Mail::BIMI::Record;
-
 use Mail::DMARC::PurePerl;
 
 my $bimi = Mail::BIMI->new;
-
 my $dmarc = Mail::DMARC::PurePerl->new;
 $dmarc->result->result( 'pass' );
 $dmarc->result->disposition( 'reject' );
@@ -34,4 +31,3 @@ my $expected_result = 'bimi=none (Domain is not BIMI enabled)';
 is( $auth_results, $expected_result, 'Auth results correcct' );
 
 done_testing;
-

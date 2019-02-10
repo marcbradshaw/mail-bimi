@@ -3,7 +3,6 @@ use strict;
 use warnings FATAL => 'all';
 use lib 't';
 use Test::More;
-
 use Mail::BIMI;
 use Mail::BIMI::Record;
 
@@ -64,7 +63,7 @@ sub test_record {
   $record->record( $record->_parse_record( $entry ) );
   $record->is_valid;
   my @errors = ( $record->error->@*, $record->authorities->error->@*, $record->locations->error->@* );
-  return [ $record->is_valid(), \@errors ];
+  return [ $record->is_valid, \@errors ];
 }
 
 #!perl
