@@ -139,7 +139,7 @@ sub _build_record($self) {
 
 sub _get_dns_rr($self,$type,$domain) {
   my @matches;
-  my $res     = $self->resolver();
+  my $res     = $self->resolver;
   my $query   = $res->query( $domain, $type ) or do {
     return @matches;
   };

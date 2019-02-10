@@ -11,6 +11,7 @@ use English qw( -no_match_vars );
 
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
+  with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Constants';
   has domain => ( is => 'rw', isa => Str );
   has selector => ( is => 'rw', isa => Str, lazy => 1, builder => sub{ return 'default' } );
@@ -19,7 +20,7 @@ use Mail::BIMI::Result;
   has result => ( is => 'rw', lazy => 1, builder => '_build_result' );
 
 sub _build_record($self) {
-  return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector );
+  return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector, resolver => $self->resolver );
 }
 
 sub _build_result($self) {
