@@ -32,8 +32,8 @@ sub get_authentication_results_object($self) {
     $header->add_child( Mail::AuthenticationResults::Header::Comment->new()->safe_set_value( $self->comment ) );
   }
   if ( $self->result eq 'pass' ) {
-    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.d' )->safe_set_value( $self->record->domain ) );
-    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'selector' )->safe_set_value( $self->record->selector ) );
+    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.d' )->safe_set_value( $self->parent->record->domain ) );
+    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'selector' )->safe_set_value( $self->parent->record->selector ) );
   }
   return $header;
 }
