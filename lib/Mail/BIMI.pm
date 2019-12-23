@@ -61,7 +61,3 @@ sub _build_result($self) {
 
 
 1;
-
-# ABSTRACT: BIMI parser
-__END__
-

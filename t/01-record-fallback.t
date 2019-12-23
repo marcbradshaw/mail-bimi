@@ -8,6 +8,10 @@ use Mail::BIMI;
 use Mail::BIMI::Record;
 use Mail::DMARC::PurePerl;
 
+my $test_domain = 'test.fastmail.com';
+my $test_org_domain = Mail::DMARC::PurePerl->new->get_organizational_domain($test_domain);
+is( $test_org_domain, 'fastmail.com', 'Mail::DMARC public suffix list correctly functioning' );
+
 {
   my $bimi = Mail::BIMI->new;
 
@@ -21,7 +25,6 @@ use Mail::DMARC::PurePerl;
 
   my $record = $bimi->record;
   $record->record;
-
   is_deeply( $record->domain, 'gallifreyburning.com', 'Fallback domain' );
   is_deeply( $record->selector, 'default', 'Fallback selector' );
 }

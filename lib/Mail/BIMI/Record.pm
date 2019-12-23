@@ -47,8 +47,6 @@ sub _build_locations($self) {
 }
 
 sub _build_is_valid($self) {
-  # Missing or invalid v
-
   return 0 if ! keys $self->record->%*;
 
   if ( ! exists ( $self->record->{v} ) ) {
@@ -58,29 +56,6 @@ sub _build_is_valid($self) {
     $self->add_error( 'Empty v tag' )   if lc $self->record->{v} eq '';
     $self->add_error( 'Invalid v tag' ) if lc $self->record->{v} ne 'bimi1';
   }
-
-  # Move these into Locations->is_valid;
-  # and Authority->is_valid
-  # Missing l
-
-  # Invalid l url
-  # l is hot https://
-  #    if ( ! exists ( $Data->{ 'l' } ) ) {
-  #      $Self->error( 'Missing l tag' );
-  #  }
-  #  else {
-  #      if ( scalar @{ $Data->{ 'l' } } == 0 ) {
-  #              $Self->error( 'Empty l tag' );
-  #      }
-  #      else {
-  #          foreach my $l ( @{ $Data->{ 'l' } } ) {
-  #              $Self->error( 'Empty l tag' ) if $l eq '';
-  #              if ( ! ( $l =~ /^https:\/\// ) ) {
-  #                  $Self->error( 'Invalid transport in l tag' );
-  #              }
-  #          }
-  #      }
-  #  }
 
   return 0 if !$self->locations->is_valid;
   return 0 if $self->error->@*;
