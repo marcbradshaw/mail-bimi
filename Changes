@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Fix for BIMI records using multiple txt parts
 
 1.20200103 2020-01-03 UTC
   - Fix tests for perl 5.20
