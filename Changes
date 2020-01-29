@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Fixed prereqs
 
 1.20200107 2020-01-07 UTC
   - Fix for BIMI records using multiple txt parts
