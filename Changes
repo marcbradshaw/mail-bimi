@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+1.20200129 2020-01-29 UTC
   - Fixed prereqs
   - Tests now use Mocked DNS Zones
   - Allow SPF object to be checked for +all
