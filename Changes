@@ -1,4 +1,6 @@
 {{$NEXT}}
+  - Improve tests
+  - Fix incorrect abstracts
 
 1.20200210 2020-02-10 UTC
   - Tests now use Mocked DNS Zones
