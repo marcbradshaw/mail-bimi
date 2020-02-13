@@ -1,5 +1,5 @@
 package Mail::BIMI::Record::Authority;
-# ABSTRACT: Class to model a collection of egress pools
+# ABSTRACT: Class to model a BIMI authority
 # VERSION
 use 5.20.0;
 use Moo;

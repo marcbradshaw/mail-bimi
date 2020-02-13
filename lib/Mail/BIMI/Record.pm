@@ -1,5 +1,5 @@
 package Mail::BIMI::Record;
-# ABSTRACT: Class to model a collection of egress pools
+# ABSTRACT: Class to model a BIMI record
 # VERSION
 use 5.20.0;
 use Moo;

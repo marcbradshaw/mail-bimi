@@ -1,5 +1,5 @@
 package Mail::BIMI::Role::Constants;
-# ABSTRACT: Class to model a collection of egress pools
+# ABSTRACT: Class to model defined constants
 # VERSION
 use 5.20.0;
 use Moo::Role;
