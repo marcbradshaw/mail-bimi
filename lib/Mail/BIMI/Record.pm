@@ -102,7 +102,7 @@ sub _build_record($self) {
     }
   }
   elsif ( scalar @records > 1 ) {
-    push $self->error->@*, $self->MULTI_BIMI_RECORD;
+    $self->add_error( $self->MULTI_BIMI_RECORD );
     return {};
   }
   else {
@@ -141,7 +141,7 @@ sub _parse_record($self,$record) {
     my ( $key, $value ) = split '=', $part, 2;
     $key = lc $key;
     if ( exists $data->{ $key } ) {
-      push $self->error->@*, 'Duplicate key in record';
+      $self->add_error( 'Duplicate key in record' );
     }
     if ( grep { $key eq $_ } ( qw{ v l a } ) ) {
       $data->{$key} = $value;

@@ -42,7 +42,4 @@ sub get_authentication_results($self) {
   return $self->get_authentication_results_object->as_string;
 }
 
-sub get_bimi_location {
-}
-
 1;
