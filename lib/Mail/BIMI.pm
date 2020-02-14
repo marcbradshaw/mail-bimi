@@ -69,6 +69,9 @@ sub _build_result($self) {
     if ( $self->record->has_error( $self->NO_BIMI_RECORD ) ) {
       $result->set_result( 'none', $self->BIMI_NOT_ENABLED );
     }
+    elsif ( $self->record->has_error( $self->DNS_ERROR ) ) {
+      $result->set_result( 'none', $self->DNS_ERROR );
+    }
     else {
       $result->set_result( 'fail', $self->BIMI_INVALID );
     }

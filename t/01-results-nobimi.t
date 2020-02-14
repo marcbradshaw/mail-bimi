@@ -7,7 +7,7 @@ use Mail::BIMI::Pragmas;
 use Test::More;
 use Mail::BIMI;
 use Mail::BIMI::Record;
-use Net::DNS::Resolver::Mock;
+use Net::DNS::Resolver::Mock 1.20200214;
 
 my $bimi = Mail::BIMI->new();
 

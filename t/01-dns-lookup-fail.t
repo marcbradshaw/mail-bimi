@@ -8,42 +8,41 @@ use Test::More;
 use Mail::BIMI;
 use Mail::BIMI::Record;
 use Mail::DMARC::PurePerl;
-use Mail::SPF::Server;
-use Mail::SPF::Request;
 use Net::DNS::Resolver::Mock 1.20200214;
+
+my $bimi = Mail::BIMI->new();
 
 my $resolver = Net::DNS::Resolver::Mock->new;
 $resolver->zonefile_read('t/zonefile');
-
-my $spf_server = Mail::SPF::Server->new(
-  'dns_resolver' => $resolver,
-);
-
-my $spf_request = Mail::SPF::Request->new(
- 'versions'      => [1],
- 'scope'         => 'mfrom',
- 'identity'      => 'test@spfnall.gallifreyburning.com',
- 'ip_address'    => '66.111.4.25',
- 'helo_identity' => 'spfnall.galllifreyburning.com',
-);
-
-my $spf_result = $spf_server->process($spf_request);
-
-my $bimi = Mail::BIMI->new();
 $bimi->resolver($resolver);
 
 my $dmarc = Mail::DMARC::PurePerl->new;
 $dmarc->result->result( 'pass' );
 $dmarc->result->disposition( 'reject' );
 $bimi->dmarc_object( $dmarc->result );
-$bimi->spf_object( $spf_result );
 
-$bimi->domain( 'spfall.gallifreyburning.com' );
-$bimi->selector( 'default' );
+$resolver->die_on( 'foobar._bimi.gallifreyburning.com', 'TXT', 'Fail' );
+$bimi->domain( 'gallifreyburning.com' );
+$bimi->selector( 'foobar' );
+
+my $record = $bimi->record;
+
+is_deeply(
+    [ $record->is_valid, $record->error ],
+    [ 0, ['DNS query error'] ],
+    'Test record validates'
+);
+
+my $expected_data = {};
+
+is_deeply( $record->record, $expected_data, 'Parsed data' );
+
+my $expected_url_list = [];
+is_deeply( $record->locations->location, $expected_url_list, 'URL list' );
 
 my $result = $bimi->result;
 my $auth_results = $result->get_authentication_results;
-my $expected_result = 'bimi=pass header.d=spfall.gallifreyburning.com selector=default';
+my $expected_result = 'bimi=none (DNS query error)';
 is( $auth_results, $expected_result, 'Auth results correcct' );
 
 done_testing;
