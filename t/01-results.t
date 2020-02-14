@@ -28,16 +28,6 @@ sub process_bimi {
   is( $auth_results, $expected_result, $test );
   is ( $result->domain, $domain, 'result domain' );
   is ( $result->selector, $selector, 'result selector' );
-
-  is ( $bimi->domain , $domain, 'bimi domain' );
-  is ( $bimi->selector, $selector, 'bimi selector' );
-}
-
-sub bimi_object_defaults {
-  my $bimi = Mail::BIMI->new;
-  is ( $bimi->selector, 'default', 'default bimi selector' );
-  $bimi->selector( 'foobar' );
-  is ( $bimi->selector, 'foobar', 'set bimi selector' );
 }
 
 sub get_dmarc_result {
