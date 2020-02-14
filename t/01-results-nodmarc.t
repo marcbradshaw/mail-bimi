@@ -14,7 +14,7 @@ my $bimi = Mail::BIMI->new( domain => 'test.example.com', selector => 'default',
 
 my $result = $bimi->result;
 my $auth_results = $result->get_authentication_results;
-is( $auth_results, 'bimi=skipped (no DMARC)', 'authresults' );
+is( $auth_results, 'bimi=skipped (No DMARC)', 'authresults' );
 is ( $result->domain, 'test.example.com', 'result domain' );
 is ( $result->selector, 'default', 'result selector' );
 

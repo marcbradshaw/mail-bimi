@@ -35,7 +35,7 @@ sub _build_result($self) {
 
   # does DMARC pass
   if ( ! $self->dmarc_object ) {
-    $result->set_result( 'skipped', 'no DMARC' );
+    $result->set_result( 'skipped', $self->NO_DMARC );
     return $result;
   }
   if ( $self->dmarc_object->result ne 'pass' ) {
@@ -52,7 +52,7 @@ sub _build_result($self) {
               if ( @spf_terms ) {
                     my $last_term = pop @spf_terms;
                     if ( $last_term->name eq 'all' && $last_term->qualifier eq '+') {
-                        $result->set_result( 'skipped', 'SPF +all detected' );
+                        $result->set_result( 'skipped', $self->SPF_PLUS_ALL );
                         return $result;
                     }
                 }
@@ -61,16 +61,16 @@ sub _build_result($self) {
     }
 
   if ( ! $self->record ) {
-    $result->set_result( 'none', 'No BIMI Record' );
+    $result->set_result( 'none', $self->NO_BIMI_RECORD );
     return $result;
   }
 
   if ( ! $self->record->is_valid ) {
     if ( $self->record->has_error( $self->NO_BIMI_RECORD ) ) {
-      $result->set_result( 'none', 'Domain is not BIMI enabled' );
+      $result->set_result( 'none', $self->BIMI_NOT_ENABLED );
     }
     else {
-      $result->set_result( 'fail', 'Invalid BIMI Record' );
+      $result->set_result( 'fail', $self->BIMI_INVALID );
     }
     return $result;
   }
