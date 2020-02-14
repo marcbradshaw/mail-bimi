@@ -3,6 +3,7 @@ package Mail::BIMI;
 # VERSION
 use 5.20.0;
 use Moo;
+use Carp;
 use Types::Standard qw{Str HashRef ArrayRef};
 use Type::Utils qw{class_type};
 use Mail::BIMI::Pragmas;
@@ -21,10 +22,13 @@ use Mail::BIMI::Result;
   has result => ( is => 'rw', lazy => 1, builder => '_build_result' );
 
 sub _build_record($self) {
+  croak 'Domain required' if ! $self->domain;
   return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector, resolver => $self->resolver );
 }
 
 sub _build_result($self) {
+  croak 'Domain required' if ! $self->domain;
+
   my $result = Mail::BIMI::Result->new(
     parent => $self,
   );
