@@ -35,7 +35,9 @@ sub process_bimi {
 
 sub bimi_object_defaults {
   my $bimi = Mail::BIMI->new;
-  is ( $bimi->selector, 'default', 'bimi selector' );
+  is ( $bimi->selector, 'default', 'default bimi selector' );
+  $bimi->selector( 'foobar' );
+  is ( $bimi->selector, 'foobar', 'set bimi selector' );
 }
 
 sub get_dmarc_result {
