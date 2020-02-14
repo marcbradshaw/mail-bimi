@@ -60,11 +60,6 @@ sub _build_result($self) {
         }
     }
 
-  if ( ! $self->record ) {
-    $result->set_result( 'none', $self->NO_BIMI_RECORD );
-    return $result;
-  }
-
   if ( ! $self->record->is_valid ) {
     if ( $self->record->has_error( $self->NO_BIMI_RECORD ) ) {
       $result->set_result( 'none', $self->BIMI_NOT_ENABLED );
