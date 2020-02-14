@@ -109,7 +109,6 @@ sub _build_record($self) {
     # We have one record, let's use that.
     return $self->_parse_record($records[0]);
   }
-  return {};
 }
 
 sub _get_dns_rr($self,$type,$domain) {
