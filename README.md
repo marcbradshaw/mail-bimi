@@ -14,10 +14,8 @@ https://authindicators.github.io/rfc-brand-indicators-for-message-identification
 BIMI is a draft specification which defines a method to allow domain owners to specify
 brand-specific indicators to be displayed next to peoperly authenticated email messages.
 
-Code based on draft version of spec dated April 16, 2017
-
 Copyright
 ---------
 
-(c)2017 Marc Bradshaw <marc@marcbradshaw.net>
+(c)2020 Marc Bradshaw <marc@marcbradshaw.net>
 
