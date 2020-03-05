@@ -1,4 +1,9 @@
 {{$NEXT}}
+
+1.20200226 2020-02-26 UTC
+  - Update README
+
+1.20200214 2020-02-14 UTC
   - Improve tests
   - Fix incorrect abstracts
 
