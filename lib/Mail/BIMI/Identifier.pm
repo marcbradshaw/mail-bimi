@@ -1,0 +1,131 @@
+package Mail::BIMI::Identifier;
+# ABSTRACT: Class to model a BIMI identifier
+# VERSION
+use 5.20.0;
+use Moo;
+use Types::Standard qw{Str HashRef ArrayRef};
+use Type::Utils qw{class_type};
+use Mail::BIMI::Pragmas;
+use IO::Uncompress::Gunzip;
+use MIME::Base64;
+use XML::LibXML;
+  with 'Mail::BIMI::Role::Error';
+  with 'Mail::BIMI::Role::Constants';
+  with 'Mail::BIMI::Role::HTTPClient';
+  with 'Mail::BIMI::Role::Data';
+  has location => ( is => 'rw', isa => Str );
+  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data' );
+  has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed' );
+  has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml' );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
+  has parser => ( is => 'rw', lazy => 1, builder => '_build_parser' );
+  has header => ( is => 'rw', lazy => 1, builder => '_build_header' );
+
+sub _build_data_uncompressed($self) {
+  my $data = $self->data;
+  if ( $data =~ /^\037\213/ ) {
+    my $unzipped;
+    eval{
+      IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
+    };
+    if ( my $error = $@ ) {
+      $self->add_error( 'Error unzipping SVG' );
+      return;
+    }
+    return $unzipped;
+  }
+  else {
+    return $data;
+  }
+}
+
+sub data_maybe_compressed($self) {
+  # Alias for clarity, the data is as received.
+  return $self->data;
+}
+
+sub _build_data_xml($self) {
+  my $xml;
+  my $data = $self->data_uncompressed;
+  if ( !$data ) {
+    $self->add_error( 'Could not get SVG data' );
+    return;
+  }
+  eval {
+    $xml = XML::LibXML->new->load_xml(string => $self->data_uncompressed);
+  };
+  if ( my $error = $@ ) {
+    $self->add_error( 'Invalid XML in SVG' );
+    return;
+  }
+  return $xml;
+}
+
+{
+  my $parser;
+  sub _build_parser($self) {
+    return $parser if $parser;
+    $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file('SVG_1.2_BIMI.rng'));
+    return $parser;
+  }
+}
+
+sub _build_data($self) {
+  if ( ! $self->location ) {
+    $self->add_error( 'No location specified' );
+    return;
+  }
+  my $data = $self->http_client_get( $self->location );
+  if ( !$self->http_client_response->{success} ) {
+    if ( $self->http_client_response->{status} == 599 ) {
+      $self->add_error( 'Could not fetch SVG: Error '.$self->http_client_response->{content} );
+    }
+      else {
+      $self->add_error( 'Could not fetch SVG: Error '.$self->http_client_response->{status} );
+    }
+    return '';
+  }
+  return $data;
+}
+
+sub _build_is_valid($self) {
+
+  if (!($self->data||$self->location)) {
+    $self->add_error( 'Nothing to validate' );
+    return 0;
+  }
+
+  if (!$self->data) {
+    $self->add_error( 'No data' );
+    return 0;
+  }
+
+  my $is_valid;
+
+  if ( length $self->data_uncompressed > 32768 ) {
+    $self->add_error( 'SVG Document exceeds maximum size' );
+  }
+  else {
+    eval {
+      $self->parser->validate( $self->data_xml );
+      $is_valid=1;
+    };
+    if ( !$is_valid ) {
+      $self->add_error( 'SVG did not validate' );
+    }
+  }
+
+  return 0 if $self->error->@*;
+  return 1;
+}
+
+sub _build_header($self) {
+  return if !$self->is_valid;
+  my $base64 = encode_base64( $self->data_maybe_compressed );
+  $base64 =~ s/\n//g;
+  my @parts = unpack("(A70)*", $base64);
+  return join("\n    ", @parts);
+}
+
+1;
+
