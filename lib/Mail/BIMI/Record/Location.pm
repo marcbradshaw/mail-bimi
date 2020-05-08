@@ -20,8 +20,12 @@ sub _build_is_valid($self) {
       $self->add_error( $self->EMPTY_L_TAG );
     }
     elsif ( ! ( $location =~ /^https:\/\// ) ) {
-      $self->add_error( $self->INVALID_TRANSPORT );
+      $self->add_error( $self->INVALID_TRANSPORT_L );
     }
+  }
+
+  if ( scalar $self->location->@* > 1 ) {
+    $self->add_error( $self->MULTIPLE_LOCATIONS );
   }
 
   return 0 if $self->error->@*;

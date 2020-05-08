@@ -67,9 +67,9 @@ is_deeply(
   'Invalid transport in location'
 );
 is_deeply(
-  test_record( 'v=bimi1; l=foo,,bar', 'example.com', 'default' ),
-  [  0, ['Invalid transport in location', 'Empty l tag', 'Invalid transport in location'] ],
-  'Empty l entry'
+  test_record( 'v=bimi1; l=https://foo,https://bar', 'example.com', 'default' ),
+  [  0, ['Multiple entries for l found'] ],
+  'MultipleEmpty l entry'
 );
 is_deeply(
   test_record( 'v=bimi1; l=', 'example.com', 'default' ),
