@@ -63,12 +63,12 @@ is_deeply(
 );
 is_deeply(
   test_record( 'v=bimi1; l=http://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
-  [ 0, ['Invalid transport in locations'] ],
-  'Invalid transport in locations'
+  [ 0, ['Invalid transport in location'] ],
+  'Invalid transport in location'
 );
 is_deeply(
   test_record( 'v=bimi1; l=foo,,bar', 'example.com', 'default' ),
-  [  0, ['Invalid transport in locations', 'Empty l tag', 'Invalid transport in locations'] ],
+  [  0, ['Invalid transport in location', 'Empty l tag', 'Invalid transport in location'] ],
   'Empty l entry'
 );
 is_deeply(

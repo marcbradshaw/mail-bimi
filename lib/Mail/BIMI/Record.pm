@@ -50,7 +50,7 @@ sub _build_is_valid($self) {
   return 0 if ! keys $self->record->%*;
 
   if ( ! exists ( $self->record->{v} ) ) {
-    $self->add_error( 'Missing v tag' );
+    $self->add_error( $self->MISSING_V_TAG );
   }
   else {
     $self->add_error( $self->EMPTY_V_TAG )   if lc $self->record->{v} eq '';

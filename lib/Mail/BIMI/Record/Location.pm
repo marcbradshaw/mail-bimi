@@ -17,7 +17,7 @@ sub _build_is_valid($self) {
 
   foreach my $location ( $self->location->@* ) {
     if ( $location eq '' ) {
-      $self->add_error( 'Empty l tag' );
+      $self->add_error( $self->EMPTY_L_TAG );
     }
     elsif ( ! ( $location =~ /^https:\/\// ) ) {
       $self->add_error( $self->INVALID_TRANSPORT );

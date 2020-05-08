@@ -29,7 +29,7 @@ sub _build_data_uncompressed($self) {
       IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
     };
     if ( my $error = $@ ) {
-      $self->add_error( 'Error unzipping SVG' );
+      $self->add_error( $self->SVG_UNZIP_ERROR );
       return;
     }
     return $unzipped;
@@ -48,14 +48,14 @@ sub _build_data_xml($self) {
   my $xml;
   my $data = $self->data_uncompressed;
   if ( !$data ) {
-    $self->add_error( 'Could not get SVG data' );
+    $self->add_error( $self->SVG_GET_ERROR );
     return;
   }
   eval {
     $xml = XML::LibXML->new->load_xml(string => $self->data_uncompressed);
   };
   if ( my $error = $@ ) {
-    $self->add_error( 'Invalid XML in SVG' );
+    $self->add_error( $self->SVG_INVALID_XML );
     return;
   }
   return $xml;
@@ -72,16 +72,16 @@ sub _build_data_xml($self) {
 
 sub _build_data($self) {
   if ( ! $self->location ) {
-    $self->add_error( 'No location specified' );
+    $self->add_error( $self->CODE_MISSING_LOCATION );
     return;
   }
   my $data = $self->http_client_get( $self->location );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
-      $self->add_error( 'Could not fetch SVG: Error '.$self->http_client_response->{content} );
+      $self->add_error( $self->SVG_FETCH_ERROR.' Error '.$self->http_client_response->{content} );
     }
       else {
-      $self->add_error( 'Could not fetch SVG: Error '.$self->http_client_response->{status} );
+      $self->add_error( $self->SVG_FETCH_ERROR.' Error '.$self->http_client_response->{status} );
     }
     return '';
   }
@@ -91,19 +91,19 @@ sub _build_data($self) {
 sub _build_is_valid($self) {
 
   if (!($self->data||$self->location)) {
-    $self->add_error( 'Nothing to validate' );
+    $self->add_error( $self->CODE_NOTHING_TO_VALIDATE );
     return 0;
   }
 
   if (!$self->data) {
-    $self->add_error( 'No data' );
+    $self->add_error( $self->CODE_NO_DATA );
     return 0;
   }
 
   my $is_valid;
 
   if ( length $self->data_uncompressed > 32768 ) {
-    $self->add_error( 'SVG Document exceeds maximum size' );
+    $self->add_error( $self->SVG_SIZE );
   }
   else {
     eval {
@@ -111,7 +111,7 @@ sub _build_is_valid($self) {
       $is_valid=1;
     };
     if ( !$is_valid ) {
-      $self->add_error( 'SVG did not validate' );
+      $self->add_error( $self->SVG_VALIDATION_ERROR );
     }
   }
 
