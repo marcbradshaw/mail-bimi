@@ -13,13 +13,16 @@ use XML::LibXML;
   with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::HTTPClient';
   with 'Mail::BIMI::Role::Data';
-  has location => ( is => 'rw', isa => Str );
-  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data' );
-  has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed' );
+  with 'Mail::BIMI::Role::Cacheable';
+  has location => ( is => 'rw', isa => Str, is_cache_key =>1  );
+  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1 );
+  has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', is_cacheable => 1 );
   has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml' );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
   has parser => ( is => 'rw', lazy => 1, builder => '_build_parser' );
-  has header => ( is => 'rw', lazy => 1, builder => '_build_header' );
+  has header => ( is => 'rw', lazy => 1, builder => '_build_header', is_cacheable => 1);
+
+sub cache_valid_for($self) { return 3600 }
 
 sub _build_data_uncompressed($self) {
   my $data = $self->data;

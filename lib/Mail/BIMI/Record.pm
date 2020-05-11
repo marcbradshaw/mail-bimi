@@ -12,13 +12,16 @@ use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Resolver';
-  has domain => ( is => 'rw', isa => Str, required => 1 );
-  has selector => ( is => 'rw', isa => Str );
-  has version => ( is => 'rw', isa => Str );
+  with 'Mail::BIMI::Role::Cacheable';
+  has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1 );
+  has selector => ( is => 'rw', isa => Str, is_cache_key => 1 );
+  has version => ( is => 'rw', isa => Str, is_cacheable => 1 );
   has authorities => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authorities' );
   has locations => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Location'), lazy => 1, builder => '_build_locations' );
-  has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record' );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
+  has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record', is_cacheable => 1 );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
+
+sub cache_valid_for($self) { return 3600 }
 
 sub _build_authorities($self) {
   my $record = $self->record->{a} // '';

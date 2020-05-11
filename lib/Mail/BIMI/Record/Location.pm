@@ -34,7 +34,7 @@ sub _build_is_valid($self) {
 
 sub _build_identifier($self) {
   return if ! $self->is_valid;
-  return Mail::BIMI::Identifier->new( location => $self->location );
+  return Mail::BIMI::Identifier->new( location => $self->location->[0] );
 }
 
 1;
