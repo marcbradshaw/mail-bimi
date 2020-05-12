@@ -38,8 +38,8 @@ my $expected_data = {};
 
 is_deeply( $record->record, $expected_data, 'Parsed data' );
 
-my $expected_url_list = [];
-is_deeply( $record->locations->location, $expected_url_list, 'URL list' );
+my $expected_url = undef;
+is_deeply( $record->location->location, $expected_url, 'URL' );
 
 my $result = $bimi->result;
 my $auth_results = $result->get_authentication_results;

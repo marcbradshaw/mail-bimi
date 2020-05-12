@@ -9,7 +9,7 @@ use Test::More;
 use Mail::BIMI;
 use Mail::BIMI::Record;
 
-plan tests => 12;
+plan tests => 11;
 
 is_deeply(
   test_record( 'v=bimi1; l=https://bimi.example.com/marks/file.svg', 'example.com', 'default' ),
@@ -68,11 +68,6 @@ is_deeply(
   'Invalid transport in location'
 );
 is_deeply(
-  test_record( 'v=bimi1; l=https://foo,https://bar', 'example.com', 'default' ),
-  [  0, ['Multiple entries for l found'] ],
-  'MultipleEmpty l entry'
-);
-is_deeply(
   test_record( 'v=bimi1; l=', 'example.com', 'default' ),
   [ 0, ['Empty l tag'] ],
   'Empty l tag'
@@ -83,7 +78,7 @@ sub test_record {
   my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
   $record->record( $record->_parse_record( $entry ) );
   $record->is_valid;
-  my @errors = ( $record->error->@*, $record->authorities->error->@*, $record->locations->error->@* );
+  my @errors = ( $record->error->@*, $record->authority->error->@*, $record->location->error->@* );
   return [ $record->is_valid, \@errors ];
 }
 

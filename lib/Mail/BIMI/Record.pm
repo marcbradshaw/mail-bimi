@@ -14,37 +14,31 @@ use Mail::DMARC::PurePerl;
   has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1 );
   has selector => ( is => 'rw', isa => Str, is_cache_key => 1 );
   has version => ( is => 'rw', isa => Str, is_cacheable => 1 );
-  has authorities => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authorities' );
-  has locations => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Location'), lazy => 1, builder => '_build_locations' );
+  has authority => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authority' );
+  has location => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Location'), lazy => 1, builder => '_build_location' );
   has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record', is_cacheable => 1 );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
 
 sub cache_valid_for($self) { return 3600 }
 
-sub _build_authorities($self) {
-  my $record = $self->record->{a} // '';
+sub _build_authority($self) {
+  my $record;
+  if ( exists $self->record->{a} ) {
+    $record = $self->record->{a} // '';
+  }
   # TODO better parser here
-  my @authority = split( ',', $record );
-  return Mail::BIMI::Record::Authority->new( authority => \@authority );
+  return Mail::BIMI::Record::Authority->new( authority => $record );
 }
 
-sub _build_locations($self) {
-  my $record = '';
-  if ( ! exists $self->record->{l} ) {
-    $self->add_error( $self->MISSING_L_TAG );
-  }
-  else {
+sub _build_location($self) {
+  my $record;
+  if ( exists $self->record->{l} ) {
     $record = $self->record->{l} // '';
-    if ( $record eq '' ) {
-      $self->add_error( $self->EMPTY_L_TAG );
-    }
   }
-
   # TODO better parser here
     # Need to decode , and ; as per spec
     # TODO, should this have '.svg' appended?
-  my @location = split( ',', $record );
-  return Mail::BIMI::Record::Location->new( location => \@location );
+  return Mail::BIMI::Record::Location->new( location => $record );
 }
 
 sub _build_is_valid($self) {
@@ -58,7 +52,7 @@ sub _build_is_valid($self) {
     $self->add_error( $self->INVALID_V_TAG ) if lc $self->record->{v} ne 'bimi1';
   }
 
-  return 0 if !$self->locations->is_valid;
+  return 0 if !$self->location->is_valid;
   return 0 if $self->error->@*;
   return 1;
 }
