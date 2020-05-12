@@ -3,8 +3,6 @@ package Mail::BIMI::Identifier;
 # VERSION
 use 5.20.0;
 use Moo;
-use Types::Standard qw{Str HashRef ArrayRef};
-use Type::Utils qw{class_type};
 use Mail::BIMI::Pragmas;
 use IO::Uncompress::Gunzip;
 use MIME::Base64;

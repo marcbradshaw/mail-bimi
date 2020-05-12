@@ -3,11 +3,7 @@ package Mail::BIMI::Role::Cacheable::File;
 # VERSION
 use 5.20.0;
 use Moo::Role;
-use Carp;
-use Types::Standard qw{Int};
-use Type::Utils qw{class_type};
 use Mail::BIMI::Pragmas;
-use JSON;
 use Digest::SHA256;
   has _cache_filename => ( is => 'ro', lazy => 1, builder => '_build_cache_filename' );
 

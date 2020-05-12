@@ -3,13 +3,7 @@ package Mail::BIMI;
 # VERSION
 use 5.20.0;
 use Moo;
-use Carp;
-use Types::Standard qw{Str HashRef ArrayRef};
-use Type::Utils qw{class_type};
 use Mail::BIMI::Pragmas;
-
-use English qw( -no_match_vars );
-
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
   with 'Mail::BIMI::Role::Resolver';

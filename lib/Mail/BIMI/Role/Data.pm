@@ -3,8 +3,6 @@ package Mail::BIMI::Role::Data;
 # VERSION
 use 5.20.0;
 use Moo::Role;
-use Types::Standard qw{Str HashRef ArrayRef};
-use Type::Utils qw{class_type};
 use Mail::BIMI::Pragmas;
 
 sub get_data_from_file($self,$file) {

@@ -3,10 +3,7 @@ package Mail::BIMI::Role::Cacheable;
 # VERSION
 use 5.20.0;
 use Moo::Role;
-use Carp;
 use Mail::BIMI::Pragmas;
-use Types::Standard qw{Int};
-
   with  'Mail::BIMI::Role::Cacheable::File';
 
   has _do_not_cache => ( is => 'rw', isa => Int, required => 0 );
