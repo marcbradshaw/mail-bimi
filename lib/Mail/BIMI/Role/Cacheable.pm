@@ -4,7 +4,11 @@ package Mail::BIMI::Role::Cacheable;
 use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
-  with  'Mail::BIMI::Role::Cacheable::File';
+  my $backend = $ENV{MAIL_BIMI_CACHE_BACKEND} // 'File';
+  my $cache_backend = $backend eq 'File' ? 'File'
+                    : $backend eq 'Null' ? 'Null'
+                    : 'Null'; # Untaint
+  with  'Mail::BIMI::Role::Cacheable::'.$cache_backend;
 
   has _do_not_cache => ( is => 'rw', isa => Int, required => 0 );
   has _cache_read_timestamp => ( is => 'rw', required => 0 );
@@ -18,7 +22,6 @@ sub do_not_cache($self) {
 }
 
 sub BUILD($self,$args) {
-
   my @cache_key;
   my @cache_fields;
   foreach my $attribute ( sort keys %{Moo->_constructor_maker_for(ref $self)}{attribute_specs}->%* ) {
