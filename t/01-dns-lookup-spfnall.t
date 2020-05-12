@@ -47,4 +47,6 @@ my $auth_results = $result->get_authentication_results;
 my $expected_result = 'bimi=pass header.d=spfall.gallifreyburning.com selector=default';
 is( $auth_results, $expected_result, 'Auth results correcct' );
 
+use Data::Dumper;print Dumper $bimi;
+
 done_testing;

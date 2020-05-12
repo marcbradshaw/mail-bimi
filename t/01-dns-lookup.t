@@ -34,13 +34,13 @@ is_deeply(
 );
 
 my $expected_data = {
-    'l' => 'https://bimi.example.com/marks/bazz.svg',
+    'l' => 'https://fastmaildmarc.com/FM_BIMI.svg',
     'v' => 'bimi1'
 };
 
 is_deeply( $record->record, $expected_data, 'Parsed data' );
 
-my $expected_url = 'https://bimi.example.com/marks/bazz.svg';
+my $expected_url = 'https://fastmaildmarc.com/FM_BIMI.svg';
 is_deeply( $record->location->location, $expected_url, 'URL' );
 
 my $result = $bimi->result;

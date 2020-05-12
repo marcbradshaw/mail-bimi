@@ -4,11 +4,15 @@ package Mail::BIMI::Record::Authority;
 use 5.20.0;
 use Moo;
 use Mail::BIMI::Pragmas;
+  with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::Error';
   has authority => ( is => 'rw', isa => sub{ undef || Str}, required => 1 );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
 
 sub _build_is_valid($self) {
+  return 1 if !defined $self->authority;
+  return 1 if $self->authority eq '';
+  return 1 if $self->authority eq 'self';
   if ( ! ( $self->authority =~ /^https:\/\// ) ) {
     $self->add_error( $self->INVALID_TRANSPORT_A );
   }

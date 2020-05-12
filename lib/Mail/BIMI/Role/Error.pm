@@ -7,7 +7,12 @@ use Mail::BIMI::Pragmas;
   has error => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => sub{return []}, is_cacheable => 1 );
 
 sub add_error($self,$error) {
-  push $self->error->@*, $error;
+  if ( ref $error eq 'ARRAY' ) {
+    push $self->error->@*, $error->@*;
+  }
+  else {
+    push $self->error->@*, $error;
+  }
 }
 
 sub has_error($self,$error) {

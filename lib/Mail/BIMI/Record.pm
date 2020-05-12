@@ -46,13 +46,19 @@ sub _build_is_valid($self) {
 
   if ( ! exists ( $self->record->{v} ) ) {
     $self->add_error( $self->MISSING_V_TAG );
+    return 0;
   }
   else {
     $self->add_error( $self->EMPTY_V_TAG )   if lc $self->record->{v} eq '';
     $self->add_error( $self->INVALID_V_TAG ) if lc $self->record->{v} ne 'bimi1';
+    return 0 if $self->error->@*;
   }
-
-  return 0 if !$self->location->is_valid;
+  if (!$self->location->is_valid) {
+    $self->add_error( $self->location->error );
+  }
+  if (!$self->authority->is_valid) {
+    $self->add_error( $self->authority->error );
+  }
   return 0 if $self->error->@*;
   return 1;
 }

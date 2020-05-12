@@ -10,11 +10,11 @@ use Mail::BIMI;
 use Mail::BIMI::Record;
 use Mail::DMARC::PurePerl;
 
-process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://bimi.example.com/marks/', 'pass', 'reject',
+process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://fastmaildmarc.com/FM_BIMI.svg', 'pass', 'reject',
     'bimi=pass header.d=test.example.com selector=default', 'Pass' );
-process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://bimi.example.com/marks/', 'fail', 'reject',
+process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://fastmaildmarc.com/FM_BIMI.svg', 'fail', 'reject',
     'bimi=skipped (DMARC fail)', 'DMARC Fail');
-process_bimi( 'test.example.com', 'default', 'v=foobar; l=https://bimi.example.com/marks/', 'pass', 'reject',
+process_bimi( 'test.example.com', 'default', 'v=foobar; l=https://fastmaildmarc.com/FM_BIMI.svg', 'pass', 'reject',
     'bimi=fail (Invalid BIMI Record)', 'Skipped Invalid');
 
 sub process_bimi {
