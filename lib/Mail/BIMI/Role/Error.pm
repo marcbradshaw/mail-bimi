@@ -8,9 +8,11 @@ use Mail::BIMI::Pragmas;
 
 sub add_error($self,$error) {
   if ( ref $error eq 'ARRAY' ) {
+    chomp $error->@*;
     push $self->error->@*, $error->@*;
   }
   else {
+    chomp $error;
     push $self->error->@*, $error;
   }
 }

@@ -111,8 +111,9 @@ sub _build_is_valid($self) {
       $self->parser->validate( $self->data_xml );
       $is_valid=1;
     };
+    my $validation_errors = $@;
     if ( !$is_valid ) {
-      $self->add_error( $self->SVG_VALIDATION_ERROR );
+      $self->add_error( $self->SVG_VALIDATION_ERROR.': '.$validation_errors );
     }
   }
 
@@ -126,6 +127,19 @@ sub _build_header($self) {
   $base64 =~ s/\n//g;
   my @parts = unpack("(A70)*", $base64);
   return join("\n    ", @parts);
+}
+
+sub app_validate($self) {
+  say 'Indicator Returned:';
+  say '  GZipped : ' . ( $self->data_uncompressed eq $self->data ? 'No' : 'Yes' );
+  say '  BIMI-Indicator: '.$self->header;
+  say "  Is Valid : " . ( $self->is_valid ? 'Yes' : 'No' );
+  if ( ! $self->is_valid ) {
+    say "Errors:";
+    foreach my $error ( $self->error->@* ) {
+      say '  '.$error;
+    }
+  }
 }
 
 1;

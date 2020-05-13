@@ -13,13 +13,21 @@ use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Cacheable';
   has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1 );
   has selector => ( is => 'rw', isa => Str, is_cache_key => 1 );
-  has version => ( is => 'rw', isa => Str, is_cacheable => 1 );
+  has version => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_version', is_cacheable => 1 );
   has authority => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authority' );
   has location => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Location'), lazy => 1, builder => '_build_location' );
   has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record', is_cacheable => 1 );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
 
 sub cache_valid_for($self) { return 3600 }
+
+sub _build_version($self) {
+  my $version;
+  if ( exists $self->record->{v} ) {
+    $version = $self->record->{v} // '';
+  }
+  return $version;
+}
 
 sub _build_authority($self) {
   my $record;
@@ -71,7 +79,8 @@ sub _build_record($self) {
 
   my @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_dns_rr( 'TXT', $selector. '._bimi.' . $domain); };
   if ( my $error = $@ ) {
-    $self->add_error( $self->DNS_ERROR );
+    $error =~ s/ at \/.*$//;
+    $self->add_error( $self->DNS_ERROR.': '.$error );
     return {};
   }
 
@@ -84,7 +93,8 @@ sub _build_record($self) {
 
     @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_dns_rr( 'TXT', $fallback_selector. '._bimi.' . $fallback_domain); };
     if ( my $error = $@ ) {
-      $self->add_error( $self->DNS_ERROR );
+      $error =~ s/ at \/.*$//;
+      $self->add_error( $self->DNS_ERROR.': '.$error );
       return {};
     }
     if ( !@records ) {
@@ -148,6 +158,21 @@ sub _parse_record($self,$record) {
     }
   }
   return $data;
+}
+
+sub app_validate($self) {
+  say '';
+  say 'Record Returned:';
+  say '  Version   : '.$self->version;
+  say '  Authority : '.$self->authority->authority if $self->authority;
+  say '  Location  : '.$self->location->location if $self->location;
+  say "  Is Valid  : " . ( $self->is_valid ? 'Yes' : 'No' );
+  if ( ! $self->is_valid ) {
+    say "Errors:";
+    foreach my $error ( $self->error->@* ) {
+      say '  '.$error;
+    }
+  }
 }
 
 1;
