@@ -1,5 +1,5 @@
-package Mail::BIMI::Identifier;
-# ABSTRACT: Class to model a BIMI identifier
+package Mail::BIMI::Indicator;
+# ABSTRACT: Class to model a BIMI indicator
 # VERSION
 use 5.20.0;
 use Moo;
