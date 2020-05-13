@@ -12,6 +12,7 @@ use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Cacheable';
   has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1 );
+  has retrieved_record => ( is => 'rwp', is_cacheable => 1 );
   has selector => ( is => 'rw', isa => Str, is_cache_key => 1 );
   has version => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_version', is_cacheable => 1 );
   has authority => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authority' );
@@ -77,7 +78,7 @@ sub _build_record($self) {
   my $fallback_selector = 'default';
   my $fallback_domain   = Mail::DMARC::PurePerl->new->get_organizational_domain($domain);
 
-  my @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_dns_rr( 'TXT', $selector. '._bimi.' . $domain); };
+  my @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($selector,$domain); };
   if ( my $error = $@ ) {
     $error =~ s/ at \/.*$//;
     $self->add_error( $self->DNS_ERROR.': '.$error );
@@ -91,7 +92,7 @@ sub _build_record($self) {
       return {};
     }
 
-    @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_dns_rr( 'TXT', $fallback_selector. '._bimi.' . $fallback_domain); };
+    @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($fallback_selector,$fallback_domain); };
     if ( my $error = $@ ) {
       $error =~ s/ at \/.*$//;
       $self->add_error( $self->DNS_ERROR.': '.$error );
@@ -109,6 +110,7 @@ sub _build_record($self) {
       # We have one record, let's use that.
       $self->domain($fallback_domain);
       $self->selector($fallback_selector);
+      $self->_set_retrieved_record($records[0]);
       return $self->_parse_record($records[0]);
     }
   }
@@ -118,26 +120,20 @@ sub _build_record($self) {
   }
   else {
     # We have one record, let's use that.
+    $self->_set_retrieved_record($records[0]);
     return $self->_parse_record($records[0]);
   }
 }
 
-sub _get_dns_rr($self,$type,$domain) {
+sub _get_from_dns($self,$selector,$domain) {
   my @matches;
   my $res     = $self->resolver;
-  my $query   = $res->query( $domain, $type ) or do {
+  my $query   = $res->query( "$selector._bimi.$domain", 'TXT' ) or do {
     return @matches;
   };
   for my $rr ( $query->answer ) {
-    next if $rr->type ne $type;
-    push @matches, $rr->type eq  'A'   ?        $rr->address
-                 : $rr->type eq 'PTR'  ?        $rr->ptrdname
-                 : $rr->type eq  'NS'  ?        $rr->nsdname
-                 : $rr->type eq  'TXT' ? scalar $rr->txtdata
-                 : $rr->type eq  'SPF' ? scalar $rr->txtdata
-                 : $rr->type eq 'AAAA' ?        $rr->address
-                 : $rr->type eq  'MX'  ?        $rr->exchange
-                 : $rr->answer;
+    next if $rr->type ne 'TXT';
+    push @matches, scalar $rr->txtdata;
   }
   return @matches;
 }
@@ -161,9 +157,12 @@ sub _parse_record($self,$record) {
 }
 
 sub app_validate($self) {
-  say '';
   say 'Record Returned:';
+  $self->is_valid; # To set retrieved record and actual domain/selector
+  say '  Record    : '.$self->retrieved_record;
   say '  Version   : '.$self->version;
+  say '  Domain    : '.$self->domain;
+  say '  Selector  : '.$self->selector;
   say '  Authority : '.$self->authority->authority if $self->authority;
   say '  Location  : '.$self->location->location if $self->location;
   say "  Is Valid  : " . ( $self->is_valid ? 'Yes' : 'No' );
