@@ -21,8 +21,8 @@ sub MISSING_L_TAG            { return 'Missing l tag' }
 sub MISSING_V_TAG            { return 'Missing v tag' }
 sub MULTIPLE_AUTHORITIES     { return 'Multiple entries for a found' }
 sub MULTIPLE_LOCATIONS       { return 'Multiple entries for l found' }
-sub MULTI_BIMI_RECORD        { return 'multiple BIMI records found' }
-sub NO_BIMI_RECORD           { return 'no BIMI records found' }
+sub MULTI_BIMI_RECORD        { return 'Multiple BIMI records found' }
+sub NO_BIMI_RECORD           { return 'No BIMI records found' }
 sub NO_DMARC                 { return 'No DMARC' }
 sub SPF_PLUS_ALL             { return 'SPF +all detected' }
 sub SVG_FETCH_ERROR          { return 'Could not fetch SVG' }

@@ -62,7 +62,37 @@ sub _build_result($self) {
       $result->set_result( 'none', $self->DNS_ERROR );
     }
     else {
-      $result->set_result( 'fail', $self->BIMI_INVALID );
+      my @fail_errors = qw{
+        NO_DMARC
+        MULTI_BIMI_RECORD
+        DUPLICATE_KEY
+        EMPTY_L_TAG
+        EMPTY_V_TAG
+        INVALID_V_TAG
+        MISSING_L_TAG
+        MISSING_V_TAG
+        MULTIPLE_AUTHORITIES
+        MULTIPLE_LOCATIONS
+        INVALID_TRANSPORT_A
+        INVALID_TRANSPORT_L
+        SPF_PLUS_ALL
+        SVG_FETCH_ERROR
+        SVG_GET_ERROR
+        SVG_SIZE
+        SVG_UNZIP_ERROR
+        SVG_INVALID_XML
+        SVG_VALIDATION_ERROR };
+      my $found_error = 0;
+      foreach my $fail_error (@fail_errors) {
+        if ( $self->record->has_error( $self->$fail_error ) ) {
+          $found_error = 1;
+          $result->set_result( 'fail', $self->$fail_error );
+          last;
+        }
+      }
+      if ( !$found_error ) {
+        $result->set_result( 'fail', $self->BIMI_INVALID );
+      }
     }
     return $result;
   }

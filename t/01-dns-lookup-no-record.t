@@ -29,7 +29,7 @@ my $record = $bimi->record;
 
 is_deeply(
     [ $record->is_valid(), $record->error() ],
-    [ 0, ['no BIMI records found'] ],
+    [ 0, ['No BIMI records found'] ],
     'Test record does not validate'
 );
 

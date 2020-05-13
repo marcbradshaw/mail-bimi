@@ -28,7 +28,7 @@ $bimi->selector( 'default' );
 my $record = $bimi->record;
 is_deeply(
     [ $record->is_valid, $record->error ],
-    [ 0, ['multiple BIMI records found'] ],
+    [ 0, ['Multiple BIMI records found'] ],
     'Test record does not validate'
 );
 
@@ -41,7 +41,7 @@ is_deeply( $record->location->location, $expected_url, 'URL' );
 
 my $result = $bimi->result;
 my $auth_results = $result->get_authentication_results;
-my $expected_result = 'bimi=fail (Invalid BIMI Record)';
+my $expected_result = 'bimi=fail (Multiple BIMI records found)';
 is( $auth_results, $expected_result, 'Auth results correcct' );
 
 done_testing;

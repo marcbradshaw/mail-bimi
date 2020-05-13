@@ -79,10 +79,10 @@ sub _build_data($self) {
   my $data = $self->http_client_get( $self->location );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
-      $self->add_error( $self->SVG_FETCH_ERROR.' Error '.$self->http_client_response->{content} );
+      $self->add_error({ error => $self->SVG_FETCH_ERROR, detail => $self->http_client_response->{content} });
     }
       else {
-      $self->add_error( $self->SVG_FETCH_ERROR.' Error '.$self->http_client_response->{status} );
+      $self->add_error({ error => $self->SVG_FETCH_ERROR, detail => $self->http_client_response->{status} });
     }
     return '';
   }
@@ -113,7 +113,7 @@ sub _build_is_valid($self) {
     };
     my $validation_errors = $@;
     if ( !$is_valid ) {
-      $self->add_error( $self->SVG_VALIDATION_ERROR.': '.$validation_errors );
+      $self->add_error({ error => $self->SVG_VALIDATION_ERROR, detail => $validation_errors });
     }
   }
 
@@ -132,12 +132,15 @@ sub _build_header($self) {
 sub app_validate($self) {
   say 'Indicator Returned:';
   say '  GZipped : ' . ( $self->data_uncompressed eq $self->data ? 'No' : 'Yes' );
-  say '  BIMI-Indicator: '.$self->header;
+  say '  BIMI-Indicator: '.$self->header if $self->is_valid;
   say "  Is Valid : " . ( $self->is_valid ? 'Yes' : 'No' );
   if ( ! $self->is_valid ) {
     say "Errors:";
-    foreach my $error ( $self->error->@* ) {
-      say '  '.$error;
+    foreach my $error ( $self->error_detail->@* ) {
+      my $error_text = $error->{error};
+      my $error_detail = $error->{detail};
+      $error_detail =~ s/\n/\n    /g;
+      say "  $error_text".($error_detail?"\n    ".$error_detail:'');
     }
   }
 }

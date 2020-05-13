@@ -15,7 +15,7 @@ process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://fastmaildmarc.c
 process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://fastmaildmarc.com/FM_BIMI.svg', 'fail', 'reject',
     'bimi=skipped (DMARC fail)', 'DMARC Fail');
 process_bimi( 'test.example.com', 'default', 'v=foobar; l=https://fastmaildmarc.com/FM_BIMI.svg', 'pass', 'reject',
-    'bimi=fail (Invalid BIMI Record)', 'Skipped Invalid');
+    'bimi=fail (Invalid v tag)', 'Skipped Invalid');
 
 sub process_bimi {
   my ( $domain, $selector, $entry, $dmarc_result, $dmarc_disposition, $expected_result, $test ) = @_;
