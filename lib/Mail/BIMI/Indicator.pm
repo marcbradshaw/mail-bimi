@@ -7,6 +7,7 @@ use Mail::BIMI::Pragmas;
 use IO::Uncompress::Gunzip;
 use MIME::Base64;
 use XML::LibXML;
+our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS };
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::HTTPClient';
@@ -19,6 +20,7 @@ use XML::LibXML;
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
   has parser => ( is => 'rw', lazy => 1, builder => '_build_parser' );
   has header => ( is => 'rw', lazy => 1, builder => '_build_header', is_cacheable => 1);
+  has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => sub{ return 'SVG_1.2_PS' }, is_cacheable => 1 );
 
 sub cache_valid_for($self) { return 3600 }
 
@@ -66,7 +68,7 @@ sub _build_data_xml($self) {
   my $parser;
   sub _build_parser($self) {
     return $parser if $parser;
-    $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file('SVG_1.2_PS.rng'));
+    $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file($self->validator_profile.'.rng'));
     return $parser;
   }
 }
@@ -133,6 +135,7 @@ sub app_validate($self) {
   say 'Indicator Returned:';
   say '  GZipped : ' . ( $self->data_uncompressed eq $self->data ? 'No' : 'Yes' );
   say '  BIMI-Indicator: '.$self->header if $self->is_valid;
+  say '  Profile Used:   '.$self->validator_profile;
   say "  Is Valid : " . ( $self->is_valid ? 'Yes' : 'No' );
   if ( ! $self->is_valid ) {
     say "Errors:";

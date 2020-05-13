@@ -19,18 +19,20 @@ sub usage_desc { "%c checksvg %o <URL>" }
 
 sub opt_spec {
   return (
+    [ 'profile=s', 'SVG Profile to validate against ('.join('|',@Mail::BIMI::Indicator::VALIDATOR_PROFILES).')' ],
   );
 }
 
 sub validate_args($self,$opt,$args) {
  $self->usage_error('No URL specified') if !@$args;
  $self->usage_error('Multiple URLs specified') if scalar @$args > 1;
+ $self->usage_error('Unknown SVG Profile') if $opt->profile && !grep {$opt->profile} @Mail::BIMI::Indicator::VALIDATOR_PROFILES
 }
 
 sub execute($self,$opt,$args) {
-  require Mail::BIMI::Indicator;
   my $url = $args->[0];
   my $indicator = Mail::BIMI::Indicator->new( location => $url );
+  $indicator->validator_profile($opt->profile) if $opt->profile;
   say "BIMI SVG checker";
   say '';
   say 'Requested:';

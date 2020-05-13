@@ -12,7 +12,7 @@ use Carp;
 use English;
 use JSON;
 use Type::Utils qw{class_type};
-use Types::Standard qw{Str HashRef ArrayRef};
+use Types::Standard qw{Str HashRef ArrayRef Enum};
 
 sub import {
   strict->import;

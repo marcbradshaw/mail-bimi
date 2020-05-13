@@ -5,7 +5,7 @@ use 5.20.0;
 BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::App -command;
-use Mail::BIMI::Indicator;
+use Mail::BIMI::Record;
 
 =head1 DESCRIPTION
 
@@ -30,7 +30,6 @@ sub validate_args($self,$opt,$args) {
 }
 
 sub execute($self,$opt,$args) {
-  require Mail::BIMI::Record;
   my $domain = $args->[0];
   my $selector = $opt->selector // 'default';
   my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
