@@ -66,7 +66,7 @@ sub _build_data_xml($self) {
   my $parser;
   sub _build_parser($self) {
     return $parser if $parser;
-    $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file('SVG_1.2_BIMI.rng'));
+    $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file('SVG_1.2_PS.rng'));
     return $parser;
   }
 }

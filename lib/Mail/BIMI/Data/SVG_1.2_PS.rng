@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- - - -  SVG 1.2 BIMI RNC schema -->
+<!-- - - -  SVG 1.2 PS RNC schema -->
 <grammar ns="http://www.w3.org/2000/svg" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <!-- namespace ns1 = "http://www.w3.org/1999/xlink" -->
   <start>
@@ -364,11 +364,9 @@
       <optional>
         <attribute name="viewBox"/>
       </optional>
-      <optional>
-        <attribute name="baseProfile">
-          <value>tiny</value>
-        </attribute>
-      </optional>
+      <attribute name="baseProfile">
+        <value>tiny</value>
+      </attribute>
       <optional>
         <attribute name="contentScriptType">
           <data type="string"/>
@@ -7129,4 +7127,4 @@
     </element>
   </define>
 </grammar>
-<!-- - - -  End of SVG 1.2 BIMI RNC schema -->
+<!-- - - -  End of SVG 1.2 PS RNC schema -->
