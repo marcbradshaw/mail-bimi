@@ -10,11 +10,8 @@ use Digest::SHA256;
 sub _get_from_cache($self) {
   my $cache_file = $self->_cache_filename;
   return if !-e $cache_file;
-  open my $inf,'<',$self->_cache_filename;
-  my @all = <$inf>;
-  close $inf;
+  my $raw = read_file($self->_cache_filename);
   my $j = JSON->new;
-  my $raw = join('',@all);
   $self->_cache_raw_data($raw);
   return eval{ $j->decode($raw) };
 }
@@ -24,9 +21,7 @@ sub _put_to_cache($self,$data) {
   $j->canonical;
   my $json_data = $j->encode($data);
   return if $self->_cache_raw_data && $json_data eq $self->_cache_raw_data;
-  open my $outf,'>',$self->_cache_filename;
-  print $outf $json_data;
-  close $outf;
+  write_file($self->_cache_filename,{atomic=>1},$json_data);
 }
 
 sub _delete_cache($self) {

@@ -11,10 +11,8 @@ sub get_data_from_file($self,$file) {
   if ( ! -e $base_file ) {
     die "File $file is missing";
   }
-  open my $data_file, '<', $base_file;
-  my @content = <$data_file>;
-  close $data_file;
-  return join( q{}, @content );
+  my $body = read_file($base_file);
+  return $body;
 }
 
 1;

@@ -10,6 +10,7 @@ use open ':std', ':encoding(UTF-8)';
 use Import::Into;
 use Carp;
 use English;
+use File::Slurp;
 use JSON;
 use Type::Utils qw{class_type};
 use Types::Standard qw{Str HashRef ArrayRef Enum};
@@ -24,6 +25,7 @@ sub import {
   Types::Standard->import::into(scalar caller, qw{ Str Int HashRef ArrayRef Enum } );
   Type::Utils->import::into(scalar caller, qw{ class_type } );
   English->import::into(scalar caller);
+  File::Slurp->import::into(scalar caller, qw{ read_file write_file } );
   JSON->import::into(scalar caller);
 }
 
