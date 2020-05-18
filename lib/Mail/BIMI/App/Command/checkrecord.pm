@@ -5,7 +5,9 @@ use 5.20.0;
 BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::App -command;
+use Mail::BIMI;
 use Mail::BIMI::Record;
+use Mail::DMARC;
 
 =head1 DESCRIPTION
 
@@ -32,7 +34,18 @@ sub validate_args($self,$opt,$args) {
 sub execute($self,$opt,$args) {
   my $domain = $args->[0];
   my $selector = $opt->selector // 'default';
-  my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
+
+  my $dmarc = Mail::DMARC::PurePerl->new;
+  $dmarc->result()->result( 'pass' );
+  $dmarc->result()->disposition( 'reject' );
+  my $bimi = Mail::BIMI->new(
+    dmarc_object => $dmarc->result,
+    domain => $domain,
+    selector => $selector,
+  );
+
+  my $record = $bimi->record;
+  #  my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
   say "BIMI record checker";
   say '';
   say 'Requested:';
@@ -44,7 +57,26 @@ sub execute($self,$opt,$args) {
     say '';
     $record->location->indicator->app_validate;
   }
+  if ( $record->authority && $record->authority->vmc ) {
+    say '';
+    $record->authority->vmc->app_validate;
+    if ( $record->authority->vmc->indicator ) {
+        say '';
+        $record->authority->vmc->indicator->app_validate;
+    }
+  }
   say '';
+
+  say 'An authenticated email with this record would receive the following BIMI results:';
+  say '';
+  my $result = $bimi->result;
+  say "Authentication-Reults: authservid.example.com; ".$result->get_authentication_results;
+  my $headers = $result->headers;
+  foreach my $header ( sort keys $headers->%* ) {
+      say "$header: ".$headers->{$header};
+  }
+
+
 }
 
 1;

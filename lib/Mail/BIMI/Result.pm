@@ -12,6 +12,7 @@ use Mail::AuthenticationResults::Header::Comment;
   has parent => ( is => 'ro', isa => class_type('Mail::BIMI'), required => 1, weaken => 1);
   has result => ( is => 'rw', isa => Str );
   has comment => ( is => 'rw', isa => Str );
+  has headers => ( is => 'rw', isa => HashRef );
 
 sub domain($self) {
   return $self->parent->domain;
@@ -35,6 +36,7 @@ sub get_authentication_results_object($self) {
     $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.d' )->safe_set_value( $self->parent->record->domain ) );
     $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'selector' )->safe_set_value( $self->parent->record->selector ) );
   }
+  ##### TODO add vmc related ptypes here
   return $header;
 }
 

@@ -47,4 +47,6 @@ my $auth_results = $result->get_authentication_results;
 my $expected_result = 'bimi=skipped (SPF +all detected)';
 is( $auth_results, $expected_result, 'Auth results correcct' );
 
+is_deeply( $result->headers, {}, 'headers' );
+
 done_testing;

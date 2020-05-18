@@ -7,6 +7,7 @@ use Mail::BIMI::Pragmas;
 
 sub BIMI_INVALID             { return 'Invalid BIMI Record' }
 sub BIMI_NOT_ENABLED         { return 'Domain is not BIMI enabled' }
+sub CODE_MISSING_AUTHORITY   { return 'No authority specified' }
 sub CODE_MISSING_LOCATION    { return 'No location specified' }
 sub CODE_NOTHING_TO_VALIDATE { return 'Nothing To Validate' }
 sub CODE_NO_DATA             { return 'No Data' }
@@ -25,7 +26,10 @@ sub MULTI_BIMI_RECORD        { return 'Multiple BIMI records found' }
 sub NO_BIMI_RECORD           { return 'No BIMI records found' }
 sub NO_DMARC                 { return 'No DMARC' }
 sub SPF_PLUS_ALL             { return 'SPF +all detected' }
+sub VMC_PARSE_ERROR          { return 'Could not parse VMC' }
+sub VMC_FETCH_ERROR          { return 'Could not fetch VMC' }
 sub SVG_FETCH_ERROR          { return 'Could not fetch SVG' }
+sub VMC_VALIDATION_ERROR     { return 'VMC did not validate' }
 sub SVG_GET_ERROR            { return 'Could not fetch SVG' }
 sub SVG_INVALID_XML          { return 'Invalid XML in SVG' }
 sub SVG_SIZE                 { return 'SVG Document exceeds maximum size' }

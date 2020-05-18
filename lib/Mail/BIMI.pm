@@ -25,6 +25,7 @@ sub _build_result($self) {
 
   my $result = Mail::BIMI::Result->new(
     parent => $self,
+    headers => {},
   );
 
   # does DMARC pass
@@ -77,12 +78,16 @@ sub _build_result($self) {
         INVALID_TRANSPORT_L
         SPF_PLUS_ALL
         SVG_FETCH_ERROR
+        VMC_FETCH_ERROR
+        VMC_PARSE_ERROR
+        VMC_VALIDATION_ERROR
         SVG_GET_ERROR
         SVG_SIZE
         SVG_UNZIP_ERROR
         SVG_INVALID_XML
         SVG_VALIDATION_ERROR };
       my $found_error = 0;
+
       foreach my $fail_error (@fail_errors) {
         if ( $self->record->has_error( $self->$fail_error ) ) {
           $found_error = 1;
@@ -95,6 +100,15 @@ sub _build_result($self) {
       }
     }
     return $result;
+  }
+
+  if ( $self->record->authority && $self->record->authority->is_relevant ) {
+    $result->headers->{'BIMI-Location'} = $self->record->authority->authority;
+    $result->headers->{'BIMI-Indicator'} = $self->record->authority->vmc->indicator->header;
+  }
+  else {
+    $result->headers->{'BIMI-Location'} = $self->record->location->location;;
+    $result->headers->{'BIMI-Indicator'} = $self->record->location->indicator->header;
   }
 
   $result->set_result( 'pass', '' );
