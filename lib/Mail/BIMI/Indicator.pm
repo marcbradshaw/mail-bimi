@@ -8,6 +8,7 @@ use IO::Uncompress::Gunzip;
 use MIME::Base64;
 use XML::LibXML;
 our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
+  with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::HTTPClient';
@@ -20,7 +21,11 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
   has parser => ( is => 'rw', lazy => 1, builder => '_build_parser' );
   has header => ( is => 'rw', lazy => 1, builder => '_build_header', is_cacheable => 1);
-  has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => sub{ return $ENV{MAIL_BIMI_SVG_PROFILE} // 'SVG_1.2_PS' }, is_cacheable => 1 );
+  has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', is_cacheable => 1 );
+
+sub _build_validator_profile($self) {
+  return $self->bimi_object->SVG_PROFILE // 'SVG_1.2_PS';
+}
 
 sub cache_valid_for($self) { return 3600 }
 
@@ -109,7 +114,7 @@ sub _build_is_valid($self) {
     $self->add_error( $self->SVG_SIZE );
   }
   else {
-    if ( $ENV{MAIL_BIMI_NO_VALIDATE_SVG} ) {
+    if ( $self->bimi_object->NO_VALIDATE_SVG ) {
       $is_valid=1;
     }
     else {

@@ -12,13 +12,13 @@ use Crypt::OpenSSL::Verify;
 use Mozilla::CA;
 use File::Temp qw{ tempfile };
 use Mail::BIMI::Indicator;
+  with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::HTTPClient';
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
   has authority => ( is => 'rw', isa => Str, is_cache_key =>1  );
-  has authority_object => ( is => 'ro', isa => class_type('Mail::BIMI::Record::Authority'), required => 0, weaken => 1);
   has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1 );
   has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', is_cacheable => 1 );
   has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list', is_cacheable => 0 );
@@ -36,8 +36,8 @@ sub _build_data($self) {
     $self->add_error( $self->CODE_MISSING_AUTHORITY );
     return;
   }
-  if ($ENV{MAIL_BIMI_VMC_FROM_FILE}) {
-    return scalar read_file $ENV{MAIL_BIMI_VMC_FROM_FILE};
+  if ($self->bimi_object->VMC_FROM_FILE) {
+    return scalar read_file $self->bimi_object->VMC_FROM_FILE;
   }
   my $data = $self->http_client_get( $self->authority );
   if ( !$self->http_client_response->{success} ) {
@@ -86,7 +86,7 @@ sub _build_vmc_object($self) {
 }
 
 sub _build_is_cert_valid($self) {
-  return 1 if $ENV{MAIL_BIMI_NO_VALIDATE_CERT};
+  return 1 if $self->bimi_object->NO_VALIDATE_CERT;
   my $temp_fh = File::Temp->new(UNLINK=>0);
   my $temp_name = $temp_fh->filename;
   close $temp_fh;
@@ -217,7 +217,7 @@ sub _build_indicator($self) {
   if ( $uri =~ /^data:image\/svg\+xml;base64,/ ) {
     my ( $null, $base64 ) = split( ',', $uri );
     my $data = MIME::Base64::decode($base64);
-    return Mail::BIMI::Indicator->new( location => $self->indicator_uri, data => $data );
+    return Mail::BIMI::Indicator->new( location => $self->indicator_uri, data => $data, bimi_object => $self->bimi_object );
   }
   else {
     $self->add_error({ error => $self->VMC_PARSE_ERROR, detail => 'Could not extract SVG from VMC' });

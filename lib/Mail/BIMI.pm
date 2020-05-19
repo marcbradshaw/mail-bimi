@@ -6,6 +6,7 @@ use Moo;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
+  with 'Mail::BIMI::Role::Options';
   with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Constants';
   has domain => ( is => 'rw', isa => Str );
@@ -17,7 +18,7 @@ use Mail::BIMI::Result;
 
 sub _build_record($self) {
   croak 'Domain required' if ! $self->domain;
-  return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector, resolver => $self->resolver );
+  return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector, resolver => $self->resolver, bimi_object => $self );
 }
 
 sub _build_result($self) {

@@ -5,6 +5,7 @@ use 5.20.0;
 use Moo;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Indicator;
+  with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Constants';
   has location => ( is => 'rw', isa => sub{ undef || Str }, required => 1 );
@@ -44,7 +45,7 @@ sub _build_is_valid($self) {
 sub _build_indicator($self) {
   return if !$self->_is_valid;
   return if !$self->is_relevant;
-  return Mail::BIMI::Indicator->new( location => $self->location );
+  return Mail::BIMI::Indicator->new( location => $self->location, bimi_object => $self->bimi_object );
 }
 
 1;

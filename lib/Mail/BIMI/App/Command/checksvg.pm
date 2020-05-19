@@ -5,6 +5,7 @@ use 5.20.0;
 BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::App -command;
+use Mail::BIMI;
 use Mail::BIMI::Indicator;
 
 =head1 DESCRIPTION
@@ -31,7 +32,8 @@ sub validate_args($self,$opt,$args) {
 
 sub execute($self,$opt,$args) {
   my $url = $args->[0];
-  my $indicator = Mail::BIMI::Indicator->new( location => $url );
+  my $bimi = Mail::BIMI->new;
+  my $indicator = Mail::BIMI::Indicator->new( location => $url, bimi_object => $bimi );
   $indicator->validator_profile($opt->profile) if $opt->profile;
   say "BIMI SVG checker";
   say '';

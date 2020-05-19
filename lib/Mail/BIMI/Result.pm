@@ -9,7 +9,7 @@ use Mail::BIMI::Pragmas;
 use Mail::AuthenticationResults::Header::Entry;
 use Mail::AuthenticationResults::Header::SubEntry;
 use Mail::AuthenticationResults::Header::Comment;
-  has bimi_object => ( is => 'ro', isa => class_type('Mail::BIMI'), required => 1, weaken => 1);
+  with 'Mail::BIMI::Role::Base';
   has result => ( is => 'rw', isa => Str );
   has comment => ( is => 'rw', isa => Str );
   has headers => ( is => 'rw', isa => HashRef );

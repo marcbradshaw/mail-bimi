@@ -7,6 +7,7 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::Record::Authority;
 use Mail::BIMI::Record::Location;
 use Mail::DMARC::PurePerl;
+  with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Resolver';
@@ -36,7 +37,7 @@ sub _build_authority($self) {
     $record = $self->record->{a} // '';
   }
   # TODO better parser here
-  return Mail::BIMI::Record::Authority->new( authority => $record, record_object => $self );
+  return Mail::BIMI::Record::Authority->new( authority => $record, bimi_object => $self->bimi_object );
 }
 
 sub _build_location($self) {
@@ -46,13 +47,13 @@ sub _build_location($self) {
   }
   # TODO better parser here
   # Need to decode , and ; as per spec>
-  my $location = Mail::BIMI::Record::Location->new( location => $record, is_relevant => $self->location_is_relevant );
+  my $location = Mail::BIMI::Record::Location->new( location => $record, is_relevant => $self->location_is_relevant, bimi_object => $self->bimi_object );
   return $location;
 }
 
 sub location_is_relevant($self) {
   # True if we don't have a relevant authority OR if we are checking VMC AND Location
-  return 1 unless $ENV{MAIL_BIMI_NO_LOCATION_WITH_VMC};
+  return 1 unless $self->bimi_object->NO_LOCATION_WITH_VMC;
   warn $self->authority->is_relevant;
   if ( $self->authority && $self->authority->is_relevant ) {
     return 0;
@@ -149,8 +150,8 @@ sub _build_record($self) {
 
 sub _get_from_dns($self,$selector,$domain) {
   my @matches;
-  if ($ENV{MAIL_BIMI_FORCE_RECORD}) {
-    push @matches, $ENV{MAIL_BIMI_FORCE_RECORD};
+  if ($self->bimi_object->FORCE_RECORD) {
+    push @matches, $self->bimi_object->FORCE_RECORD;
     return @matches;
   }
   my $res     = $self->resolver;
