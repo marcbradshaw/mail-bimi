@@ -35,5 +35,6 @@ sub SVG_INVALID_XML          { return 'Invalid XML in SVG' }
 sub SVG_SIZE                 { return 'SVG Document exceeds maximum size' }
 sub SVG_UNZIP_ERROR          { return 'Error unzipping SVG' }
 sub SVG_VALIDATION_ERROR     { return 'SVG did not validate' }
+sub SVG_MISMATCH             { return 'SVG in bimi-location did not match SVG in VMC' }
 
 1;

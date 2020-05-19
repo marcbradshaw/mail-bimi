@@ -82,6 +82,7 @@ sub _build_vmc_object($self) {
 }
 
 sub _build_is_cert_valid($self) {
+  return 1 if $ENV{MAIL_BIMI_NO_VALIDATE_CERT};
   my $temp_fh = File::Temp->new(UNLINK=>0);
   my $temp_name = $temp_fh->filename;
   close $temp_fh;

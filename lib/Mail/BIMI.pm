@@ -85,7 +85,9 @@ sub _build_result($self) {
         SVG_SIZE
         SVG_UNZIP_ERROR
         SVG_INVALID_XML
-        SVG_VALIDATION_ERROR };
+        SVG_VALIDATION_ERROR
+        SVG_MISMATCH
+      };
       my $found_error = 0;
 
       foreach my $fail_error (@fail_errors) {
@@ -102,14 +104,21 @@ sub _build_result($self) {
     return $result;
   }
 
+  my @bimi_location;
   if ( $self->record->authority && $self->record->authority->is_relevant ) {
-    $result->headers->{'BIMI-Location'} = $self->record->authority->authority;
+    push @bimi_location, '    l='.$self->record->location->location if $self->record->location_is_relevant;
+    push @bimi_location, '    a='.$self->record->authority->authority;
     $result->headers->{'BIMI-Indicator'} = $self->record->authority->vmc->indicator->header;
   }
   else {
-    $result->headers->{'BIMI-Location'} = $self->record->location->location;;
+    push @bimi_location, '    l='.$self->record->location->location;
     $result->headers->{'BIMI-Indicator'} = $self->record->location->indicator->header;
   }
+
+  $result->headers->{'BIMI-Location'} = join( "\n",
+    'v=BIMI1;',
+    @bimi_location,
+  );
 
   $result->set_result( 'pass', '' );
 

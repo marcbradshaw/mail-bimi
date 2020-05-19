@@ -11,6 +11,7 @@ use Mail::BIMI::Indicator;
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
   has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator' );
+  has is_relevant => ( is => 'rw', lazy => 1, builder => sub{return 1;} );
 
 sub _build__is_valid($self) {
   # Check is_valid without checking indicator, because recursion!
@@ -41,7 +42,8 @@ sub _build_is_valid($self) {
 }
 
 sub _build_indicator($self) {
-  return if ! $self->_is_valid;
+  return if !$self->_is_valid;
+  return if !$self->is_relevant;
   return Mail::BIMI::Indicator->new( location => $self->location );
 }
 

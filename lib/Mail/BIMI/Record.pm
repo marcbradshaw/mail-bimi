@@ -46,8 +46,18 @@ sub _build_location($self) {
   }
   # TODO better parser here
     # Need to decode , and ; as per spec
-    # TODO, should this have '.svg' appended?
-  return Mail::BIMI::Record::Location->new( location => $record );
+  my $location = Mail::BIMI::Record::Location->new( location => $record, is_relevant => $self->location_is_relevant );
+  return $location;
+}
+
+sub location_is_relevant($self) {
+  # True if we don't have a relevant authority OR if we are checking VMC AND Location
+  return 1 unless $ENV{MAIL_BIMI_NO_LOCATION_WITH_VMC};
+  warn $self->authority->is_relevant;
+  if ( $self->authority && $self->authority->is_relevant ) {
+    return 0;
+  }
+  return 1;
 }
 
 sub _build_is_valid($self) {
@@ -62,12 +72,24 @@ sub _build_is_valid($self) {
     $self->add_error( $self->INVALID_V_TAG ) if lc $self->record->{v} ne 'bimi1';
     return 0 if $self->error->@*;
   }
-  if (!$self->location->is_valid) {
-    $self->add_error( $self->location->error );
-  }
   if (!$self->authority->is_valid) {
     $self->add_error( $self->authority->error );
   }
+  if ($self->location_is_relevant && !$self->location->is_valid) {
+    $self->add_error( $self->location->error );
+  }
+
+  return 0 if $self->error->@*;
+
+  if ( $self->authority && $self->authority->is_relevant ) {
+    # Check the SVG payloads are identical
+    ## Compare raw? or Uncompressed?
+    if ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed ne $self->location->indicator->data_uncompressed ) {
+    #if ( $self->authority->vmc->indicator->data_maybe_compressed ne $self->location->indicator->data_maybe_compressed ) {
+      $self->add_error( $self->SVG_MISMATCH );
+    }
+  }
+
   return 0 if $self->error->@*;
   return 1;
 }
@@ -164,8 +186,9 @@ sub app_validate($self) {
   say '  Domain    : '.$self->domain;
   say '  Selector  : '.$self->selector;
   say '  Authority : '.$self->authority->authority if $self->authority;
-  say '  Location  : '.$self->location->location if $self->location;
+  say '  Location  : '.$self->location->location if $self->location_is_relevant && $self->location;
   say "  Is Valid  : " . ( $self->is_valid ? 'Yes' : 'No' );
+
   if ( ! $self->is_valid ) {
     say "Errors:";
     foreach my $error ( $self->error_detail->@* ) {
