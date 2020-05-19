@@ -110,11 +110,6 @@ sub _build_is_cert_valid($self) {
   }
   unlink $temp_name;
 
-## TODO does alt match domain?
-## is expired? 
-  ## does have valid usage?
-  ## is not self signed?
-  #
   return $cert_is_valid;
 }
 
@@ -123,12 +118,12 @@ sub subject($self) {
   return $self->vmc_object->subject;
 }
 
-sub notBefore($self) {
+sub not_before($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->notBefore;
 }
 
-sub notAfter($self) {
+sub not_after($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->notAfter;
 }
@@ -199,17 +194,19 @@ sub _build_indicator_asn($self) {
     return;
   }
 
-  #  my $image_details = $decoded->{subjectLogo}->{direct}->{image}->[0]->{imageDetails};
+  #my $image_details = $decoded->{subjectLogo}->{direct}->{image}->[0]->{imageDetails};
   #my $mime_type = $image_details->{mediaType};
   #my $logo_hash = $image_details->{logotypeHash}->[0];
-  #my $logo_uri = $image_details->{logotypeURI}->[0];
   return $decoded;
 }
  
 sub _build_indicator_uri($self) {
   return if !$self->indicator_asn;
-  #TODO catch errors with invalid asn
-  return $self->indicator_asn->{subjectLogo}->{direct}->{image}->[0]->{imageDetails}->{logotypeURI}->[0];
+  my $uri = eval{ $self->indicator_asn->{subjectLogo}->{direct}->{image}->[0]->{imageDetails}->{logotypeURI}->[0] };
+  if ( my $error = $@ ) {
+    $self->add_error({ error => $self->VMC_PARSE_ERROR, detail => 'Could not extract SVG from VMC' });
+  }
+  return $uri;
 }
 
 sub _build_indicator($self) {
@@ -222,30 +219,22 @@ sub _build_indicator($self) {
     my $data = MIME::Base64::decode($base64);
     return Mail::BIMI::Indicator->new( location => $self->indicator_uri, data => $data );
   }
+  else {
+    $self->add_error({ error => $self->VMC_PARSE_ERROR, detail => 'Could not extract SVG from VMC' });
+  }
 }
 
 
 sub _build_is_valid($self) {
 
-## TODO THIS
-#if (!($self->data||$self->authority)) {
-#    $self->add_error( $self->CODE_NOTHING_TO_VALIDATE );
-#    return 0;
-#  }
-
-#  if (!$self->data) {
-#    $self->add_error( $self->CODE_NO_DATA );
-#    return 0;
-#  }
-
   $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => 'Expired' } ) if $self->is_expired;
   $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => 'Missing usage flag' } ) if !$self->has_valid_usage;
   $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => 'Invalid alt name' }) if !$self->is_valid_alt_name;
   $self->is_cert_valid;
-  #  if ( 
-#  if ( !$self->indicator->is_valid ) {
-#    $self->add_error( $self->indicator->error );
-#  }
+
+  if ( !$self->indicator->is_valid ) {
+    $self->add_error( $self->indicator->error );
+  }
 
   return 0 if $self->error->@*;
   return 1;
@@ -253,17 +242,16 @@ sub _build_is_valid($self) {
 
 sub app_validate($self) {
   say 'VMC Returned:';
-  say '  Subject : '.$self->subject;
-  say '  Not Before : ' .$self->notBefore;
-  say '  Not After : ' .$self->notAfter;
-  say '  Issuer : ' .$self->issuer;
-  say '  Expired : ' . ( $self->is_expired ? 'Yes' : 'No' );
-  say '  Alt Name: ' . $self->alt_name;
-  say '  Alt Name Valid: ' . $self->is_valid_alt_name;
-  ## ToDo is alt name valid?
-  say '  Has Valid Usage: ' . ( $self->has_valid_usage ? 'Yes' : 'No' );
-  say "  Cert Valid : " . ( $self->is_cert_valid ? 'Yes' : 'No' );
-  say "  Is Valid   : " . ( $self->is_valid ? 'Yes' : 'No' );
+  say '  Subject         : '.$self->subject;
+  say '  Not Before      : '.$self->not_before;
+  say '  Not After       : '.$self->not_after;
+  say '  Issuer          : '.$self->issuer;
+  say '  Expired         : '.( $self->is_expired ? 'Yes' : 'No' );
+  say '  Alt Name        : '.$self->alt_name;
+  say '  Alt Name Valid  : '.$self->is_valid_alt_name;
+  say '  Has Valid Usage : '.( $self->has_valid_usage ? 'Yes' : 'No' );
+  say '  Cert Valid      : '.( $self->is_cert_valid ? 'Yes' : 'No' );
+  say '  Is Valid        : '.( $self->is_valid ? 'Yes' : 'No' );
   if ( ! $self->is_valid ) {
     say "Errors:";
     foreach my $error ( $self->error_detail->@* ) {

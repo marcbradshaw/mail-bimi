@@ -45,7 +45,7 @@ sub _build_location($self) {
     $record = $self->record->{l} // '';
   }
   # TODO better parser here
-    # Need to decode , and ; as per spec
+  # Need to decode , and ; as per spec>
   my $location = Mail::BIMI::Record::Location->new( location => $record, is_relevant => $self->location_is_relevant );
   return $location;
 }
@@ -191,7 +191,7 @@ sub app_validate($self) {
   say '  Selector  : '.$self->selector;
   say '  Authority : '.$self->authority->authority if $self->authority;
   say '  Location  : '.$self->location->location if $self->location_is_relevant && $self->location;
-  say "  Is Valid  : " . ( $self->is_valid ? 'Yes' : 'No' );
+  say '  Is Valid  : '.( $self->is_valid ? 'Yes' : 'No' );
 
   if ( ! $self->is_valid ) {
     say "Errors:";

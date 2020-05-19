@@ -34,9 +34,19 @@ sub get_authentication_results_object($self) {
   }
   if ( $self->result eq 'pass' ) {
     $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.d' )->safe_set_value( $self->bimi_object->record->domain ) );
-    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'selector' )->safe_set_value( $self->bimi_object->record->selector ) );
+    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.selector' )->safe_set_value( $self->bimi_object->record->selector ) );
   }
-  ##### TODO add vmc related ptypes here
+  if ( $self->bimi_object->record->authority->is_relevant ) {
+    my $vmc = $self->bimi_object->record->authority->vmc;
+    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority' )->safe_set_value( $vmc->is_valid ? 'pass' : 'fail' ) );
+    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority-uri' )->safe_set_value( $self->bimi_object->record->authority->authority ) );
+    if ( $self->result eq 'pass' ) {
+      $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority-not-before' )->safe_set_value( $vmc->not_before ) );
+      $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority-not-after' )->safe_set_value( $vmc->not_after ) );
+      $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority-issuer' )->safe_set_value( $vmc->issuer ) );
+    }
+  }
+
   return $header;
 }
 

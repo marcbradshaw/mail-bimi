@@ -138,10 +138,10 @@ sub _build_header($self) {
 
 sub app_validate($self) {
   say 'Indicator Returned:';
-  say '  GZipped : ' . ( $self->data_uncompressed eq $self->data ? 'No' : 'Yes' );
-  say '  BIMI-Indicator: '.$self->header if $self->is_valid;
-  say '  Profile Used:   '.$self->validator_profile;
-  say "  Is Valid : " . ( $self->is_valid ? 'Yes' : 'No' );
+  say '  GZipped        : '.( $self->data_uncompressed eq $self->data ? 'No' : 'Yes' );
+  say '  BIMI-Indicator : '.$self->header if $self->is_valid;
+  say '  Profile Used   : '.$self->validator_profile;
+  say '  Is Valid       : '.( $self->is_valid ? 'Yes' : 'No' );
   if ( ! $self->is_valid ) {
     say "Errors:";
     foreach my $error ( $self->error_detail->@* ) {
