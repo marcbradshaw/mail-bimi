@@ -36,7 +36,7 @@ sub _build_authority($self) {
     $record = $self->record->{a} // '';
   }
   # TODO better parser here
-  return Mail::BIMI::Record::Authority->new( authority => $record );
+  return Mail::BIMI::Record::Authority->new( authority => $record, record_object => $self );
 }
 
 sub _build_location($self) {
@@ -149,6 +149,10 @@ sub _build_record($self) {
 
 sub _get_from_dns($self,$selector,$domain) {
   my @matches;
+  if ($ENV{MAIL_BIMI_FORCE_RECORD}) {
+    push @matches, $ENV{MAIL_BIMI_FORCE_RECORD};
+    return @matches;
+  }
   my $res     = $self->resolver;
   my $query   = $res->query( "$selector._bimi.$domain", 'TXT' ) or do {
     return @matches;

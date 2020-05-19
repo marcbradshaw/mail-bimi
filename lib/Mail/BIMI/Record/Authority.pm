@@ -8,6 +8,7 @@ use Mail::BIMI::VMC;
   with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::Error';
   has authority => ( is => 'rw', isa => sub{ undef || Str}, required => 1 );
+  has record_object => ( is => 'ro', isa => class_type('Mail::BIMI::Record'), required => 1, weaken => 1);
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
   has vmc => ( is => 'rw', lazy => 1, builder => '_build_vmc' );
@@ -44,7 +45,7 @@ sub _build_is_valid($self) {
 sub _build_vmc($self) {
   return if !$self->_is_valid;
   return if !$self->is_relevant;
-  return Mail::BIMI::VMC->new( authority => $self->authority );
+  return Mail::BIMI::VMC->new( authority => $self->authority, authority_object => $self );
 }
 
 1;

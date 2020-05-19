@@ -18,6 +18,7 @@ use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
   has authority => ( is => 'rw', isa => Str, is_cache_key =>1  );
+  has authority_object => ( is => 'ro', isa => class_type('Mail::BIMI::Record::Authority'), required => 0, weaken => 1);
   has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1 );
   has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', is_cacheable => 1 );
   has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list', is_cacheable => 0 );
@@ -34,6 +35,9 @@ sub _build_data($self) {
   if ( ! $self->authority ) {
     $self->add_error( $self->CODE_MISSING_AUTHORITY );
     return;
+  }
+  if ($ENV{MAIL_BIMI_VMC_FROM_FILE}) {
+    return scalar read_file $ENV{MAIL_BIMI_VMC_FROM_FILE};
   }
   my $data = $self->http_client_get( $self->authority );
   if ( !$self->http_client_response->{success} ) {
@@ -152,6 +156,20 @@ sub alt_name($self) {
   return $alt_name;
 }
 
+sub is_valid_alt_name($self) {
+  return 1 if ! $self->authority_object; # Cannot check without context
+  my $domain = lc $self->authority_object->record_object->domain;
+  my @alt_names = split( ',', lc $self->alt_name );
+  foreach my $alt_name ( @alt_names ) {
+    $alt_name =~ s/^\s+//;
+    $alt_name =~ s/\s+$//;
+    next if ! $alt_name =~ /^dns:/;
+    $alt_name =~ s/^dns://;
+    return 1 if $alt_name eq $domain;
+  }
+  return 0;
+}
+
 sub is_self_signed($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->is_selfsigned;
@@ -220,8 +238,11 @@ sub _build_is_valid($self) {
 #    return 0;
 #  }
 
-$self->is_cert_valid;
-
+  $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => 'Expired' } ) if $self->is_expired;
+  $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => 'Missing usage flag' } ) if !$self->has_valid_usage;
+  $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => 'Invalid alt name' }) if !$self->is_valid_alt_name;
+  $self->is_cert_valid;
+  #  if ( 
 #  if ( !$self->indicator->is_valid ) {
 #    $self->add_error( $self->indicator->error );
 #  }
@@ -238,6 +259,7 @@ sub app_validate($self) {
   say '  Issuer : ' .$self->issuer;
   say '  Expired : ' . ( $self->is_expired ? 'Yes' : 'No' );
   say '  Alt Name: ' . $self->alt_name;
+  say '  Alt Name Valid: ' . $self->is_valid_alt_name;
   ## ToDo is alt name valid?
   say '  Has Valid Usage: ' . ( $self->has_valid_usage ? 'Yes' : 'No' );
   say "  Cert Valid : " . ( $self->is_cert_valid ? 'Yes' : 'No' );

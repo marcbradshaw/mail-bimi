@@ -24,7 +24,7 @@ sub _build_result($self) {
   croak 'Domain required' if ! $self->domain;
 
   my $result = Mail::BIMI::Result->new(
-    parent => $self,
+    bimi_object => $self,
     headers => {},
   );
 
