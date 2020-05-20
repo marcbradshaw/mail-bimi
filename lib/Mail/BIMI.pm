@@ -42,6 +42,7 @@ sub _build_result($self) {
 
   # Is DMARC enforcing?
   my $dmarc = Mail::DMARC::PurePerl->new;
+  $dmarc->set_resolver($self->resolver);
   $dmarc->header_from($self->domain);
   $dmarc->validate;
   if (exists $dmarc->result->{published}){

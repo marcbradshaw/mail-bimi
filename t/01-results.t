@@ -9,6 +9,7 @@ use Test::More;
 use Mail::BIMI;
 use Mail::BIMI::Record;
 use Mail::DMARC::PurePerl;
+use Net::DNS::Resolver::Mock 1.20200214;
 
 process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://fastmaildmarc.com/FM_BIMI.svg', 'pass', 'reject',
     'bimi=pass header.d=test.example.com header.selector=default', 'Pass' );
@@ -21,6 +22,11 @@ sub process_bimi {
   my ( $domain, $selector, $entry, $dmarc_result, $dmarc_disposition, $expected_result, $test ) = @_;
 
   my $bimi = Mail::BIMI->new( domain => $domain, selector => $selector );
+
+  my $resolver = Net::DNS::Resolver::Mock->new;
+  $resolver->zonefile_read('t/zonefile');
+  $bimi->resolver($resolver);
+
   my $record = Mail::BIMI::Record->new( bimi_object => $bimi, domain => $domain, selector => $selector );
   $record->record( $record->_parse_record( $entry ) );
   $bimi->record($record);
