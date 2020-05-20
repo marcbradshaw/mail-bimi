@@ -237,7 +237,7 @@ sub _build_is_valid($self) {
   $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => 'Invalid alt name' }) if !$self->is_valid_alt_name;
   $self->is_cert_valid;
 
-  if ( !$self->indicator->is_valid ) {
+  if ( $self->indicator && !$self->indicator->is_valid ) {
     $self->add_error( $self->indicator->error );
   }
 
