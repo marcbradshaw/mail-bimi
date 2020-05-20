@@ -159,6 +159,7 @@ sub alt_name($self) {
 sub is_valid_alt_name($self) {
   return 1 if ! $self->authority_object; # Cannot check without context
   my $domain = lc $self->authority_object->record_object->domain;
+  return 0 if !$self->alt_name;
   my @alt_names = split( ',', lc $self->alt_name );
   foreach my $alt_name ( @alt_names ) {
     $alt_name =~ s/^\s+//;
@@ -218,6 +219,7 @@ sub _build_indicator($self) {
 #  return if ! $self->_is_valid;
   return if !$self->is_cert_valid;
   my $uri = $self->indicator_uri;
+  return if !$uri;
   ## TODO MAKE THIS BETTER
   if ( $uri =~ /^data:image\/svg\+xml;base64,/ ) {
     my ( $null, $base64 ) = split( ',', $uri );
@@ -226,6 +228,7 @@ sub _build_indicator($self) {
   }
   else {
     $self->add_error({ error => $self->VMC_PARSE_ERROR, detail => 'Could not extract SVG from VMC' });
+    return;
   }
 }
 
