@@ -75,7 +75,8 @@ is_deeply(
 
 sub test_record {
   my ( $entry, $domain, $selector ) = @_;
-  my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
+  my $bimi = Mail::BIMI->new;
+  my $record = Mail::BIMI::Record->new( bimi_object => $bimi, domain => $domain, selector => $selector );
   $record->record( $record->_parse_record( $entry ) );
   $record->is_valid;
   my @errors = $record->error->@*;

@@ -44,7 +44,7 @@ $bimi->selector( 'default' );
 
 my $result = $bimi->result;
 my $auth_results = $result->get_authentication_results;
-my $expected_result = 'bimi=pass header.d=spfall.gallifreyburning.com selector=default';
+my $expected_result = 'bimi=pass header.d=spfall.gallifreyburning.com header.selector=default';
 is( $auth_results, $expected_result, 'Auth results correcct' );
 
 my $expected_headers = {
@@ -68,7 +68,8 @@ my $expected_headers = {
     ZaIiBmaWxsPSIjZmZjMTA3Ii8+PHBhdGggZD0iTTI3Ni4xNSw2NjkuMjRINzMxLjI3YTE2
     LjU4LDE2LjU4LDAsMCwwLDE2LjU4LTE2LjU5VjM1NC43NloiIGZpbGw9IiMzMzNlNDgiLz
     48L2c+PC9zdmc+Cg==',
-          'BIMI-Location' => 'https://fastmaildmarc.com/FM_BIMI.svg'
+          'BIMI-Location' => 'v=BIMI1;
+    l=https://fastmaildmarc.com/FM_BIMI.svg'
         };
 is_deeply( $result->headers, $expected_headers, 'headers' );
 

@@ -9,9 +9,10 @@ use Test::More;
 use Mail::BIMI;
 use Mail::BIMI::Record;
 
-my $record = Mail::BIMI::Record->new( domain => 'test.example.com', selector => 'default' );
+my $bimi = Mail::BIMI->new( domain => 'test.example.com', selector => 'default' );
+my $record = Mail::BIMI::Record->new( bimi_object => $bimi, domain => 'test.example.com', selector => 'default' );
 $record->record( $record->_parse_record( 'v=bimi1; l=https://bimi.example.com/marks/' ) );
-my $bimi = Mail::BIMI->new( domain => 'test.example.com', selector => 'default', record => $record );
+$bimi->record($record);
 
 my $result = $bimi->result;
 my $auth_results = $result->get_authentication_results;

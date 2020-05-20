@@ -11,7 +11,7 @@ use Mail::BIMI::Record;
 use Mail::DMARC::PurePerl;
 
 process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://fastmaildmarc.com/FM_BIMI.svg', 'pass', 'reject',
-    'bimi=pass header.d=test.example.com selector=default', 'Pass' );
+    'bimi=pass header.d=test.example.com header.selector=default', 'Pass' );
 process_bimi( 'test.example.com', 'default', 'v=bimi1; l=https://fastmaildmarc.com/FM_BIMI.svg', 'fail', 'reject',
     'bimi=skipped (DMARC fail)', 'DMARC Fail');
 process_bimi( 'test.example.com', 'default', 'v=foobar; l=https://fastmaildmarc.com/FM_BIMI.svg', 'pass', 'reject',
@@ -20,9 +20,11 @@ process_bimi( 'test.example.com', 'default', 'v=foobar; l=https://fastmaildmarc.
 sub process_bimi {
   my ( $domain, $selector, $entry, $dmarc_result, $dmarc_disposition, $expected_result, $test ) = @_;
 
-  my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
+  my $bimi = Mail::BIMI->new( domain => $domain, selector => $selector );
+  my $record = Mail::BIMI::Record->new( bimi_object => $bimi, domain => $domain, selector => $selector );
   $record->record( $record->_parse_record( $entry ) );
-  my $bimi = Mail::BIMI->new( domain => $domain, selector => $selector, record => $record, dmarc_object => get_dmarc_result( $dmarc_result, $dmarc_disposition ) );
+  $bimi->record($record);
+  $bimi->dmarc_object( get_dmarc_result( $dmarc_result, $dmarc_disposition ) );
 
   my $result = $bimi->result;
   my $auth_results = $result->get_authentication_results;
