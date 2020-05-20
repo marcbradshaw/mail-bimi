@@ -11,6 +11,7 @@ sub CODE_MISSING_AUTHORITY   { return 'No authority specified' }
 sub CODE_MISSING_LOCATION    { return 'No location specified' }
 sub CODE_NOTHING_TO_VALIDATE { return 'Nothing To Validate' }
 sub CODE_NO_DATA             { return 'No Data' }
+sub DMARC_NOT_ENFORCING      { return 'DMARC Policy is not at enforcement' }
 sub DNS_ERROR                { return 'DNS query error' }
 sub DUPLICATE_KEY            { return 'Duplicate key in record' }
 sub EMPTY_L_TAG              { return 'Empty l tag' }

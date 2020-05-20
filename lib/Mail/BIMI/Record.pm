@@ -186,13 +186,15 @@ sub _parse_record($self,$record) {
 sub app_validate($self) {
   say 'Record Returned:';
   $self->is_valid; # To set retrieved record and actual domain/selector
-  say '  Record    : '.$self->retrieved_record;
-  say '  Version   : '.$self->version;
-  say '  Domain    : '.$self->domain;
-  say '  Selector  : '.$self->selector;
-  say '  Authority : '.$self->authority->authority if $self->authority;
-  say '  Location  : '.$self->location->location if $self->location_is_relevant && $self->location;
-  say '  Is Valid  : '.( $self->is_valid ? 'Yes' : 'No' );
+  say '  Record    : '.($self->retrieved_record//'-none-');
+  if ($self->retrieved_record){
+    say '  Version   : '.($self->version//'-none-');
+    say '  Domain    : '.($self->domain//'-none-');
+    say '  Selector  : '.($self->selector//'-none-');
+    say '  Authority : '.($self->authority->authority//'-none-') if $self->authority;
+    say '  Location  : '.($self->location->location//'-none-') if $self->location_is_relevant && $self->location;
+    say '  Is Valid  : '.($self->is_valid?'Yes':'No');
+  }
 
   if ( ! $self->is_valid ) {
     say "Errors:";

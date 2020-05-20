@@ -6,6 +6,7 @@ use Moo;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
+use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Options';
   with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Constants';
@@ -37,6 +38,24 @@ sub _build_result($self) {
   if ( $self->dmarc_object->result ne 'pass' ) {
       $result->set_result( 'skipped', 'DMARC ' . $self->dmarc_object->result );
       return $result;
+  }
+
+  # Is DMARC enforcing?
+  my $dmarc = Mail::DMARC::PurePerl->new;
+  $dmarc->header_from($self->domain);
+  $dmarc->validate;
+  if (exists $dmarc->result->{published}){
+    my $published_policy = $dmarc->result->published->p // '';
+    my $published_subdomain_policy = $dmarc->result->published->sp // '';
+    my $effective_published_policy = ( $dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
+    if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
+      $result->set_result( 'skipped', $self->DMARC_NOT_ENFORCING );
+      return $result;
+    }
+  }
+  else {
+    $result->set_result( 'skipped', $self->NO_DMARC );
+    return $result;
   }
 
   if ( $self->spf_object ) {

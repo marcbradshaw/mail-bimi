@@ -247,16 +247,16 @@ sub _build_is_valid($self) {
 
 sub app_validate($self) {
   say 'VMC Returned:';
-  say '  Subject         : '.$self->subject;
-  say '  Not Before      : '.$self->not_before;
-  say '  Not After       : '.$self->not_after;
-  say '  Issuer          : '.$self->issuer;
-  say '  Expired         : '.( $self->is_expired ? 'Yes' : 'No' );
-  say '  Alt Name        : '.$self->alt_name;
-  say '  Alt Name Valid  : '.$self->is_valid_alt_name;
-  say '  Has Valid Usage : '.( $self->has_valid_usage ? 'Yes' : 'No' );
-  say '  Cert Valid      : '.( $self->is_cert_valid ? 'Yes' : 'No' );
-  say '  Is Valid        : '.( $self->is_valid ? 'Yes' : 'No' );
+  say '  Subject         : '.($self->subject//'-none-');
+  say '  Not Before      : '.($self->not_before//'-none-');
+  say '  Not After       : '.($self->not_after//'-none-');
+  say '  Issuer          : '.($self->issuer//'-none-');
+  say '  Expired         : '.($self->is_expired ? 'Yes' : 'No' );
+  say '  Alt Name        : '.($self->alt_name//'-none-');
+  say '  Alt Name Valid  : '.($self->is_valid_alt_name?'Yes':'No');
+  say '  Has Valid Usage : '.($self->has_valid_usage?'Yes':'No');
+  say '  Cert Valid      : '.($self->is_cert_valid?'Yes':'No');
+  say '  Is Valid        : '.($self->is_valid?'Yes':'No');
   if ( ! $self->is_valid ) {
     say "Errors:";
     foreach my $error ( $self->error_detail->@* ) {
