@@ -108,6 +108,7 @@ sub _build_result($self) {
         SVG_INVALID_XML
         SVG_VALIDATION_ERROR
         SVG_MISMATCH
+        VMC_REQUIRED
       };
       my $found_error = 0;
 

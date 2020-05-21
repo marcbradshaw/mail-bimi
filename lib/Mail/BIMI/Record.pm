@@ -82,6 +82,12 @@ sub _build_is_valid($self) {
 
   return 0 if $self->error->@*;
 
+  if ( $self->bimi_object->REQUIRE_VMC ) {
+      unless ( $self->authority && $self->authority->vmc && $self->authority->vmc->is_valid ) {
+          $self->add_error( $self->VMC_REQUIRED );
+      }
+  }
+
   if ( $self->authority && $self->authority->is_relevant ) {
     # Check the SVG payloads are identical
     ## Compare raw? or Uncompressed?
