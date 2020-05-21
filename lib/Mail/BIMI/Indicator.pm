@@ -24,11 +24,11 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', is_cacheable => 1 );
 
 sub _build_validator_profile($self) {
-  return $self->bimi_object->SVG_PROFILE;
+  return $self->bimi_object->OPT_SVG_PROFILE;
 }
 
 sub cache_valid_for($self) { return 3600 }
-sub http_client_max_fetch_size($self) { return $self->bimi_object->SVG_MAX_FETCH_SIZE };
+sub http_client_max_fetch_size($self) { return $self->bimi_object->OPT_SVG_MAX_FETCH_SIZE };
 
 sub _build_data_uncompressed($self) {
   my $data = $self->data;
@@ -38,7 +38,7 @@ sub _build_data_uncompressed($self) {
       IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
     };
     if ( my $error = $@ ) {
-      $self->add_error( $self->SVG_UNZIP_ERROR );
+      $self->add_error( $self->ERR_SVG_UNZIP_ERROR );
       return;
     }
     return $unzipped;
@@ -57,14 +57,14 @@ sub _build_data_xml($self) {
   my $xml;
   my $data = $self->data_uncompressed;
   if ( !$data ) {
-    $self->add_error( $self->SVG_GET_ERROR );
+    $self->add_error( $self->ERR_SVG_GET_ERROR );
     return;
   }
   eval {
     $xml = XML::LibXML->new->load_xml(string => $self->data_uncompressed);
   };
   if ( my $error = $@ ) {
-    $self->add_error( $self->SVG_INVALID_XML );
+    $self->add_error( $self->ERR_SVG_INVALID_XML );
     return;
   }
   return $xml;
@@ -81,16 +81,16 @@ sub _build_data_xml($self) {
 
 sub _build_data($self) {
   if ( ! $self->location ) {
-    $self->add_error( $self->CODE_MISSING_LOCATION );
+    $self->add_error( $self->ERR_CODE_MISSING_LOCATION );
     return;
   }
   my $data = $self->http_client_get( $self->location );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
-      $self->add_error({ error => $self->SVG_FETCH_ERROR, detail => $self->http_client_response->{content} });
+      $self->add_error({ error => $self->ERR_SVG_FETCH_ERROR, detail => $self->http_client_response->{content} });
     }
       else {
-      $self->add_error({ error => $self->SVG_FETCH_ERROR, detail => $self->http_client_response->{status} });
+      $self->add_error({ error => $self->ERR_SVG_FETCH_ERROR, detail => $self->http_client_response->{status} });
     }
     return '';
   }
@@ -100,22 +100,22 @@ sub _build_data($self) {
 sub _build_is_valid($self) {
 
   if (!($self->data||$self->location)) {
-    $self->add_error( $self->CODE_NOTHING_TO_VALIDATE );
+    $self->add_error( $self->ERR_CODE_NOTHING_TO_VALIDATE );
     return 0;
   }
 
   if (!$self->data) {
-    $self->add_error( $self->CODE_NO_DATA );
+    $self->add_error( $self->ERR_CODE_NO_DATA );
     return 0;
   }
 
   my $is_valid;
 
-  if ( length $self->data_uncompressed > $self->bimi_object->SVG_MAX_SIZE ) {
-    $self->add_error( $self->SVG_SIZE );
+  if ( length $self->data_uncompressed > $self->bimi_object->OPT_SVG_MAX_SIZE ) {
+    $self->add_error( $self->ERR_SVG_SIZE );
   }
   else {
-    if ( $self->bimi_object->NO_VALIDATE_SVG ) {
+    if ( $self->bimi_object->OPT_NO_VALIDATE_SVG ) {
       $is_valid=1;
     }
     else {
@@ -125,7 +125,7 @@ sub _build_is_valid($self) {
       };
       my $validation_errors = $@;
       if ( !$is_valid ) {
-        $self->add_error({ error => $self->SVG_VALIDATION_ERROR, detail => $validation_errors });
+        $self->add_error({ error => $self->ERR_SVG_VALIDATION_ERROR, detail => $validation_errors });
       }
     }
   }

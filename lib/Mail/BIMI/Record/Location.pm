@@ -17,13 +17,13 @@ use Mail::BIMI::Indicator;
 sub _build__is_valid($self) {
   # Check is_valid without checking indicator, because recursion!
   if ( !defined $self->location ) {
-    $self->add_error( $self->MISSING_L_TAG );
+    $self->add_error( $self->ERR_MISSING_L_TAG );
   }
   elsif ( $self->location eq '' ) {
-    $self->add_error( $self->EMPTY_L_TAG );
+    $self->add_error( $self->ERR_EMPTY_L_TAG );
   }
   elsif ( ! ( $self->location =~ /^https:\/\// ) ) {
-    $self->add_error( $self->INVALID_TRANSPORT_L );
+    $self->add_error( $self->ERR_INVALID_TRANSPORT_L );
   }
   else {
   }

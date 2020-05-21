@@ -17,7 +17,7 @@ use HTTP::Tiny::Paranoid;
     $http_client = HTTP::Tiny::Paranoid->new(
       agent => $agent,
       max_size => $self->http_client_max_fetch_size,
-      timeout => $self->bimi_object->HTTP_CLIENT_TIMEOUT,
+      timeout => $self->bimi_object->OPT_HTTP_CLIENT_TIMEOUT,
       verify_SSL => 1,     # Certificates MUST verify
     );
     return $http_client;

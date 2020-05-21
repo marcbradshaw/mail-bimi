@@ -53,7 +53,7 @@ sub _build_location($self) {
 
 sub location_is_relevant($self) {
   # True if we don't have a relevant authority OR if we are checking VMC AND Location
-  return 1 unless $self->bimi_object->NO_LOCATION_WITH_VMC;
+  return 1 unless $self->bimi_object->OPT_NO_LOCATION_WITH_VMC;
   warn $self->authority->is_relevant;
   if ( $self->authority && $self->authority->is_relevant ) {
     return 0;
@@ -65,12 +65,12 @@ sub _build_is_valid($self) {
   return 0 if ! keys $self->record->%*;
 
   if ( ! exists ( $self->record->{v} ) ) {
-    $self->add_error( $self->MISSING_V_TAG );
+    $self->add_error( $self->ERR_MISSING_V_TAG );
     return 0;
   }
   else {
-    $self->add_error( $self->EMPTY_V_TAG )   if lc $self->record->{v} eq '';
-    $self->add_error( $self->INVALID_V_TAG ) if lc $self->record->{v} ne 'bimi1';
+    $self->add_error( $self->ERR_EMPTY_V_TAG )   if lc $self->record->{v} eq '';
+    $self->add_error( $self->ERR_INVALID_V_TAG ) if lc $self->record->{v} ne 'bimi1';
     return 0 if $self->error->@*;
   }
   if (!$self->authority->is_valid) {
@@ -82,9 +82,9 @@ sub _build_is_valid($self) {
 
   return 0 if $self->error->@*;
 
-  if ( $self->bimi_object->REQUIRE_VMC ) {
+  if ( $self->bimi_object->OPT_REQUIRE_VMC ) {
       unless ( $self->authority && $self->authority->vmc && $self->authority->vmc->is_valid ) {
-          $self->add_error( $self->VMC_REQUIRED );
+          $self->add_error( $self->ERR_VMC_REQUIRED );
       }
   }
 
@@ -93,7 +93,7 @@ sub _build_is_valid($self) {
     ## Compare raw? or Uncompressed?
     if ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed ne $self->location->indicator->data_uncompressed ) {
     #if ( $self->authority->vmc->indicator->data_maybe_compressed ne $self->location->indicator->data_maybe_compressed ) {
-      $self->add_error( $self->SVG_MISMATCH );
+      $self->add_error( $self->ERR_SVG_MISMATCH );
     }
   }
 
@@ -110,29 +110,29 @@ sub _build_record($self) {
   my @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($selector,$domain); };
   if ( my $error = $@ ) {
     $error =~ s/ at \/.*$//;
-    $self->add_error({ error => $self->DNS_ERROR, detail => $error });
+    $self->add_error({ error => $self->ERR_DNS_ERROR, detail => $error });
     return {};
   }
 
   if ( !@records ) {
     if ( $domain eq $fallback_domain && $selector eq $fallback_selector ) {
       # nothing to fall back to
-      $self->add_error( $self->NO_BIMI_RECORD );
+      $self->add_error( $self->ERR_NO_BIMI_RECORD );
       return {};
     }
 
     @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($fallback_selector,$fallback_domain); };
     if ( my $error = $@ ) {
       $error =~ s/ at \/.*$//;
-      $self->add_error({ error => $self->DNS_ERROR, detail => $error });
+      $self->add_error({ error => $self->ERR_DNS_ERROR, detail => $error });
       return {};
     }
     if ( !@records ) {
-      $self->add_error( $self->NO_BIMI_RECORD );
+      $self->add_error( $self->ERR_NO_BIMI_RECORD );
       return {};
     }
     elsif ( scalar @records > 1 ) {
-      $self->add_error( $self->MULTI_BIMI_RECORD );
+      $self->add_error( $self->ERR_MULTI_BIMI_RECORD );
       return {};
     }
     else {
@@ -144,7 +144,7 @@ sub _build_record($self) {
     }
   }
   elsif ( scalar @records > 1 ) {
-    $self->add_error( $self->MULTI_BIMI_RECORD );
+    $self->add_error( $self->ERR_MULTI_BIMI_RECORD );
     return {};
   }
   else {
@@ -156,8 +156,8 @@ sub _build_record($self) {
 
 sub _get_from_dns($self,$selector,$domain) {
   my @matches;
-  if ($self->bimi_object->FORCE_RECORD) {
-    push @matches, $self->bimi_object->FORCE_RECORD;
+  if ($self->bimi_object->OPT_FORCE_RECORD) {
+    push @matches, $self->bimi_object->OPT_FORCE_RECORD;
     return @matches;
   }
   my $res     = $self->resolver;
@@ -180,7 +180,7 @@ sub _parse_record($self,$record) {
     my ( $key, $value ) = split '=', $part, 2;
     $key = lc $key;
     if ( exists $data->{ $key } ) {
-      $self->add_error( $self->DUPLICATE_KEY );
+      $self->add_error( $self->ERR_DUPLICATE_KEY );
     }
     if ( grep { $key eq $_ } ( qw{ v l a } ) ) {
       $data->{$key} = $value;

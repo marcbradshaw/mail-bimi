@@ -18,7 +18,7 @@ sub _build__is_valid($self) {
   return 1 if $self->authority eq '';
   return 1 if $self->authority eq 'self';
   if ( ! ( $self->authority =~ /^https:\/\// ) ) {
-    $self->add_error( $self->INVALID_TRANSPORT_A );
+    $self->add_error( $self->ERR_INVALID_TRANSPORT_A );
   }
 
   return 0 if $self->error->@*;

@@ -32,7 +32,7 @@ sub _build_result($self) {
 
   # does DMARC pass
   if ( ! $self->dmarc_object ) {
-    $result->set_result( 'skipped', $self->NO_DMARC );
+    $result->set_result( 'skipped', $self->ERR_NO_DMARC );
     return $result;
   }
   if ( $self->dmarc_object->result ne 'pass' ) {
@@ -50,12 +50,12 @@ sub _build_result($self) {
     my $published_subdomain_policy = $dmarc->result->published->sp // '';
     my $effective_published_policy = ( $dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
     if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
-      $result->set_result( 'skipped', $self->DMARC_NOT_ENFORCING );
+      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
       return $result;
     }
   }
   else {
-    $result->set_result( 'skipped', $self->NO_DMARC );
+    $result->set_result( 'skipped', $self->ERR_NO_DMARC );
     return $result;
   }
 
@@ -68,7 +68,7 @@ sub _build_result($self) {
               if ( @spf_terms ) {
                     my $last_term = pop @spf_terms;
                     if ( $last_term->name eq 'all' && $last_term->qualifier eq '+') {
-                        $result->set_result( 'skipped', $self->SPF_PLUS_ALL );
+                        $result->set_result( 'skipped', $self->ERR_SPF_PLUS_ALL );
                         return $result;
                     }
                 }
@@ -77,38 +77,38 @@ sub _build_result($self) {
     }
 
   if ( ! $self->record->is_valid ) {
-    if ( $self->record->has_error( $self->NO_BIMI_RECORD ) ) {
-      $result->set_result( 'none', $self->BIMI_NOT_ENABLED );
+    if ( $self->record->has_error( $self->ERR_NO_BIMI_RECORD ) ) {
+      $result->set_result( 'none', $self->ERR_BIMI_NOT_ENABLED );
     }
-    elsif ( $self->record->has_error( $self->DNS_ERROR ) ) {
-      $result->set_result( 'none', $self->DNS_ERROR );
+    elsif ( $self->record->has_error( $self->ERR_DNS_ERROR ) ) {
+      $result->set_result( 'none', $self->ERR_DNS_ERROR );
     }
     else {
       my @fail_errors = qw{
-        NO_DMARC
-        MULTI_BIMI_RECORD
-        DUPLICATE_KEY
-        EMPTY_L_TAG
-        EMPTY_V_TAG
-        INVALID_V_TAG
-        MISSING_L_TAG
-        MISSING_V_TAG
-        MULTIPLE_AUTHORITIES
-        MULTIPLE_LOCATIONS
-        INVALID_TRANSPORT_A
-        INVALID_TRANSPORT_L
-        SPF_PLUS_ALL
-        SVG_FETCH_ERROR
-        VMC_FETCH_ERROR
-        VMC_PARSE_ERROR
-        VMC_VALIDATION_ERROR
-        SVG_GET_ERROR
-        SVG_SIZE
-        SVG_UNZIP_ERROR
-        SVG_INVALID_XML
-        SVG_VALIDATION_ERROR
-        SVG_MISMATCH
-        VMC_REQUIRED
+        ERR_NO_DMARC
+        ERR_MULTI_BIMI_RECORD
+        ERR_DUPLICATE_KEY
+        ERR_EMPTY_L_TAG
+        ERR_EMPTY_V_TAG
+        ERR_INVALID_V_TAG
+        ERR_MISSING_L_TAG
+        ERR_MISSING_V_TAG
+        ERR_MULTIPLE_AUTHORITIES
+        ERR_MULTIPLE_LOCATIONS
+        ERR_INVALID_TRANSPORT_A
+        ERR_INVALID_TRANSPORT_L
+        ERR_SPF_PLUS_ALL
+        ERR_SVG_FETCH_ERROR
+        ERR_VMC_FETCH_ERROR
+        ERR_VMC_PARSE_ERROR
+        ERR_VMC_VALIDATION_ERROR
+        ERR_SVG_GET_ERROR
+        ERR_SVG_SIZE
+        ERR_SVG_UNZIP_ERROR
+        ERR_SVG_INVALID_XML
+        ERR_SVG_VALIDATION_ERROR
+        ERR_SVG_MISMATCH
+        ERR_VMC_REQUIRED
       };
       my $found_error = 0;
 
@@ -120,7 +120,7 @@ sub _build_result($self) {
         }
       }
       if ( !$found_error ) {
-        $result->set_result( 'fail', $self->BIMI_INVALID );
+        $result->set_result( 'fail', $self->ERR_BIMI_INVALID );
       }
     }
     return $result;
