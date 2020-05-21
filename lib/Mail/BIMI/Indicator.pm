@@ -24,10 +24,11 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', is_cacheable => 1 );
 
 sub _build_validator_profile($self) {
-  return $self->bimi_object->SVG_PROFILE // 'SVG_1.2_PS';
+  return $self->bimi_object->SVG_PROFILE;
 }
 
 sub cache_valid_for($self) { return 3600 }
+sub http_client_max_fetch_size($self) { return $self->bimi_object->SVG_MAX_FETCH_SIZE };
 
 sub _build_data_uncompressed($self) {
   my $data = $self->data;
@@ -110,7 +111,7 @@ sub _build_is_valid($self) {
 
   my $is_valid;
 
-  if ( length $self->data_uncompressed > 32768 ) {
+  if ( length $self->data_uncompressed > $self->bimi_object->SVG_MAX_SIZE ) {
     $self->add_error( $self->SVG_SIZE );
   }
   else {

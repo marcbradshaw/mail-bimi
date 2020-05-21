@@ -9,7 +9,6 @@ use MIME::Base64;
 use Convert::ASN1;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify;
-use Mozilla::CA;
 use File::Temp qw{ tempfile };
 use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::Base';
@@ -22,7 +21,6 @@ use Mail::BIMI::Indicator;
   has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1 );
   has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', is_cacheable => 1 );
   has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list', is_cacheable => 0 );
-  has root_cert => ( is => 'rw', lazy => 1, builder => '_build_root_cert' );
   has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', is_cacheable => 0 );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
   has is_cert_valid => ( is => 'rw', lazy => 1, builder => '_build_is_cert_valid', is_cacheable => 1 );
@@ -31,10 +29,7 @@ use Mail::BIMI::Indicator;
   has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator' );
 
 sub cache_valid_for($self) { return 3600 }
-
-sub _build_root_cert($self) {
-  return $self->bimi_object->SSL_ROOT_CERT // Mozilla::CA::SSL_ca_file;
-}
+sub http_client_max_fetch_size($self) { return $self->bimi_object->VMC_MAX_FETCH_SIZE };
 
 sub _build_data($self) {
   if ( ! $self->authority ) {
@@ -99,8 +94,8 @@ sub _build_is_cert_valid($self) {
   my $cert_is_valid = 1;
   for (my  $i=scalar $self->cert_object_list->@* - 1;$i>=0;$i--) {
     my $ca = $chain
-           ? Crypt::OpenSSL::Verify->new( CAfile => $temp_name)
-           : Crypt::OpenSSL::Verify->new( CAfile => $self->root_cert);
+           ? Crypt::OpenSSL::Verify->new(CAfile => $temp_name)
+           : Crypt::OpenSSL::Verify->new(CAfile => $self->bimi_object->SSL_ROOT_CERT);
     eval{$ca->verify($self->cert_object_list->[$i])};
     if ( my $error = $@ ) {
       $self->add_error({ error => $self->VMC_VALIDATION_ERROR, detail => $error });
