@@ -10,7 +10,6 @@ use XML::LibXML;
 our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
-  with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::HTTPClient';
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';

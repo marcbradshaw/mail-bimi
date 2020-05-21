@@ -7,7 +7,6 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
-  with 'Mail::BIMI::Role::Constants';
   has location => ( is => 'rw', isa => sub{ undef || Str }, required => 1 );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );

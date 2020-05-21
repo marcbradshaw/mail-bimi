@@ -8,7 +8,6 @@ use Mail::BIMI::Record::Authority;
 use Mail::BIMI::Record::Location;
 use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Base';
-  with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Cacheable';

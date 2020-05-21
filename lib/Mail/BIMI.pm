@@ -9,7 +9,7 @@ use Mail::BIMI::Result;
 use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Options';
   with 'Mail::BIMI::Role::Resolver';
-  with 'Mail::BIMI::Role::Constants';
+  with 'Mail::BIMI::Role::Error';
   has domain => ( is => 'rw', isa => Str );
   has selector => ( is => 'rw', isa => Str, lazy => 1, builder => sub{ return 'default' } );
   has dmarc_object => ( is => 'rw', isa => class_type('Mail::DMARC::Result') );

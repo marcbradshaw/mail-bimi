@@ -13,7 +13,6 @@ use File::Temp qw{ tempfile };
 use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
-  with 'Mail::BIMI::Role::Constants';
   with 'Mail::BIMI::Role::HTTPClient';
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
