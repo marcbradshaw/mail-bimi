@@ -48,7 +48,12 @@ sub _build_result($self) {
   if (exists $dmarc->result->{published}){
     my $published_policy = $dmarc->result->published->p // '';
     my $published_subdomain_policy = $dmarc->result->published->sp // '';
+    my $published_policy_pct = $dmarc->result->published->pct // 100;
     my $effective_published_policy = ( $dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
+    if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
+      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+      return $result;
+    }
     if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
       $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
       return $result;
