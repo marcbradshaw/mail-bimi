@@ -135,7 +135,7 @@ sub _build_is_valid($self) {
 
 sub _build_header($self) {
   return if !$self->is_valid;
-  my $base64 = encode_base64( $self->data_maybe_compressed );
+  my $base64 = encode_base64( $self->data_uncompressed );
   $base64 =~ s/\n//g;
   my @parts = unpack("(A70)*", $base64);
   return join("\n    ", @parts);
