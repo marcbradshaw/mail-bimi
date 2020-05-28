@@ -12,6 +12,8 @@
   - Command line helper app
   - Added evidence ptypes
   - Added BIMI-Indicator header
+  - Add DMARC policy strength requirement
+  - General cleanups
 
 1.20200226 2020-02-26 UTC
   - Update README
