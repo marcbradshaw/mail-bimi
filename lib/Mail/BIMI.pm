@@ -58,6 +58,10 @@ sub _build_result($self) {
       $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
       return $result;
     }
+    if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
+      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+      return $result;
+    }
   }
   else {
     $result->set_result( 'skipped', $self->ERR_NO_DMARC );
