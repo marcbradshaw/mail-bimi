@@ -83,6 +83,9 @@ sub _build_data($self) {
     $self->add_error( $self->ERR_CODE_MISSING_LOCATION );
     return;
   }
+  if ($self->bimi_object->OPT_SVG_FROM_FILE) {
+    return scalar read_file $self->bimi_object->OPT_SVG_FROM_FILE;
+  }
   my $data = $self->http_client_get( $self->location );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
