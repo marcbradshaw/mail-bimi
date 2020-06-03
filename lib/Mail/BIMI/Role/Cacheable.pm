@@ -50,7 +50,7 @@ sub BUILD($self,$args) {
   return if !$data;
 
   return if $data->{cache_key} ne $self->_cache_key;
-  if ($data->{timestamp}+$self->cache_valid_for < time) {
+  if ($data->{timestamp}+$self->cache_valid_for < $self->bimi_object->time) {
     $self->_delete_cache;
     return;
   }
@@ -68,7 +68,7 @@ sub DEMOLISH($self,$in_global_destruction) {
   return if $self->_do_not_cache;
   my $data = {
     cache_key => $self->_cache_key,
-    timestamp => $self->_cache_read_timestamp // time,
+    timestamp => $self->_cache_read_timestamp // $self->bimi_object->time,
     data => {},
   };
   foreach my $cache_field ( $self->_cache_fields->@* ) {
