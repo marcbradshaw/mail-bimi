@@ -5,8 +5,10 @@ use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
 use HTTP::Tiny::Paranoid;
-  has http_client => ( is => 'rw', lazy => 1, builder => '_build_http_client' );
-  has http_client_response => ( is => 'rw' );
+  has http_client => ( is => 'rw', lazy => 1, builder => '_build_http_client',
+    documentation => 'HTTP::Tiny::Paranoid (or similar) object used for HTTP operations' );
+  has http_client_response => ( is => 'rw',
+    documentation => 'HTTP Response as returned by client' );
   requires 'http_client_max_fetch_size';
 
 {
@@ -23,6 +25,14 @@ use HTTP::Tiny::Paranoid;
     return $http_client;
   }
 }
+
+=method I<http_client_get($url)>
+
+Issue a get request for $url
+
+Returns the response content and sets http_client_response
+
+=cut
 
 sub http_client_get($self,$url) {
   my $response = $self->http_client->get($url);

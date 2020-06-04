@@ -13,14 +13,22 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   with 'Mail::BIMI::Role::HTTPClient';
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
-  has location => ( is => 'rw', isa => Str, is_cache_key =>1  );
-  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1 );
-  has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', is_cacheable => 1 );
-  has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml' );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
-  has parser => ( is => 'rw', lazy => 1, builder => '_build_parser' );
-  has header => ( is => 'rw', lazy => 1, builder => '_build_header', is_cacheable => 1);
-  has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', is_cacheable => 1 );
+  has location => ( is => 'rw', isa => Str, is_cache_key => 1,
+    documentation => 'URL to retrieve Indicator from' );
+  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1,
+    documentation => 'Raw data representing the Indicator' );
+  has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', is_cacheable => 1,
+    documentation => 'Raw data in uncompressed form' );
+  has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml',
+    documentation => 'XML::LibXML object representing the Indicator' );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1,
+    documentation => 'Is this indicator valid' );
+  has parser => ( is => 'rw', lazy => 1, builder => '_build_parser',
+    documentation => 'XML::LibXML::RelaxNG parser object used to validate the Indicator XML' );
+  has header => ( is => 'rw', lazy => 1, builder => '_build_header', is_cacheable => 1,
+    documentation => 'Indicator data encoded as Base64 ready for insertion as BIMI-Indicator header' );
+  has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', is_cacheable => 1,
+    documentation => 'Validator profile used to validate the Indicator' );
 
 sub _build_validator_profile($self) {
   return $self->bimi_object->OPT_SVG_PROFILE;
@@ -46,6 +54,12 @@ sub _build_data_uncompressed($self) {
     return $data;
   }
 }
+
+=method I<data_maybe_compressed()>
+
+Synonym for data; returns the data in a maybe compressed format
+
+=cut
 
 sub data_maybe_compressed($self) {
   # Alias for clarity, the data is as received.
@@ -143,6 +157,12 @@ sub _build_header($self) {
   my @parts = unpack("(A70)*", $base64);
   return join("\n    ", @parts);
 }
+
+=method I<app_validate()>
+
+Output human readable validation status of this object
+
+=cut
 
 sub app_validate($self) {
   say 'Indicator Returned:';

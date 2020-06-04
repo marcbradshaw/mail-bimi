@@ -16,16 +16,26 @@ use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::HTTPClient';
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
-  has authority => ( is => 'rw', isa => Str, is_cache_key =>1  );
-  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1 );
-  has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', is_cacheable => 1 );
-  has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list', is_cacheable => 0 );
-  has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', is_cacheable => 0 );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
-  has is_cert_valid => ( is => 'rw', lazy => 1, builder => '_build_is_cert_valid', is_cacheable => 1 );
-  has indicator_asn => ( is => 'rw', lazy => 1, builder => '_build_indicator_asn', is_cacheable => 0 );
-  has indicator_uri => ( is => 'rw', lazt => 1, builder => '_build_indicator_uri', is_cacheable => 1 );
-  has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator' );
+  has authority => ( is => 'rw', isa => Str, is_cache_key => 1,
+    documentation => 'URI of this VMC' );
+  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1,
+    documentation => 'Raw data of the VMC contents' );
+  has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', is_cacheable => 1,
+    documentation => 'ArrayRef of individual Certificates in the chain' );
+  has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list', is_cacheable => 0,
+    documentation => 'ArrayRef of Crypt::OpenSSL::X509 objects for the Certificates in the chain' );
+  has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', is_cacheable => 0,
+    documentation => 'Crypt::OpenSSL::X509 object for this VMC' );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1,
+    documentation => 'Is this VMC valid' );
+  has is_cert_valid => ( is => 'rw', lazy => 1, builder => '_build_is_cert_valid', is_cacheable => 1,
+    documentation => 'Is this Certificate chain valid' );
+  has indicator_asn => ( is => 'rw', lazy => 1, builder => '_build_indicator_asn', is_cacheable => 0,
+    documentation => 'Parsed ASN data for the embedded Indicator' );
+  has indicator_uri => ( is => 'rw', lazt => 1, builder => '_build_indicator_uri', is_cacheable => 1,
+    documentation => 'The URI of the embedded Indicator' );
+  has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
+    documentation => 'Mail::BIMI::Indicator object for the Indicator embedded in this VMC' );
 
 sub cache_valid_for($self) { return 3600 }
 sub http_client_max_fetch_size($self) { return $self->bimi_object->OPT_VMC_MAX_FETCH_SIZE };
@@ -112,25 +122,55 @@ sub _build_is_cert_valid($self) {
   return $cert_is_valid;
 }
 
+=method I<subject()>
+
+Return the subject of the VMC
+
+=cut
+
 sub subject($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->subject;
 }
+
+=method I<not_before()>
+
+Return not before of the vmc
+
+=cut
 
 sub not_before($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->notBefore;
 }
 
+=method I<not_after()>
+
+Return not after of the vmc
+
+=cut
+
 sub not_after($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->notAfter;
 }
 
+=method I<issuer()>
+
+Return the issuer string of the VMC
+
+=cut
+
 sub issuer($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->issuer;
 }
+
+=method I<is_expired()>
+
+Return true if this VMC has expired
+
+=cut
 
 sub is_expired($self) {
   return if !$self->vmc_object;
@@ -143,12 +183,24 @@ sub is_expired($self) {
   }
 }
 
+=method I<alt_name()>
+
+Return the alt name string for the VMC
+
+=cut
+
 sub alt_name($self) {
   return if !$self->vmc_object;
   my $exts = $self->vmc_object->extensions_by_oid();
   my $alt_name = $exts->{'2.5.29.17'}->to_string;
   return $alt_name;
 }
+
+=method I<is_valid_alt_name()>
+
+Return true if the VMC has a valid alt name for the domain of the current operation
+
+=cut
 
 sub is_valid_alt_name($self) {
   return 1 if ! $self->authority_object; # Cannot check without context
@@ -165,10 +217,22 @@ sub is_valid_alt_name($self) {
   return 0;
 }
 
+=method I<is_self_signed()>
+
+Return true if this VMC is self signed
+
+=cut
+
 sub is_self_signed($self) {
   return if !$self->vmc_object;
   return $self->vmc_object->is_selfsigned;
 }
+
+=method I<has_valid_usage()>
+
+Return true if this VMC has a valid usage extension for BIMI
+
+=cut
 
 sub has_valid_usage($self) {
   return if !$self->vmc_object;
@@ -241,6 +305,12 @@ sub _build_is_valid($self) {
   return 0 if $self->error->@*;
   return 1;
 }
+
+=method I<app_validate()>
+
+Output human readable validation status of this object
+
+=cut
 
 sub app_validate($self) {
   say 'VMC Returned:';

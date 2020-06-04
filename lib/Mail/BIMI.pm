@@ -10,12 +10,39 @@ use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Options';
   with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Error';
-  has domain => ( is => 'rw', isa => Str );
-  has selector => ( is => 'rw', isa => Str, lazy => 1, builder => sub{ return 'default' } );
-  has dmarc_object => ( is => 'rw', isa => class_type('Mail::DMARC::Result') );
-  has spf_object => ( is => 'rw', isa => class_type('Mail::SPF::Result') );
-  has record => ( is => 'rw', lazy => 1, builder => '_build_record' );
-  has result => ( is => 'rw', lazy => 1, builder => '_build_result' );
+  has domain => ( is => 'rw', isa => Str, required => 0,
+    documentation => 'Domain to lookup/domain record was retrieved from', pod_section => 'inputs' );
+  has selector => ( is => 'rw', isa => Str, lazy => 1, builder => sub{ return 'default' }, documentation => 'The selector to query, assume default if null',
+    documentation => 'Selector to lookup/selector record was retrieved from', pod_section => 'inputs' );
+  has dmarc_object => ( is => 'rw', isa => sub{!defined $_[0] || class_type('Mail::DMARC::PurePerl') || class_type('Mail::DMARC::Result')},
+    documentation => 'validated Mail::DMARC::PurePerl object from parsed message', pod_section => 'inputs' );
+  has spf_object => ( is => 'rw', isa => class_type('Mail::SPF::Result'),
+    documentation => 'Mail::SPF::Result object from parsed message', pod_section => 'inputs' );
+  has dmarc_result_object => ( is => 'rw', isa => sub{!defined $_[0] || class_type('Mail::DMARC::Result')}, lazy => 1, builder => '_build_dmarc_result_object',
+    documentation => 'Relevant Mail::DMARC::Result object' );
+  has dmarc_pp_object => ( is => 'rw', isa => sub{!defined $_[0] || class_type('Mail::DMARC::PurePerl')}, lazy => 1, builder => '_build_dmarc_pp_object',
+    documentation => 'Relevant Mail::DMARC::PurePerl object' );
+  has record => ( is => 'rw', lazy => 1, builder => '_build_record',
+    documentation => 'Mail::BIMI::Record object' );
+  has result => ( is => 'rw', lazy => 1, builder => '_build_result',
+    documentation => 'Mail::BIMI::Result object' );
+  has time => ( is => 'ro', lazy => 1, builder => sub{return time},
+    documentation => 'time of retrieval - useful in testing' );
+
+sub _build_dmarc_result_object($self) {
+  return $self->dmarc_object->result if ref $self->dmarc_object eq 'Mail::DMARC::PurePerl';
+  return $self->dmarc_object         if ref $self->dmarc_object eq 'Mail::DMARC::Result';
+  return;
+}
+
+sub _build_dmarc_pp_object($self) {
+  return $self->dmarc_object if ref $self->dmarc_object eq 'Mail::DMARC::PurePerl';
+  my $dmarc = Mail::DMARC::PurePerl->new;
+  $dmarc->set_resolver($self->resolver);
+  $dmarc->header_from($self->domain);
+  $dmarc->validate;
+  return $dmarc;
+}
 
 sub _build_record($self) {
   croak 'Domain required' if ! $self->domain;
@@ -31,20 +58,17 @@ sub _build_result($self) {
   );
 
   # does DMARC pass
-  if ( ! $self->dmarc_object ) {
+  if ( ! $self->dmarc_result_object ) {
     $result->set_result( 'skipped', $self->ERR_NO_DMARC );
     return $result;
   }
-  if ( $self->dmarc_object->result ne 'pass' ) {
-      $result->set_result( 'skipped', 'DMARC ' . $self->dmarc_object->result );
+  if ( $self->dmarc_result_object->result ne 'pass' ) {
+      $result->set_result( 'skipped', 'DMARC ' . $self->dmarc_result_object->result );
       return $result;
   }
 
   # Is DMARC enforcing?
-  my $dmarc = Mail::DMARC::PurePerl->new;
-  $dmarc->set_resolver($self->resolver);
-  $dmarc->header_from($self->domain);
-  $dmarc->validate;
+  my $dmarc = $self->dmarc_pp_object;
   if (exists $dmarc->result->{published}){
     my $published_policy = $dmarc->result->published->p // '';
     my $published_subdomain_policy = $dmarc->result->published->sp // '';
@@ -155,6 +179,5 @@ sub _build_result($self) {
 
   return $result;
 }
-
 
 1;

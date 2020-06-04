@@ -36,10 +36,10 @@ sub execute($self,$opt,$args) {
   my $selector = $opt->selector // 'default';
 
   my $dmarc = Mail::DMARC::PurePerl->new;
-  $dmarc->result()->result( 'pass' );
-  $dmarc->result()->disposition( 'reject' );
+  $dmarc->header_from($domain);
+  $dmarc->validate;
   my $bimi = Mail::BIMI->new(
-    dmarc_object => $dmarc->result,
+    dmarc_object => $dmarc,
     domain => $domain,
     selector => $selector,
   );

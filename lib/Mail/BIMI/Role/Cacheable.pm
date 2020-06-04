@@ -17,6 +17,12 @@ use Mail::BIMI::Pragmas;
   has _cache_fields => ( is => 'rw' );
   requires 'cache_valid_for';
 
+=method I<do_not_cache()>
+
+Do not cache this object
+
+=cut
+
 sub do_not_cache($self) {
   $self->_do_not_cache(1);
 }

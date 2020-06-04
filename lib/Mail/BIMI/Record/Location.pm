@@ -7,11 +7,15 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
-  has location => ( is => 'rw', isa => sub{ undef || Str }, required => 1 );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
-  has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator' );
-  has is_relevant => ( is => 'rw', lazy => 1, builder => sub{return 1;} );
+  has location => ( is => 'rw', isa => sub{!defined$_[0] || Str }, required => 1,
+    documentation => 'URI of Indicator' );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
+    documentation => 'Is this Location record valid' );
+  has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
+    documentation => 'Mail::BIMI::Indicator object for this location' );
+  has is_relevant => ( is => 'rw', lazy => 1, builder => sub{return 1;},
+    documentation => 'Is the location relevant' );
 
 sub _build__is_valid($self) {
   # Check is_valid without checking indicator, because recursion!

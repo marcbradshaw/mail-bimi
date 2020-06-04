@@ -5,6 +5,12 @@ use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
 
+=method I<get_file_name($file)>
+
+Returns the full path and filename for included file $file
+
+=cut
+
 sub get_file_name($self,$file) {
   my $base_file = __FILE__;
   $base_file =~ s/\/Role\/Data.pm$/\/Data\/$file/;
@@ -13,6 +19,12 @@ sub get_file_name($self,$file) {
   }
   return $base_file;
 }
+
+=method I<get_data_from_file($file)>
+
+Returns the contents of included file $file
+
+=cut
 
 sub get_data_from_file($self,$file) {
   my $base_file = __FILE__;

@@ -11,14 +11,22 @@ use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Cacheable';
-  has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1 );
-  has retrieved_record => ( is => 'rwp', is_cacheable => 1 );
-  has selector => ( is => 'rw', isa => Str, is_cache_key => 1 );
-  has version => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_version', is_cacheable => 1 );
-  has authority => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authority' );
-  has location => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Location'), lazy => 1, builder => '_build_location' );
-  has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record', is_cacheable => 1 );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1 );
+  has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1,
+    documentation => 'Domain the record was retrieved from' );
+  has retrieved_record => ( is => 'rwp', is_cacheable => 1,
+    documentation => 'Record as retrieved' );
+  has selector => ( is => 'rw', isa => Str, is_cache_key => 1,
+    documentation => 'Selector used to retrieve the record' );
+  has version => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_version', is_cacheable => 1,
+    documentation => 'BIMI Version tag' );
+  has authority => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authority',
+    documentation => 'Mail::BIMI::Record::Authority object for this record' );
+  has location => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Location'), lazy => 1, builder => '_build_location',
+    documentation => 'Mail::BIMI::Record::Location object for this record' );
+  has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record', is_cacheable => 1,
+    documentation => 'Hashref of record valies' );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1,
+    documentation => 'Is this record valid' );
 
 sub cache_valid_for($self) { return 3600 }
 
@@ -49,6 +57,14 @@ sub _build_location($self) {
   my $location = Mail::BIMI::Record::Location->new( location => $record, is_relevant => $self->location_is_relevant, bimi_object => $self->bimi_object );
   return $location;
 }
+
+=method I<location_is_relevant()>
+
+Return true is the location is relevant to the validation of the record.
+
+If we don't have a relevant authority, or we are checking BOTH authority and location.
+
+=cut
 
 sub location_is_relevant($self) {
   # True if we don't have a relevant authority OR if we are checking VMC AND Location
@@ -187,6 +203,12 @@ sub _parse_record($self,$record) {
   }
   return $data;
 }
+
+=method I<app_validate()>
+
+Output human readable validation status of this object
+
+=cut
 
 sub app_validate($self) {
   say 'Record Returned:';

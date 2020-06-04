@@ -10,22 +10,49 @@ use Mail::AuthenticationResults::Header::Entry;
 use Mail::AuthenticationResults::Header::SubEntry;
 use Mail::AuthenticationResults::Header::Comment;
   with 'Mail::BIMI::Role::Base';
-  has result => ( is => 'rw', isa => Str );
-  has comment => ( is => 'rw', isa => Str );
-  has headers => ( is => 'rw', isa => HashRef );
+  has result => ( is => 'rw', isa => Str,
+    documentation => 'Text result' );
+  has comment => ( is => 'rw', isa => Str,
+    documentation => 'Text comment' );
+  has headers => ( is => 'rw', isa => HashRef,
+    documentation => 'Hashref of headers to add to message' );
+
+=method I<domain()>
+
+Return the domain of the current operation
+
+=cut
 
 sub domain($self) {
   return $self->bimi_object->domain;
 }
 
+=method I<selector()>
+
+Return the selector of the current operation
+
+=cut
+
 sub selector($self) {
   return $self->bimi_object->selector;
 }
+
+=method I<set_result($result,$comment)>
+
+Set the result text and comment for this Result object
+
+=cut
 
 sub set_result($self,$result,$comment) {
   $self->result($result);
   $self->comment($comment);
 }
+
+=method I<get_authentication_results_object()>
+
+Returns a Mail::AuthenticationResults::Header::Entry object with the BIMI results set
+
+=cut
 
 sub get_authentication_results_object($self) {
   my $header = Mail::AuthenticationResults::Header::Entry->new()->set_key( 'bimi' )->safe_set_value( $self->result );
@@ -44,6 +71,12 @@ sub get_authentication_results_object($self) {
 
   return $header;
 }
+
+=method I<get_authentication_results()>
+
+Return the BIMI Authentication-Results fragment as text
+
+=cut
 
 sub get_authentication_results($self) {
   return $self->get_authentication_results_object->as_string;

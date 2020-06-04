@@ -40,6 +40,12 @@ sub ERR_VMC_PARSE_ERROR          { return 'Could not parse VMC' }
 sub ERR_VMC_REQUIRED             { return 'VMC is required' }
 sub ERR_VMC_VALIDATION_ERROR     { return 'VMC did not validate' }
 
+=method I<add_error($error)>
+
+Add an error, or errors, to the current operation
+
+=cut
+
 sub add_error($self,$error) {
   if ( ref $error eq 'ARRAY' ) {
     foreach my $suberror ( $error->@* ){
@@ -57,14 +63,32 @@ sub add_error($self,$error) {
   }
 }
 
+=method I<error()>
+
+Return an ArrayRef of the current operational errors in this class
+
+=cut
+
 sub error($self) {
   my @error = map { $_->{error} } $self->_error->@*;
   return \@error;
 }
 
+=method I<error_detail()>
+
+Return an ArrayRef of the current operational errors in this class with details
+
+=cut
+
 sub error_detail($self) {
   return $self->_error;
 }
+
+=method I<has_error($error)>
+
+Return true if the current class has the given operational error
+
+=cut
 
 sub has_error($self,$error) {
   if ( grep { $_->{error} =~ /$error/ } $self->_error->@* ) {

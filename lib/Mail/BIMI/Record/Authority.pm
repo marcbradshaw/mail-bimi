@@ -7,10 +7,13 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::VMC;
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
-  has authority => ( is => 'rw', isa => sub{ undef || Str}, required => 1 );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid' );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
-  has vmc => ( is => 'rw', lazy => 1, builder => '_build_vmc' );
+  has authority => ( is => 'rw', isa => sub{!defined $_[0] || Str}, required => 1,
+    documentation => 'URI of VMC' );
+  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
+    documentation => 'Is this Authority valid' );
+  has vmc => ( is => 'rw', lazy => 1, builder => '_build_vmc',
+    documentation => 'Mail::BIMI::VMC object for this Authority' );
 
 sub _build__is_valid($self) {
   return 1 if !defined $self->authority;
@@ -23,6 +26,12 @@ sub _build__is_valid($self) {
   return 0 if $self->error->@*;
   return 1;
 }
+
+=method I<is_relevant()>
+
+Return trus if this Authority is relevant to validation
+
+=cut
 
 sub is_relevant($self) {
   return 0 if !defined $self->authority;
