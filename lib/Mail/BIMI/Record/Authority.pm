@@ -15,6 +15,12 @@ use Mail::BIMI::VMC;
   has vmc => ( is => 'rw', lazy => 1, builder => '_build_vmc',
     documentation => 'Mail::BIMI::VMC object for this Authority' );
 
+=head1 DESCRIPTION
+
+Class for representing, validating, and processing a BIMI authority attribute
+
+=cut
+
 sub _build__is_valid($self) {
   return 1 if !defined $self->authority;
   return 1 if $self->authority eq '';

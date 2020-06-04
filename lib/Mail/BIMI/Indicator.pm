@@ -30,6 +30,12 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', is_cacheable => 1,
     documentation => 'Validator profile used to validate the Indicator', pod_section => 'inputs' );
 
+=head1 DESCRIPTION
+
+Class for representing, retrieving, validating, and processing a BIMI Indicator
+
+=cut
+
 sub _build_validator_profile($self) {
   return $self->bimi_object->OPT_SVG_PROFILE;
 }

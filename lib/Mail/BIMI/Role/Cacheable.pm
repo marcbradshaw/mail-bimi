@@ -17,6 +17,12 @@ use Mail::BIMI::Pragmas;
   has _cache_fields => ( is => 'rw' );
   requires 'cache_valid_for';
 
+=head1 DESCRIPTION
+
+Role allowing the cacheing of data in a class based on defined cache keys
+
+=cut
+
 =method I<do_not_cache()>
 
 Do not cache this object

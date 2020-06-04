@@ -4,4 +4,11 @@ package Mail::BIMI::App;
 use 5.20.0;
 use Mail::BIMI::Pragmas;
 use App::Cmd::Setup -app;
+
+=head1 DESCRIPTION
+
+App::Cmd class for Mail::BIMI helper applications
+
+=cut
+
 1;

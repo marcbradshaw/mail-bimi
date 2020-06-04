@@ -29,6 +29,45 @@ use Mail::DMARC::PurePerl;
   has time => ( is => 'ro', lazy => 1, builder => sub{return time},
     documentation => 'time of retrieval - useful in testing' );
 
+=head1 DESCRIPTION
+
+Brand Indicators for Message Identification (BIMI) retrieval, validation, and processing
+
+=head1 SYNOPSIS
+
+  # Assuming we have a message, and have verified it has exactly one Header domain, and passes
+  # any other BIMI and local site requirements not related to BIMI record validation...
+  # For example, relevant DKIM coverage of any BIMI-Selector header
+  my $message = ...Specifics of adding headers and Authentication-Results is left to the reader...
+
+  my $domain = "example.com"; # domain from From header
+  my $selector = "default";   # selector from From header
+  my $spf = Mail::SPF->new( ...See Mail::SPF POD for options... );
+  my $dmarc = Mail::DMARC::PurePerl->new( ...See Mail::DMARC POD for options... );
+  $dmarc->validate;
+
+  my $bimi = Mail::BIMI->new(
+    dmarc_object => $dmarc,
+    spf_object => $spf,
+    domain => $domain,
+    selector => $selector,
+  );
+
+  my $auth_results = $bimi->get_authentication_results_object;
+  my $bimi_result = $bimi->result;
+
+  $message=>add_auth_results($auth_results); # See Mail::AuthenticationResults POD for usage
+
+  if ( $bimi_result->result eq 'pass' ) {
+    my $headers = $result->headers;
+    if ($headers) {
+      $message->add_header( 'BIMI-Location', $headers->{'BIMI-Location'} if exists $headers->{'BIMI-Location'};
+      $message->add_header( 'BIMI-Indicator', $headers->{'BIMI-Indicator'} if exists $headers->{'BIMI-Indicator'};
+    }
+  }
+
+=cut
+
 sub _build_dmarc_result_object($self) {
   return $self->dmarc_object->result if ref $self->dmarc_object eq 'Mail::DMARC::PurePerl';
   return $self->dmarc_object         if ref $self->dmarc_object eq 'Mail::DMARC::Result';

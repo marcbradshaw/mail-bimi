@@ -17,6 +17,12 @@ use Mail::BIMI::Indicator;
   has is_relevant => ( is => 'rw', lazy => 1, builder => sub{return 1;},
     documentation => 'Is the location relevant' );
 
+=head1 DESCRIPTION
+
+Class for representing, validating, and processing a BIMI location attribute
+
+=cut
+
 sub _build__is_valid($self) {
   # Check is_valid without checking indicator, because recursion!
   if ( !defined $self->location ) {

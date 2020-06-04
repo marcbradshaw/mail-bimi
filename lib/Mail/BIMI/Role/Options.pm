@@ -8,6 +8,12 @@ use Mozilla::CA;
   has CACHE_BACKEND => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_BACKEND}},
     documentation => 'Cache backend to use for cacheing' );
 
+=head1 DESCRIPTION
+
+Role for capturing caller options, which may be passed to the constructor, or set in environment
+
+=cut
+
   has OPT_FORCE_RECORD => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_FORCE_RECORD}},
     documentation => 'Fake record to use' );
   has OPT_HTTP_CLIENT_TIMEOUT  => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_HTTP_CLIENT_TIMEOUT}//3},

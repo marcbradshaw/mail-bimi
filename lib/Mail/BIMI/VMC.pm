@@ -37,6 +37,12 @@ use Mail::BIMI::Indicator;
   has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
     documentation => 'Mail::BIMI::Indicator object for the Indicator embedded in this VMC' );
 
+=head1 DESCRIPTION
+
+Class for representing, retrieving, validating, and processing a VMC
+
+=cut
+
 sub cache_valid_for($self) { return 3600 }
 sub http_client_max_fetch_size($self) { return $self->bimi_object->OPT_VMC_MAX_FETCH_SIZE };
 

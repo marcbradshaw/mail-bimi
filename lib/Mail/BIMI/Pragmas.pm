@@ -6,6 +6,12 @@ use strict;
 use warnings;
 require feature;
 
+=head1 DESCRIPTION
+
+Distribution wide pragmas and imports
+
+=cut
+
 use open ':std', ':encoding(UTF-8)';
 use Import::Into;
 use Carp;

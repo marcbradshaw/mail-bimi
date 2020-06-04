@@ -17,6 +17,12 @@ use Mail::AuthenticationResults::Header::Comment;
   has headers => ( is => 'rw', isa => HashRef,
     documentation => 'Hashref of headers to add to message' );
 
+=head1 DESCRIPTION
+
+Class for representing a BIMI result
+
+=cut
+
 =method I<domain()>
 
 Return the domain of the current operation

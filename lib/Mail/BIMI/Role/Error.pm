@@ -6,6 +6,12 @@ use Moo::Role;
 use Mail::BIMI::Pragmas;
   has _error => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => sub{return []}, is_cacheable => 1 );
 
+=head1 DESCRIPTION
+
+Role for handling validation errors
+
+=cut
+
 sub ERR_BIMI_INVALID             { return 'Invalid BIMI Record' }
 sub ERR_BIMI_NOT_ENABLED         { return 'Domain is not BIMI enabled' }
 sub ERR_CODE_MISSING_AUTHORITY   { return 'No authority specified' }

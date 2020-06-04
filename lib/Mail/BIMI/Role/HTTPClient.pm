@@ -11,6 +11,12 @@ use HTTP::Tiny::Paranoid;
     documentation => 'HTTP Response as returned by client' );
   requires 'http_client_max_fetch_size';
 
+=head1 DESCRIPTION
+
+Role for classes which require a HTTP Client implementation
+
+=cut
+
 {
   my $http_client;
   sub _build_http_client($self) {

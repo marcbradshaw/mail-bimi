@@ -5,6 +5,12 @@ use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
 
+=head1 DESCRIPTION
+
+Role for classes which require access to locally packaged files
+
+=cut
+
 =method I<get_file_name($file)>
 
 Returns the full path and filename for included file $file

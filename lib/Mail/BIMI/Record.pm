@@ -28,6 +28,12 @@ use Mail::DMARC::PurePerl;
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1,
     documentation => 'Is this record valid' );
 
+=head1 DESCRIPTION
+
+Class for representing, retrieving, validating, and processing a BIMI Record
+
+=cut
+
 sub cache_valid_for($self) { return 3600 }
 
 sub _build_version($self) {
