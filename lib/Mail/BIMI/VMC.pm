@@ -17,9 +17,9 @@ use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
   has authority => ( is => 'rw', isa => Str, is_cache_key => 1,
-    documentation => 'URI of this VMC' );
+    documentation => 'URI of this VMC', pod_section => 'inputs' );
   has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1,
-    documentation => 'Raw data of the VMC contents' );
+    documentation => 'Raw data of the VMC contents; Fetched from authority URI if not given', pod_section => 'inputs' );
   has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', is_cacheable => 1,
     documentation => 'ArrayRef of individual Certificates in the chain' );
   has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list', is_cacheable => 0,

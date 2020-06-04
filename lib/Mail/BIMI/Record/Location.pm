@@ -9,7 +9,7 @@ use Mail::BIMI::Indicator;
   with 'Mail::BIMI::Role::Error';
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
   has location => ( is => 'rw', isa => sub{!defined$_[0] || Str }, required => 1,
-    documentation => 'URI of Indicator' );
+    documentation => 'URI of Indicator', pod_section => 'inputs' );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
     documentation => 'Is this Location record valid' );
   has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',

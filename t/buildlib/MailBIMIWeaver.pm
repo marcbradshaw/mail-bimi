@@ -1,5 +1,4 @@
 package MailBIMIWeaver;
-
 use Moo;
 use Class::Load ':all';
 use Pod::Elemental::Element::Pod5::Command;
@@ -10,12 +9,9 @@ use Try::Tiny;
 use feature qw{ postderef signatures };;
 no warnings qw{ experimental::postderef experimental::signatures };
 
-# Generate better POD
-# ABSTRACT: Generate some stuff via introspection
-
 with 'Pod::Weaver::Role::Section';
 
-sub weave_section { 
+sub weave_section {
   my($self, $document, $input) = @_;
 
   my @section_parts;

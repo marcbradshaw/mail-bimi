@@ -14,9 +14,9 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
   has location => ( is => 'rw', isa => Str, is_cache_key => 1,
-    documentation => 'URL to retrieve Indicator from' );
+    documentation => 'URL to retrieve Indicator from', pod_section => 'inputs' );
   has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1,
-    documentation => 'Raw data representing the Indicator' );
+    documentation => 'Raw data representing the Indicator; Fetches from location if not given', pod_section => 'inputs' );
   has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', is_cacheable => 1,
     documentation => 'Raw data in uncompressed form' );
   has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml',
@@ -28,7 +28,7 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   has header => ( is => 'rw', lazy => 1, builder => '_build_header', is_cacheable => 1,
     documentation => 'Indicator data encoded as Base64 ready for insertion as BIMI-Indicator header' );
   has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', is_cacheable => 1,
-    documentation => 'Validator profile used to validate the Indicator' );
+    documentation => 'Validator profile used to validate the Indicator', pod_section => 'inputs' );
 
 sub _build_validator_profile($self) {
   return $self->bimi_object->OPT_SVG_PROFILE;

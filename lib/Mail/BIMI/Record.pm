@@ -12,11 +12,11 @@ use Mail::DMARC::PurePerl;
   with 'Mail::BIMI::Role::Resolver';
   with 'Mail::BIMI::Role::Cacheable';
   has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1,
-    documentation => 'Domain the record was retrieved from' );
+    documentation => 'Domain the for the record; will become fallback domain if used', pod_section => 'inputs' );
   has retrieved_record => ( is => 'rwp', is_cacheable => 1,
     documentation => 'Record as retrieved' );
   has selector => ( is => 'rw', isa => Str, is_cache_key => 1,
-    documentation => 'Selector used to retrieve the record' );
+    documentation => 'Selector used to retrieve the record; will become default if fallback was used', pod_section => 'inputs' );
   has version => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_version', is_cacheable => 1,
     documentation => 'BIMI Version tag' );
   has authority => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Authority'), lazy => 1, builder => '_build_authority',
