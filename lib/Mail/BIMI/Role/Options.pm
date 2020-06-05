@@ -5,14 +5,15 @@ use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
 use Mozilla::CA;
-  has CACHE_BACKEND => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_BACKEND}},
-    documentation => 'Cache backend to use for cacheing' );
 
 =head1 DESCRIPTION
 
 Role for capturing caller options, which may be passed to the constructor, or set in environment
 
 =cut
+
+  has OPT_CACHE_BACKEND => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_BACKEND}},
+    documentation => 'Cache backend to use for cacheing' );
 
   has OPT_FORCE_RECORD => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_FORCE_RECORD}},
     documentation => 'Fake record to use' );

@@ -35,28 +35,29 @@ sub weave_section {
   return unless ref $meta;
   return if $meta->isa('Moose::Meta::Role');
   my @attributes = $meta->get_all_attributes;
+  my @attributes = eval{ sort keys Moo->_constructor_maker_for($class_name)->{attribute_specs}->%* };
   if( @attributes ) {
     foreach my $attribute (@attributes) {
-      next unless ref $attribute;
-      next if $attribute->name =~ /^_/;
-      my $moo_attribute = %{Moo->_constructor_maker_for($class_name)}{attribute_specs}->{$attribute->name};
+      next if $attribute =~ /^_/;
+      my $moo_attribute = %{Moo->_constructor_maker_for($class_name)}{attribute_specs}->{$attribute};
       my $attribute_type = 'attributes';
-      $attribute_type = 'options' if $attribute->name =~ /^CACHE_BACKEND$/;
-      $attribute_type = 'options' if $attribute->name =~ /^OPT_/;
+      $attribute_type = 'options' if $attribute =~ /^OPT_/;
       $attribute_type = $moo_attribute->{pod_section} if exists $moo_attribute->{pod_section};
       my @attribute_parts;
       my @definition;
-      push @definition, 'is='.$attribute->{is} if $attribute_type eq 'attribute';
-      push @definition, 'required' if $attribute->{required} && $attribute_type eq 'attribute';
+      push @definition, 'is='.$moo_attribute->{is} if ( $attribute_type eq 'attributes' || $attribute_type eq 'inputs');
+      push @definition, 'required'  if $moo_attribute->{required};
+      push @definition, 'cacheable' if $moo_attribute->{is_cacheable};
+      push @definition, 'cache_key' if $moo_attribute->{is_cache_key};
       push @attribute_parts, Pod::Elemental::Element::Pod5::Ordinary->new({ content => join(' ',@definition) }) if @definition;
-      if ($attribute->{documentation}) {
-        push @attribute_parts, Pod::Elemental::Element::Pod5::Ordinary->new({ content => $attribute->{documentation} });
+      if ($moo_attribute->{documentation}) {
+        push @attribute_parts, Pod::Elemental::Element::Pod5::Ordinary->new({ content => $moo_attribute->{documentation} });
       }
       push @section_parts, {
         attribute_type => $attribute_type,
         element => Pod::Elemental::Element::Nested->new({
           command => 'head2',
-          content => $attribute->name,
+          content => $attribute,
           children => \@attribute_parts,
         }),
       };
@@ -65,9 +66,16 @@ sub weave_section {
 
   @section_parts = sort { $a->{element}->{content} cmp $b->{element}->{content} } @section_parts;
 
+  my $header = {
+    options => 'Options may be passed in to the constructor of Mail::BIMI using the OPT_ prefix, or may be set as an Environment variable using the MAIL_BIMI_ prefix in place of OPT_',
+    attributes => 'These values are derived from lookups and verifications made based upon the input values, it is however possible to override these with other values should you wish to, for example, validate a record before it is published in DNS, or validate an Indicator which is only available locally',
+    inputs => 'These values are used as inputs for lookups and verifications, they are typically set by the caller based on values found in the message being processed',
+  };
+
   foreach my $type ( qw{ inputs attributes options } ) {
     my @relevant_elements = map{ $_->{element} } grep { $_->{attribute_type} eq $type} @section_parts;
     next unless @relevant_elements;
+    unshift @relevant_elements, Pod::Elemental::Element::Pod5::Ordinary->new({ content => $header->{$type} }) if $header->{$type};
     push @{$document->children},  Pod::Elemental::Element::Nested->new({
       command => 'head1',
       content => uc $type,
