@@ -78,6 +78,7 @@ sub BUILD($self,$args) {
 
 sub DEMOLISH($self,$in_global_destruction) {
   return if $self->_do_not_cache;
+  return if $in_global_destruction;
   my $data = {
     cache_key => $self->_cache_key,
     timestamp => $self->_cache_read_timestamp // $self->bimi_object->time,
