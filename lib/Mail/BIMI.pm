@@ -14,15 +14,7 @@ use Mail::DMARC::PurePerl;
     documentation => 'Domain to lookup/domain record was retrieved from', pod_section => 'inputs' );
   has selector => ( is => 'rw', isa => Str, lazy => 1, builder => sub{ return 'default' }, documentation => 'The selector to query, assume default if null',
     documentation => 'Selector to lookup/selector record was retrieved from', pod_section => 'inputs' );
-  has dmarc_object => ( is => 'rw', isa => sub{
-      my $arg = $_[0];
-      return if !defined $arg;
-      return if ref $arg eq 'Mail::DMARC';
-      return if ref $arg eq 'Mail::DMARC::Base';
-      return if ref $arg eq 'Mail::DMARC::PurePerl';
-      return if ref $arg eq 'Mail::DMARC::Result';
-      die 'dmarc_object must be either undefined, Mail::DMARC::PurePerl or Mail::DMARC::Result';
-    },
+  has dmarc_object => ( is => 'rw', isa => AnyOf[Undef,class_type('Mail::DMARC::PurePerl'),class_type('Mail::DMARC::Result')],
     documentation => 'validated Mail::DMARC::PurePerl object from parsed message', pod_section => 'inputs' );
   has spf_object => ( is => 'rw', isa => class_type('Mail::SPF::Result'),
     documentation => 'Mail::SPF::Result object from parsed message', pod_section => 'inputs' );

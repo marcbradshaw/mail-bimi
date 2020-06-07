@@ -18,8 +18,9 @@ use Carp;
 use English;
 use File::Slurp;
 use JSON;
+use MooX::Types::MooseLike::Base qw{AnyOf};
 use Type::Utils qw{class_type};
-use Types::Standard qw{Str HashRef ArrayRef Enum};
+use Types::Standard qw{Str HashRef ArrayRef Enum Undef};
 
 sub import {
   strict->import;
@@ -28,11 +29,12 @@ sub import {
   warnings->unimport($_) for ( qw{ experimental::postderef experimental::signatures } );
 
   Carp->import::into(scalar caller);
-  Types::Standard->import::into(scalar caller, qw{ Str Int HashRef ArrayRef Enum } );
-  Type::Utils->import::into(scalar caller, qw{ class_type } );
   English->import::into(scalar caller);
   File::Slurp->import::into(scalar caller, qw{ read_file write_file } );
   JSON->import::into(scalar caller);
+  MooX::Types::MooseLike::Base->import::into(scalar caller, qw{AnyOf} );
+  Type::Utils->import::into(scalar caller, qw{ class_type } );
+  Types::Standard->import::into(scalar caller, qw{ Str Int HashRef ArrayRef Enum Undef} );
 }
 
 1;
