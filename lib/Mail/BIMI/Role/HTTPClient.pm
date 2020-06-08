@@ -41,6 +41,7 @@ Returns the response content and sets http_client_response
 =cut
 
 sub http_client_get($self,$url) {
+  warn 'HTTP Fetch: '.$url if $self->bimi_object->OPT_VERBOSE;
   my $response = $self->http_client->get($url);
   $self->http_client_response($response);
   return $response->{content};

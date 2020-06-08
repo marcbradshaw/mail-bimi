@@ -77,6 +77,7 @@ sub location_is_relevant($self) {
   return 1 unless $self->bimi_object->OPT_NO_LOCATION_WITH_VMC;
   warn $self->authority->is_relevant;
   if ( $self->authority && $self->authority->is_relevant ) {
+    warn 'Location is not relevant' if $self->bimi_object->OPT_VERBOSE;
     return 0;
   }
   return 1;
@@ -119,6 +120,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
+  warn 'Record is valid' if $self->bimi_object->OPT_VERBOSE;
   return 1;
 }
 
@@ -142,6 +144,7 @@ sub _build_record($self) {
       return {};
     }
 
+    warn 'Trying fallback domain' if $self->bimi_object->OPT_VERBOSE;
     @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($fallback_selector,$fallback_domain); };
     if ( my $error = $@ ) {
       $error =~ s/ at \/.*$//;
@@ -178,6 +181,7 @@ sub _build_record($self) {
 sub _get_from_dns($self,$selector,$domain) {
   my @matches;
   if ($self->bimi_object->OPT_FORCE_RECORD) {
+    warn 'Using fake record' if $self->bimi_object->OPT_VERBOSE;
     push @matches, $self->bimi_object->OPT_FORCE_RECORD;
     return @matches;
   }

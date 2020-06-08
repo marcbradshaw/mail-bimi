@@ -43,6 +43,7 @@ sub is_relevant($self) {
   return 0 if !defined $self->authority;
   return 0 if $self->authority eq '';
   return 0 if $self->authority eq 'self';
+  warn 'Authority is relevant' if $self->bimi_object->OPT_VERBOSE;
   return 1;
 }
 
@@ -53,6 +54,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
+  warn 'Authority is valid' if $self->bimi_object->OPT_VERBOSE;
   return 1;
 }
 

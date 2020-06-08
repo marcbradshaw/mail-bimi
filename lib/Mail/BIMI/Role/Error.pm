@@ -61,10 +61,12 @@ sub add_error($self,$error) {
   elsif ( ref $error eq 'HASH' ) {
       chomp $error->{error};
       chomp $error->{detail};
+      warn 'Error '.$error->{error}.' '.$error->{detail} if $self->bimi_object->OPT_VERBOSE;
       push $self->_error->@*, $error;
   }
   else {
     chomp $error;
+    warn 'Error '.$error if $self->bimi_object->OPT_VERBOSE;
     push $self->_error->@*, { error => $error, detail => '' };
   }
 }

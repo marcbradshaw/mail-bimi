@@ -25,6 +25,7 @@ sub get_from_cache($self) {
 
 sub put_to_cache($self,$data) {
   my $j = JSON->new;
+  warn 'Writing '.(ref $self->parent).' to cache' if $self->bimi_object->OPT_VERBOSE;
   $j->canonical;
   my $json_data = $j->encode($data);
   return if $self->parent->_cache_raw_data && $json_data eq $self->parent->_cache_raw_data;

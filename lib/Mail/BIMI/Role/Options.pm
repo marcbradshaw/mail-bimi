@@ -38,6 +38,8 @@ Role for capturing caller options, which may be passed to the constructor, or se
     documentation => 'Maximum valid size for SVG' );
   has OPT_SVG_PROFILE => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_SVG_PROFILE}//'SVG_1.2_PS'},
     documentation => 'Profile name to use for SVG validation' );
+  has OPT_VERBOSE => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_VERBOSE}},
+    documentation => 'Be More Verbose' );
   has OPT_VMC_FROM_FILE => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_VMC_FROM_FILE}},
     documentation => 'Fake VMC with file contents' );
   has OPT_VMC_MAX_FETCH_SIZE  => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_VMC_MAX_FETCH_SIZE}//65535},

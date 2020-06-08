@@ -124,6 +124,7 @@ sub _build_is_cert_valid($self) {
     close $temp_fh;
   }
   unlink $temp_name;
+  warn 'Cert is '.($cert_is_valid?'valid':'invalid') if $self->bimi_object->OPT_VERBOSE;
 
   return $cert_is_valid;
 }
@@ -182,6 +183,7 @@ sub is_expired($self) {
   return if !$self->vmc_object;
   my $seconds = 0;
   if ($self->vmc_object->checkend($seconds)) {
+    warn 'Cert is expired' if $self->bimi_object->OPT_VERBOSE;
     return 1;
   }
   else {
@@ -199,6 +201,7 @@ sub alt_name($self) {
   return if !$self->vmc_object;
   my $exts = $self->vmc_object->extensions_by_oid();
   my $alt_name = $exts->{'2.5.29.17'}->to_string;
+  warn 'Cert alt name '.$alt_name if $self->bimi_object->OPT_VERBOSE;
   return $alt_name;
 }
 
@@ -309,6 +312,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
+  warn 'VMC is valid' if $self->bimi_object->OPT_VERBOSE;
   return 1;
 }
 

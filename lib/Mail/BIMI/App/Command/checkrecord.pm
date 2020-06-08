@@ -28,7 +28,6 @@ sub opt_spec {
 sub validate_args($self,$opt,$args) {
  $self->usage_error('No Domain specified') if !@$args;
  $self->usage_error('Multiple Domains specified') if scalar @$args > 1;
-
 }
 
 sub execute($self,$opt,$args) {

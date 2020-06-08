@@ -46,6 +46,7 @@ sub http_client_max_fetch_size($self) { return $self->bimi_object->OPT_SVG_MAX_F
 sub _build_data_uncompressed($self) {
   my $data = $self->data;
   if ( $data =~ /^\037\213/ ) {
+    warn 'Uncompressing SVG' if $self->bimi_object->OPT_VERBOSE;
     my $unzipped;
     eval{
       IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
@@ -104,6 +105,7 @@ sub _build_data($self) {
     return;
   }
   if ($self->bimi_object->OPT_SVG_FROM_FILE) {
+    warn 'Reading SVG from file '.$self->bimi_object->OPT_SVG_FROM_FILE if $self->bimi_object->OPT_VERBOSE;
     return scalar read_file $self->bimi_object->OPT_SVG_FROM_FILE;
   }
   my $data = $self->http_client_get( $self->location );
@@ -139,11 +141,13 @@ sub _build_is_valid($self) {
   else {
     if ( $self->bimi_object->OPT_NO_VALIDATE_SVG ) {
       $is_valid=1;
+      warn 'Skipping SVG validation' if $self->bimi_object->OPT_VERBOSE;
     }
     else {
       eval {
         $self->parser->validate( $self->data_xml );
         $is_valid=1;
+        warn 'SVG is valid' if $self->bimi_object->OPT_VERBOSE;
       };
       my $validation_errors = $@;
       if ( !$is_valid ) {

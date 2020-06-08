@@ -48,6 +48,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
+  warn 'Location is valid' if $self->bimi_object->OPT_VERBOSE;
   return 1;
 }
 
