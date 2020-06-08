@@ -4,17 +4,14 @@ package Mail::BIMI::Role::Cacheable;
 use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
-  my $backend = $ENV{MAIL_BIMI_CACHE_BACKEND} // 'File';
-  my $cache_backend = $backend eq 'File' ? 'File'
-                    : $backend eq 'Null' ? 'Null'
-                    : 'Null'; # Untaint
-  with  'Mail::BIMI::Role::Cacheable::'.$cache_backend;
-
+use Mail::BIMI::CacheBackend::File;
+use Mail::BIMI::CacheBackend::Null;
   has _do_not_cache => ( is => 'rw', isa => Int, required => 0 );
   has _cache_read_timestamp => ( is => 'rw', required => 0 );
   has _cache_raw_data => ( is => 'rw', required => 0);
   has _cache_key => ( is => 'rw' );
   has _cache_fields => ( is => 'rw' );
+  has cache_backend => ( is => 'ro', lazy => 1, builder => '_build_cache_backend' );
   requires 'cache_valid_for';
 
 =head1 DESCRIPTION
@@ -31,6 +28,31 @@ Do not cache this object
 
 sub do_not_cache($self) {
   $self->_do_not_cache(1);
+}
+
+sub _build_cache_backend($self) {
+  my %opts = (
+    bimi_object => $self->bimi_object,
+    parent => $self,
+  );
+  my $backend_type = $self->bimi_object->OPT_CACHE_BACKEND // 'File';
+  my $backend
+              = $backend_type eq 'File' ? Mail::BIMI::CacheBackend::File->new( %opts )
+              : $backend_type eq 'Null' ? Mail::BIMI::CacheBackend::Null->new( %opts )
+              : croak 'Unknown Cache Backend';
+  return $backend;
+}
+
+sub get_from_cache($self) {
+  return $self->cache_backend->get_from_cache;
+}
+
+sub put_to_cache($self) {
+  return $self->cache_backend->put_to_cache;
+}
+
+sub delete_cache($self) {
+  return $self->cache_backend->delete_cache;
 }
 
 sub BUILD($self,$args) {
@@ -58,12 +80,12 @@ sub BUILD($self,$args) {
   ));
   $self->_cache_fields( \@cache_fields );
 
-  my $data = $self->_get_from_cache;
+  my $data = $self->get_from_cache;
   return if !$data;
 
   return if $data->{cache_key} ne $self->_cache_key;
   if ($data->{timestamp}+$self->cache_valid_for < $self->bimi_object->time) {
-    $self->_delete_cache;
+    $self->delete_cache;
     return;
   }
 
@@ -90,15 +112,7 @@ sub DEMOLISH($self,$in_global_destruction) {
     }
   }
 
-  $self->_put_to_cache($data);
-}
-
-sub _build_cache_filename($self) {
-  my $cache_dir = '/tmp/';
-  my $context = Digest::SHA256::new(512);
-  my $hash = $context->hexhash( $self->_cache_key );
-  $hash =~ s/ //g;
-  return $cache_dir.'mail-bimi-cache-'.$hash.'.cache';
+  $self->put_to_cache($data);
 }
 
 1;
