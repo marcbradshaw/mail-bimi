@@ -3,8 +3,6 @@ package Mail::BIMI::Result;
 # VERSION
 use 5.20.0;
 use Moo;
-use Types::Standard qw{Str HashRef ArrayRef};
-use Type::Utils qw{class_type};
 use Mail::BIMI::Pragmas;
 use Mail::AuthenticationResults::Header::Entry;
 use Mail::AuthenticationResults::Header::SubEntry;
@@ -14,6 +12,8 @@ use Mail::AuthenticationResults::Header::Comment;
     documentation => 'Text result' );
   has comment => ( is => 'rw', isa => Str,
     documentation => 'Text comment' );
+  has error => ( is => 'rw',
+    documentation => 'Optional Mail::BIMI::Error object detailing failure' );
   has headers => ( is => 'rw', isa => HashRef,
     documentation => 'Hashref of headers to add to message' );
 
@@ -43,15 +43,18 @@ sub selector($self) {
   return $self->bimi_object->selector;
 }
 
-=method I<set_result($result,$comment)>
+=method I<set_result($result,$error=undef)>
 
 Set the result text and comment for this Result object
 
 =cut
 
-sub set_result($self,$result,$comment) {
+sub set_result($self,$result,$error=undef) {
   $self->result($result);
-  $self->comment($comment);
+  if ($error) {
+    $self->error($error);
+    $self->comment($error->description);
+  }
 }
 
 =method I<get_authentication_results_object()>

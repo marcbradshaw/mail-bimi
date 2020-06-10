@@ -57,10 +57,10 @@ sub _build_data($self) {
   my $data = $self->http_client_get( $self->authority );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
-      $self->add_error({ error => $self->ERR_VMC_FETCH_ERROR, detail => $self->http_client_response->{content} });
+      $self->add_error($self->ERR_VMC_FETCH_ERROR($self->http_client_response->{content}));
     }
       else {
-      $self->add_error({ error => $self->ERR_VMC_FETCH_ERROR, detail => $self->http_client_response->{status} });
+      $self->add_error($self->ERR_VMC_FETCH_ERROR($self->http_client_response->{status}));
     }
     return '';
   }
@@ -90,7 +90,7 @@ sub _build_cert_object_list($self) {
     @all_x509_certs = map { Crypt::OpenSSL::X509->new_from_string(join("\n",$_->@*)) } $self->cert_list->@*;
   };
   if ( my $error = $@ ) {
-    $self->add_error({ error => $self->ERR_VMC_PARSE_ERROR, detail => $error });
+    $self->add_error($self->ERR_VMC_PARSE_ERROR($error));
   }
   return \@all_x509_certs;
 }
@@ -113,7 +113,7 @@ sub _build_is_cert_valid($self) {
            : Crypt::OpenSSL::Verify->new(CAfile => $self->bimi_object->OPT_SSL_ROOT_CERT);
     eval{$ca->verify($self->cert_object_list->[$i])};
     if ( my $error = $@ ) {
-      $self->add_error({ error => $self->ERR_VMC_VALIDATION_ERROR, detail => $error });
+      $self->add_error($self->ERR_VMC_VALIDATION_ERROR($error));
       $cert_is_valid = 0;
       last;
     }
@@ -263,7 +263,7 @@ sub _build_indicator_asn($self) {
   die $asn->error if $asn->error;
   my $decoded = $decoder->decode($indicator);
   if ( $decoder->error ) {
-    $self->add_error({ error => $self->ERR_VMC_PARSE_ERROR, detail => $decoder->error });
+    $self->add_error($self->ERR_VMC_PARSE_ERROR($decoder->error));
     return;
   }
 
@@ -277,7 +277,7 @@ sub _build_indicator_uri($self) {
   return if !$self->indicator_asn;
   my $uri = eval{ $self->indicator_asn->{subjectLogo}->{direct}->{image}->[0]->{imageDetails}->{logotypeURI}->[0] };
   if ( my $error = $@ ) {
-    $self->add_error({ error => $self->ERR_VMC_PARSE_ERROR, detail => 'Could not extract SVG from VMC' });
+    $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not extract SVG from VMC'));
   }
   return $uri;
 }
@@ -294,7 +294,7 @@ sub _build_indicator($self) {
     return Mail::BIMI::Indicator->new( location => $self->indicator_uri, data => $data, bimi_object => $self->bimi_object );
   }
   else {
-    $self->add_error({ error => $self->ERR_VMC_PARSE_ERROR, detail => 'Could not extract SVG from VMC' });
+    $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not extract SVG from VMC'));
     return;
   }
 }
@@ -302,9 +302,9 @@ sub _build_indicator($self) {
 
 sub _build_is_valid($self) {
 
-  $self->add_error({ error => $self->ERR_VMC_VALIDATION_ERROR, detail => 'Expired' } ) if $self->is_expired;
-  $self->add_error({ error => $self->ERR_VMC_VALIDATION_ERROR, detail => 'Missing usage flag' } ) if !$self->has_valid_usage;
-  $self->add_error({ error => $self->ERR_VMC_VALIDATION_ERROR, detail => 'Invalid alt name' }) if !$self->is_valid_alt_name;
+  $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Expired')) if $self->is_expired;
+  $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Missing usage flag')) if !$self->has_valid_usage;
+  $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Invalid alt name')) if !$self->is_valid_alt_name;
   $self->is_cert_valid;
 
   if ( $self->indicator && !$self->indicator->is_valid ) {
@@ -336,11 +336,12 @@ sub app_validate($self) {
   say '  Is Valid        : '.($self->is_valid?'Yes':'No');
   if ( ! $self->is_valid ) {
     say "Errors:";
-    foreach my $error ( $self->error_detail->@* ) {
-      my $error_text = $error->{error};
-      my $error_detail = $error->{detail};
+    foreach my $error ( $self->error->@* ) {
+      my $error_code = $error->code;
+      my $error_text = $error->description;
+      my $error_detail = $error->detail;
       $error_detail =~ s/\n/\n    /g;
-      say "  $error_text".($error_detail?"\n    ".$error_detail:'');
+      say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
     }
   }
 }

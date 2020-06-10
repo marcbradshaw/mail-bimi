@@ -133,7 +133,7 @@ sub _build_record($self) {
   my @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($selector,$domain); };
   if ( my $error = $@ ) {
     $error =~ s/ at \/.*$//;
-    $self->add_error({ error => $self->ERR_DNS_ERROR, detail => $error });
+    $self->add_error($self->ERR_DNS_ERROR($error));
     return {};
   }
 
@@ -148,7 +148,7 @@ sub _build_record($self) {
     @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($fallback_selector,$fallback_domain); };
     if ( my $error = $@ ) {
       $error =~ s/ at \/.*$//;
-      $self->add_error({ error => $self->ERR_DNS_ERROR, detail => $error });
+      $self->add_error($self->ERR_DNS_ERROR($error));
       return {};
     }
     if ( !@records ) {
@@ -236,10 +236,11 @@ sub app_validate($self) {
   if ( ! $self->is_valid ) {
     say "Errors:";
     foreach my $error ( $self->error_detail->@* ) {
-      my $error_text = $error->{error};
-      my $error_detail = $error->{detail};
+      my $error_code = $error->code;
+      my $error_text = $error->description;
+      my $error_detail = $error->detail;
       $error_detail =~ s/\n/\n    /g;
-      say "  $error_text".($error_detail?"\n    ".$error_detail:'');
+      say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
     }
   }
 }

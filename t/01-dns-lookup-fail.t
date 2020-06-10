@@ -29,8 +29,8 @@ $bimi->selector( 'foobar' );
 my $record = $bimi->record;
 
 is_deeply(
-    [ $record->is_valid, $record->error ],
-    [ 0, ['DNS query error'] ],
+    [ $record->is_valid, $record->error_codes ],
+    [ 0, ['DNS_ERROR'] ],
     'Test record validates'
 );
 

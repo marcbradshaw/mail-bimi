@@ -111,10 +111,10 @@ sub _build_data($self) {
   my $data = $self->http_client_get( $self->location );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
-      $self->add_error({ error => $self->ERR_SVG_FETCH_ERROR, detail => $self->http_client_response->{content} });
+      $self->add_error($self->ERR_SVG_FETCH_ERROR($self->http_client_response->{content}));
     }
       else {
-      $self->add_error({ error => $self->ERR_SVG_FETCH_ERROR, detail => $self->http_client_response->{status} });
+      $self->add_error($self->ERR_SVG_FETCH_ERROR($self->http_client_response->{status}));
     }
     return '';
   }
@@ -151,7 +151,7 @@ sub _build_is_valid($self) {
       };
       my $validation_errors = $@;
       if ( !$is_valid ) {
-        $self->add_error({ error => $self->ERR_SVG_VALIDATION_ERROR, detail => $validation_errors });
+        $self->add_error($self->ERR_SVG_VALIDATION_ERROR($validation_errors));
       }
     }
   }
@@ -182,11 +182,12 @@ sub app_validate($self) {
   say '  Is Valid       : '.($self->is_valid?'Yes':'No');
   if ( ! $self->is_valid ) {
     say "Errors:";
-    foreach my $error ( $self->error_detail->@* ) {
-      my $error_text = $error->{error};
-      my $error_detail = $error->{detail};
+    foreach my $error ( $self->error->@* ) {
+      my $error_code = $error->code;
+      my $error_text = $error->description;
+      my $error_detail = $error->detail;
       $error_detail =~ s/\n/\n    /g;
-      say "  $error_text".($error_detail?"\n    ".$error_detail:'');
+      say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
     }
   }
 }

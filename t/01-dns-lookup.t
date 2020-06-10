@@ -28,7 +28,7 @@ $bimi->selector( 'foobar' );
 my $record = $bimi->record;
 
 is_deeply(
-    [ $record->is_valid, $record->error ],
+    [ $record->is_valid, $record->error_codes ],
     [ 1, [] ],
     'Test record validates'
 );

@@ -26,7 +26,7 @@ $bimi->selector( 'default' );
 
 my $result = $bimi->result;
 my $auth_results = $result->get_authentication_results;
-is( $auth_results, 'bimi=none (Domain is not BIMI enabled)', 'authresults' );
+is( $auth_results, 'bimi=none (No BIMI records found)', 'authresults' );
 is ( $result->domain, 'nobimi.com', 'result domain' );
 is ( $result->selector, 'default', 'result selector' );
 

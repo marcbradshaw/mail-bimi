@@ -103,7 +103,7 @@ sub _build_result($self) {
     return $result;
   }
   if ( $self->dmarc_result_object->result ne 'pass' ) {
-      $result->set_result( 'skipped', 'DMARC ' . $self->dmarc_result_object->result );
+      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_PASS($self->dmarc_result_object->result));
       return $result;
   }
 
@@ -150,45 +150,46 @@ sub _build_result($self) {
     }
 
   if ( ! $self->record->is_valid ) {
-    if ( $self->record->has_error( $self->ERR_NO_BIMI_RECORD ) ) {
-      $result->set_result( 'none', $self->ERR_BIMI_NOT_ENABLED );
+    my $has_error;
+    if ( ($has_error) = $self->record->filter_errors( 'NO_BIMI_RECORD' ) ) {
+      $result->set_result( 'none', $has_error );
     }
-    elsif ( $self->record->has_error( $self->ERR_DNS_ERROR ) ) {
-      $result->set_result( 'none', $self->ERR_DNS_ERROR );
+    elsif ( ($has_error) = $self->record->filter_errors( 'DNS_ERROR' ) ) {
+      $result->set_result( 'none', $has_error );
     }
     else {
       my @fail_errors = qw{
-        ERR_NO_DMARC
-        ERR_MULTI_BIMI_RECORD
-        ERR_DUPLICATE_KEY
-        ERR_EMPTY_L_TAG
-        ERR_EMPTY_V_TAG
-        ERR_INVALID_V_TAG
-        ERR_MISSING_L_TAG
-        ERR_MISSING_V_TAG
-        ERR_MULTIPLE_AUTHORITIES
-        ERR_MULTIPLE_LOCATIONS
-        ERR_INVALID_TRANSPORT_A
-        ERR_INVALID_TRANSPORT_L
-        ERR_SPF_PLUS_ALL
-        ERR_SVG_FETCH_ERROR
-        ERR_VMC_FETCH_ERROR
-        ERR_VMC_PARSE_ERROR
-        ERR_VMC_VALIDATION_ERROR
-        ERR_SVG_GET_ERROR
-        ERR_SVG_SIZE
-        ERR_SVG_UNZIP_ERROR
-        ERR_SVG_INVALID_XML
-        ERR_SVG_VALIDATION_ERROR
-        ERR_SVG_MISMATCH
-        ERR_VMC_REQUIRED
+        NO_DMARC
+        MULTI_BIMI_RECORD
+        DUPLICATE_KEY
+        EMPTY_L_TAG
+        EMPTY_V_TAG
+        INVALID_V_TAG
+        MISSING_L_TAG
+        MISSING_V_TAG
+        MULTIPLE_AUTHORITIES
+        MULTIPLE_LOCATIONS
+        INVALID_TRANSPORT_A
+        INVALID_TRANSPORT_L
+        SPF_PLUS_ALL
+        SVG_FETCH_ERROR
+        VMC_FETCH_ERROR
+        VMC_PARSE_ERROR
+        VMC_VALIDATION_ERROR
+        SVG_GET_ERROR
+        SVG_SIZE
+        SVG_UNZIP_ERROR
+        SVG_INVALID_XML
+        SVG_VALIDATION_ERROR
+        SVG_MISMATCH
+        VMC_REQUIRED
       };
       my $found_error = 0;
 
       foreach my $fail_error (@fail_errors) {
-        if ( $self->record->has_error( $self->$fail_error ) ) {
+        if ( my ($error) = $self->record->filter_errors( $fail_error ) ) {
           $found_error = 1;
-          $result->set_result( 'fail', $self->$fail_error );
+          $result->set_result( 'fail', $error );
           last;
         }
       }
@@ -215,7 +216,7 @@ sub _build_result($self) {
     @bimi_location,
   );
 
-  $result->set_result( 'pass', '' );
+  $result->set_result( 'pass' );
 
   return $result;
 }

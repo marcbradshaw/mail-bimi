@@ -27,8 +27,8 @@ $bimi->selector( 'default' );
 
 my $record = $bimi->record;
 is_deeply(
-    [ $record->is_valid, $record->error ],
-    [ 0, ['Multiple BIMI records found'] ],
+    [ $record->is_valid, $record->error_codes ],
+    [ 0, ['MULTI_BIMI_RECORD'] ],
     'Test record does not validate'
 );
 

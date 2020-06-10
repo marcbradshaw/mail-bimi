@@ -4,7 +4,8 @@ package Mail::BIMI::Role::Error;
 use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
-  has _error => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => sub{return []}, is_cacheable => 1 );
+use Mail::BIMI::Error;
+  has error => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => sub{return []}, is_cacheable => 1 );
 
 =head1 DESCRIPTION
 
@@ -12,39 +13,58 @@ Role for handling validation errors
 
 =cut
 
-sub ERR_BIMI_INVALID             { return 'Invalid BIMI Record' }
-sub ERR_BIMI_NOT_ENABLED         { return 'Domain is not BIMI enabled' }
-sub ERR_CODE_MISSING_AUTHORITY   { return 'No authority specified' }
-sub ERR_CODE_MISSING_LOCATION    { return 'No location specified' }
-sub ERR_CODE_NOTHING_TO_VALIDATE { return 'Nothing To Validate' }
-sub ERR_CODE_NO_DATA             { return 'No Data' }
-sub ERR_DMARC_NOT_ENFORCING      { return 'DMARC Policy is not at enforcement' }
-sub ERR_DNS_ERROR                { return 'DNS query error' }
-sub ERR_DUPLICATE_KEY            { return 'Duplicate key in record' }
-sub ERR_EMPTY_L_TAG              { return 'Empty l tag' }
-sub ERR_EMPTY_V_TAG              { return 'Empty v tag' }
-sub ERR_INVALID_TRANSPORT_A      { return 'Invalid transport in authority' }
-sub ERR_INVALID_TRANSPORT_L      { return 'Invalid transport in location' }
-sub ERR_INVALID_V_TAG            { return 'Invalid v tag' }
-sub ERR_MISSING_L_TAG            { return 'Missing l tag' }
-sub ERR_MISSING_V_TAG            { return 'Missing v tag' }
-sub ERR_MULTIPLE_AUTHORITIES     { return 'Multiple entries for a found' }
-sub ERR_MULTIPLE_LOCATIONS       { return 'Multiple entries for l found' }
-sub ERR_MULTI_BIMI_RECORD        { return 'Multiple BIMI records found' }
-sub ERR_NO_BIMI_RECORD           { return 'No BIMI records found' }
-sub ERR_NO_DMARC                 { return 'No DMARC' }
-sub ERR_SPF_PLUS_ALL             { return 'SPF +all detected' }
-sub ERR_SVG_FETCH_ERROR          { return 'Could not fetch SVG' }
-sub ERR_SVG_GET_ERROR            { return 'Could not fetch SVG' }
-sub ERR_SVG_INVALID_XML          { return 'Invalid XML in SVG' }
-sub ERR_SVG_MISMATCH             { return 'SVG in bimi-location did not match SVG in VMC' }
-sub ERR_SVG_SIZE                 { return 'SVG Document exceeds maximum size' }
-sub ERR_SVG_UNZIP_ERROR          { return 'Error unzipping SVG' }
-sub ERR_SVG_VALIDATION_ERROR     { return 'SVG did not validate' }
-sub ERR_VMC_FETCH_ERROR          { return 'Could not fetch VMC' }
-sub ERR_VMC_PARSE_ERROR          { return 'Could not parse VMC' }
-sub ERR_VMC_REQUIRED             { return 'VMC is required' }
-sub ERR_VMC_VALIDATION_ERROR     { return 'VMC did not validate' }
+{
+  my $error_hash = {
+    BIMI_INVALID             => 'Invalid BIMI Record',
+    BIMI_NOT_ENABLED         => 'Domain is not BIMI enabled',
+    CODE_MISSING_AUTHORITY   => 'No authority specified',
+    CODE_MISSING_LOCATION    => 'No location specified',
+    CODE_NOTHING_TO_VALIDATE => 'Nothing To Validate',
+    CODE_NO_DATA             => 'No Data',
+    DMARC_NOT_ENFORCING      => 'DMARC Policy is not at enforcement',
+    DMARC_NOT_PASS           => 'DMARC did not pass',
+    DNS_ERROR                => 'DNS query error',
+    DUPLICATE_KEY            => 'Duplicate key in record',
+    EMPTY_L_TAG              => 'Empty l tag',
+    EMPTY_V_TAG              => 'Empty v tag',
+    INVALID_TRANSPORT_A      => 'Invalid transport in authority',
+    INVALID_TRANSPORT_L      => 'Invalid transport in location',
+    INVALID_V_TAG            => 'Invalid v tag',
+    MISSING_L_TAG            => 'Missing l tag',
+    MISSING_V_TAG            => 'Missing v tag',
+    MULTIPLE_AUTHORITIES     => 'Multiple entries for a found',
+    MULTIPLE_LOCATIONS       => 'Multiple entries for l found',
+    MULTI_BIMI_RECORD        => 'Multiple BIMI records found',
+    NO_BIMI_RECORD           => 'No BIMI records found',
+    NO_DMARC                 => 'No DMARC',
+    SPF_PLUS_ALL             => 'SPF +all detected',
+    SVG_FETCH_ERROR          => 'Could not fetch SVG',
+    SVG_GET_ERROR            => 'Could not fetch SVG',
+    SVG_INVALID_XML          => 'Invalid XML in SVG',
+    SVG_MISMATCH             => 'SVG in bimi-location did not match SVG in VMC',
+    SVG_SIZE                 => 'SVG Document exceeds maximum size',
+    SVG_UNZIP_ERROR          => 'Error unzipping SVG',
+    SVG_VALIDATION_ERROR     => 'SVG did not validate',
+    VMC_FETCH_ERROR          => 'Could not fetch VMC',
+    VMC_PARSE_ERROR          => 'Could not parse VMC',
+    VMC_REQUIRED             => 'VMC is required',
+    VMC_VALIDATION_ERROR     => 'VMC did not validate',
+  };
+
+  no strict 'refs';
+  foreach my $error ( sort keys $error_hash->%* ) {
+    my $method_name = 'ERR_'.$error;
+    *$method_name = sub{
+      my ( $self, $detail ) = @_;
+      return Mail::BIMI::Error->new(
+        code => $error,
+        description => $error_hash->{$error},
+        $detail ? ( detail => $detail ) : (),
+      );
+    };
+  }
+}
+
 
 =method I<add_error($error)>
 
@@ -53,56 +73,41 @@ Add an error, or errors, to the current operation
 =cut
 
 sub add_error($self,$error) {
-  if ( ref $error eq 'ARRAY' ) {
+if ( ref $error eq 'ARRAY' ) {
     foreach my $suberror ( $error->@* ){
         $self->add_error($suberror);
     }
   }
-  elsif ( ref $error eq 'HASH' ) {
-      chomp $error->{error};
-      chomp $error->{detail};
-      warn 'Error '.$error->{error}.' '.$error->{detail} if $self->bimi_object->OPT_VERBOSE;
-      push $self->_error->@*, $error;
-  }
   else {
-    chomp $error;
-    warn 'Error '.$error if $self->bimi_object->OPT_VERBOSE;
-    push $self->_error->@*, { error => $error, detail => '' };
+    warn join(' : ',
+      'Error',
+      $error->code,
+      $error->description
+      ( $error->detail ? $error->detail : () ),
+    ) if $self->bimi_object->OPT_VERBOSE;
+    push $self->error->@*, $error;
   }
 }
 
-=method I<error()>
+=method I<error_codes>
 
-Return an ArrayRef of the current operational errors in this class
+Return an ArrayRef of current error codes
 
 =cut
 
-sub error($self) {
-  my @error = map { $_->{error} } $self->_error->@*;
-  return \@error;
+sub error_codes($self) {
+  my @error_codes = map { $_->code } $self->error->@*;
+  return \@error_codes;
 }
 
-=method I<error_detail()>
+=method I<filter_errors($error)>
 
-Return an ArrayRef of the current operational errors in this class with details
-
-=cut
-
-sub error_detail($self) {
-  return $self->_error;
-}
-
-=method I<has_error($error)>
-
-Return true if the current class has the given operational error
+Return error(s) matching the given error code
 
 =cut
 
-sub has_error($self,$error) {
-  if ( grep { $_->{error} =~ /$error/ } $self->_error->@* ) {
-    return 1;
-  }
-  return 0;
+sub filter_errors($self,$error) {
+  return grep { $_->code eq $error } $self->error->@*;
 }
 
 1;
