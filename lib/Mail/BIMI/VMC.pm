@@ -339,7 +339,7 @@ sub app_validate($self) {
     foreach my $error ( $self->error->@* ) {
       my $error_code = $error->code;
       my $error_text = $error->description;
-      my $error_detail = $error->detail;
+      my $error_detail = $error->detail // '';
       $error_detail =~ s/\n/\n    /g;
       say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
     }

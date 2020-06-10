@@ -149,9 +149,9 @@ sub _build_is_valid($self) {
         $is_valid=1;
         warn 'SVG is valid' if $self->bimi_object->OPT_VERBOSE;
       };
-      my $validation_errors = $@;
-      if ( !$is_valid ) {
-        $self->add_error($self->ERR_SVG_VALIDATION_ERROR($validation_errors));
+      if ( my $validation_error = $@ ) {
+        my $error_text = ref $validation_error eq 'XML::LibXML::Error' ? $validation_error->as_string : $validation_error;
+        $self->add_error($self->ERR_SVG_VALIDATION_ERROR($error_text));
       }
     }
   }
@@ -185,7 +185,7 @@ sub app_validate($self) {
     foreach my $error ( $self->error->@* ) {
       my $error_code = $error->code;
       my $error_text = $error->description;
-      my $error_detail = $error->detail;
+      my $error_detail = $error->detail // '';
       $error_detail =~ s/\n/\n    /g;
       say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
     }
