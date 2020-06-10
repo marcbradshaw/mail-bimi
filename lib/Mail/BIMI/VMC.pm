@@ -90,6 +90,8 @@ sub _build_cert_object_list($self) {
     @all_x509_certs = map { Crypt::OpenSSL::X509->new_from_string(join("\n",$_->@*)) } $self->cert_list->@*;
   };
   if ( my $error = $@ ) {
+    chomp $error;
+    $error =~ s/\. at .*$//;
     $self->add_error($self->ERR_VMC_PARSE_ERROR($error));
   }
   return \@all_x509_certs;
