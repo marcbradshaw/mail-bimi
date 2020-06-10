@@ -37,6 +37,7 @@ sub execute($self,$opt,$args) {
   my $dmarc = Mail::DMARC::PurePerl->new;
   $dmarc->header_from($domain);
   $dmarc->validate;
+  $dmarc->result->result('pass');
   my $bimi = Mail::BIMI->new(
     dmarc_object => $dmarc,
     domain => $domain,
