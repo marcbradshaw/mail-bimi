@@ -2,7 +2,7 @@ package Mail::BIMI::App::Command::checkrecord;
 # ABSTRACT: Check a BIMI record for validation
 # VERSION
 use 5.20.0;
-BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
+BEGIN { $ENV{MAIL_BIMI_CACHE_DEFAULT_BACKEND} = 'Null' };
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::App -command;
 use Mail::BIMI;
@@ -76,6 +76,7 @@ sub execute($self,$opt,$args) {
       say "$header: ".$headers->{$header};
   }
 
+  $bimi->finish;
 }
 
 1;

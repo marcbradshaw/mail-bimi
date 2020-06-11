@@ -214,6 +214,18 @@ sub _parse_record($self,$record) {
   return $data;
 }
 
+=method I<finish()>
+
+Finish and clean up, write cache if enabled.
+
+=cut
+
+sub finish($self) {
+  $self->authority->finish if $self->authority;
+  $self->location->finish if $self->location;
+  $self->_write_cache;
+}
+
 =method I<app_validate()>
 
 Output human readable validation status of this object

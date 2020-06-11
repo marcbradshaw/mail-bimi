@@ -58,4 +58,14 @@ sub _build_indicator($self) {
   return Mail::BIMI::Indicator->new( location => $self->location, bimi_object => $self->bimi_object );
 }
 
+=method I<finish()>
+
+Finish and clean up, write cache if enabled.
+
+=cut
+
+sub finish($self) {
+  $self->indicator->finish if $self->indicator;
+}
+
 1;

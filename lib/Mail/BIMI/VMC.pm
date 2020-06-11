@@ -318,6 +318,17 @@ sub _build_is_valid($self) {
   return 1;
 }
 
+=method I<finish()>
+
+Finish and clean up, write cache if enabled.
+
+=cut
+
+sub finish($self) {
+  $self->indicator->finish if $self->indicator;
+  $self->_write_cache;
+}
+
 =method I<app_validate()>
 
 Output human readable validation status of this object

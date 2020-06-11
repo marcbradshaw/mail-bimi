@@ -168,6 +168,16 @@ sub _build_header($self) {
   return join("\n    ", @parts);
 }
 
+=method I<finish()>
+
+Finish and clean up, write cache if enabled.
+
+=cut
+
+sub finish($self) {
+  $self->_write_cache;
+}
+
 =method I<app_validate()>
 
 Output human readable validation status of this object

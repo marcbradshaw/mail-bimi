@@ -221,4 +221,20 @@ sub _build_result($self) {
   return $result;
 }
 
+=method I<finish()>
+
+Finish and clean up, write cache if enabled.
+
+=cut
+
+sub finish($self) {
+  $self->record->finish if $self->record;
+}
+
+=method I<app_validate()>
+
+Output human readable validation status of this object
+
+=cut
+
 1;

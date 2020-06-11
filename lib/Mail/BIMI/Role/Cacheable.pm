@@ -4,6 +4,7 @@ package Mail::BIMI::Role::Cacheable;
 use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
+use Mail::BIMI::CacheBackend::FastMmap;
 use Mail::BIMI::CacheBackend::File;
 use Mail::BIMI::CacheBackend::Null;
   has _do_not_cache => ( is => 'rw', isa => Int, required => 0 );
@@ -35,25 +36,14 @@ sub _build_cache_backend($self) {
     bimi_object => $self->bimi_object,
     parent => $self,
   );
-  my $backend_type = $self->bimi_object->OPT_CACHE_BACKEND // 'File';
+  my $backend_type = $self->bimi_object->OPT_CACHE_BACKEND;
   my $backend
-              = $backend_type eq 'File' ? Mail::BIMI::CacheBackend::File->new( %opts )
+              = $backend_type eq 'FastMmap' ? Mail::BIMI::CacheBackend::FastMmap->new( %opts )
+              : $backend_type eq 'File' ? Mail::BIMI::CacheBackend::File->new( %opts )
               : $backend_type eq 'Null' ? Mail::BIMI::CacheBackend::Null->new( %opts )
               : croak 'Unknown Cache Backend';
   warn 'Using cache backend '.$backend_type if $self->bimi_object->OPT_VERBOSE;
   return $backend;
-}
-
-sub get_from_cache($self) {
-  return $self->cache_backend->get_from_cache;
-}
-
-sub put_to_cache($self) {
-  return $self->cache_backend->put_to_cache;
-}
-
-sub delete_cache($self) {
-  return $self->cache_backend->delete_cache;
 }
 
 sub BUILD($self,$args) {
@@ -81,13 +71,13 @@ sub BUILD($self,$args) {
   ));
   $self->_cache_fields( \@cache_fields );
 
-  my $data = $self->get_from_cache;
+  my $data = $self->cache_backend->get_from_cache;
   return if !$data;
   warn 'Build '.(ref $self).' from cache' if $self->bimi_object->OPT_VERBOSE;
 
   return if $data->{cache_key} ne $self->_cache_key;
   if ($data->{timestamp}+$self->cache_valid_for < $self->bimi_object->time) {
-    $self->delete_cache;
+    $self->cache_backend->delete_cache;
     return;
   }
 
@@ -101,8 +91,13 @@ sub BUILD($self,$args) {
 }
 
 sub DEMOLISH($self,$in_global_destruction) {
-  return if $self->_do_not_cache;
   return if $in_global_destruction;
+  $self->_write_cache;
+}
+
+sub _write_cache($self) {
+  return if $self->_do_not_cache;
+  $self->_do_not_cache(1);
   my $data = {
     cache_key => $self->_cache_key,
     timestamp => $self->_cache_read_timestamp // $self->bimi_object->time,
@@ -114,7 +109,7 @@ sub DEMOLISH($self,$in_global_destruction) {
     }
   }
 
-  $self->put_to_cache($data);
+  $self->cache_backend->put_to_cache($data);
 }
 
 1;

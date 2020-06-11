@@ -12,10 +12,12 @@ Role for capturing caller options, which may be passed to the constructor, or se
 
 =cut
 
-  has OPT_CACHE_FILE_DIRECTORY => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_FILE_DIRECTORY}},
-    documentation => 'Directory to store Cache files in when using File backend' );
-  has OPT_CACHE_BACKEND => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_BACKEND}},
+  has OPT_CACHE_BACKEND => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_BACKEND}//$ENV{MAIL_BIMI_CACHE_DEFAULT_BACKEND}//'File'},
     documentation => 'Cache backend to use for cacheing' );
+  has OPT_CACHE_FASTMMAP_SHARE_FILE => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_FASTMMAP_SHARE_FILE}//'/tmp/mail-bimi.fastmmap'},
+    documentation => 'Shared cache file when using FastMmap backend' );
+  has OPT_CACHE_FILE_DIRECTORY => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_CACHE_FILE_DIRECTORY}//'/tmp/'},
+    documentation => 'Directory to store Cache files in when using File backend' );
   has OPT_FORCE_RECORD => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_FORCE_RECORD}},
     documentation => 'Fake record to use' );
   has OPT_HTTP_CLIENT_TIMEOUT  => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_HTTP_CLIENT_TIMEOUT}//3},

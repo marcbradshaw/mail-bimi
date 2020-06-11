@@ -64,4 +64,14 @@ sub _build_vmc($self) {
   return Mail::BIMI::VMC->new( authority => $self->authority, bimi_object => $self->bimi_object );
 }
 
+=method I<finish()>
+
+Finish and clean up, write cache if enabled.
+
+=cut
+
+sub finish($self) {
+  $self->vmc->finish if $self->vmc;
+}
+
 1;

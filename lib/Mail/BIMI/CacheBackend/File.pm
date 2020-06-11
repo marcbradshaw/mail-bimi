@@ -37,7 +37,7 @@ sub delete_cache($self) {
 }
 
 sub _build_cache_filename($self) {
-  my $cache_dir = $self->bimi_object->OPT_CACHE_FILE_DIRECTORY // '/tmp/';
+  my $cache_dir = $self->bimi_object->OPT_CACHE_FILE_DIRECTORY;
   my $context = Digest::SHA256::new(512);
   my $hash = $context->hexhash( $self->parent->_cache_key );
   $hash =~ s/ //g;
