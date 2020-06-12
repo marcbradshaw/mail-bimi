@@ -5,9 +5,7 @@ use 5.20.0;
 use Moo;
 use Mail::BIMI::Pragmas;
 use Cache::FastMmap;
-use Digest::SHA256;
   with 'Mail::BIMI::Role::CacheBackend';
-  has _cache_key => ( is => 'ro', lazy => 1, builder => '_build_cache_key' );
   has _cache_fastmmap => ( is => 'rw', lazy => 1, builder => '_build_cache_fastmmap' );
 
 =head1 DESCRIPTION
@@ -24,22 +22,15 @@ sub _build_cache_fastmmap($self) {
 }
 
 sub get_from_cache($self) {
-  return $self->_cache_fastmmap->get($self->_cache_key);
+  return $self->_cache_fastmmap->get($self->_cache_hash);
 }
 
 sub put_to_cache($self,$data) {
-  $self->_cache_fastmmap->set($self->_cache_key,$data);
+  $self->_cache_fastmmap->set($self->_cache_hash,$data);
 }
 
 sub delete_cache($self) {
-  $self->_cache_fastmmap->remove($self->_cache_key);
-}
-
-sub _build_cache_key($self) {
-  my $context = Digest::SHA256::new(512);
-  my $hash = $context->hexhash( $self->parent->_cache_key );
-  $hash =~ s/ //g;
-  return $hash;
+  $self->_cache_fastmmap->remove($self->_cache_hash);
 }
 
 1;

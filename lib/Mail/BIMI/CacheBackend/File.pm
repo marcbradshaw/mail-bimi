@@ -4,7 +4,6 @@ package Mail::BIMI::CacheBackend::File;
 use 5.20.0;
 use Moo;
 use Mail::BIMI::Pragmas;
-use Digest::SHA256;
   with 'Mail::BIMI::Role::CacheBackend';
   has _cache_filename => ( is => 'ro', lazy => 1, builder => '_build_cache_filename' );
 
@@ -38,10 +37,7 @@ sub delete_cache($self) {
 
 sub _build_cache_filename($self) {
   my $cache_dir = $self->bimi_object->OPT_CACHE_FILE_DIRECTORY;
-  my $context = Digest::SHA256::new(512);
-  my $hash = $context->hexhash( $self->parent->_cache_key );
-  $hash =~ s/ //g;
-  return $cache_dir.'mail-bimi-cache-'.$hash.'.cache';
+  return $cache_dir.'mail-bimi-cache-'.$self->_cache_hash.'.cache';
 }
 
 1;
