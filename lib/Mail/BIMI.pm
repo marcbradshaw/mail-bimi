@@ -132,6 +132,37 @@ sub _build_result($self) {
     return $result;
   }
 
+  # Is Org DMARC Enforcing?
+  my $org_domain   = Mail::DMARC::PurePerl->new->get_organizational_domain($self->domain);
+  if ( lc $org_domain ne lc $self->domain ) {
+    my $org_dmarc = Mail::DMARC::PurePerl->new;
+    $org_dmarc->set_resolver($self->resolver);
+    $org_dmarc->header_from($org_domain);
+    $org_dmarc->validate;
+    if (exists $org_dmarc->result->{published}){
+      my $published_policy = $org_dmarc->result->published->p // '';
+      my $published_subdomain_policy = $org_dmarc->result->published->sp // '';
+      my $published_policy_pct = $org_dmarc->result->published->pct // 100;
+      my $effective_published_policy = ( $org_dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
+      if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
+        $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+        return $result;
+      }
+      if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
+        $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+        return $result;
+      }
+      if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
+        $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+        return $result;
+      }
+    }
+    else {
+      $result->set_result( 'skipped', $self->ERR_NO_DMARC );
+      return $result;
+    }
+  }
+
   if ( $self->spf_object ) {
       my $spf_request = $self->spf_object->request;
       if ( $spf_request ) {
