@@ -4,6 +4,7 @@ package Mail::BIMI::CacheBackend::File;
 use 5.20.0;
 use Moo;
 use Mail::BIMI::Pragmas;
+use Sereal qw{encode_sereal decode_sereal};
   with 'Mail::BIMI::Role::CacheBackend';
   has _cache_filename => ( is => 'ro', lazy => 1, builder => '_build_cache_filename' );
 
@@ -16,19 +17,15 @@ Cache worker role for File storage
 sub get_from_cache($self) {
   my $cache_file = $self->_cache_filename;
   return if !-e $cache_file;
-  my $raw = read_file($self->_cache_filename);
-  my $j = JSON->new;
-  $self->parent->_cache_raw_data($raw);
-  return eval{ $j->decode($raw) };
+  my $raw = scalar read_file($self->_cache_filename);
+  return eval{ decode_sereal($raw) };
 }
 
 sub put_to_cache($self,$data) {
-  my $j = JSON->new;
   warn 'Writing '.(ref $self->parent).' to cache' if $self->bimi_object->OPT_VERBOSE;
-  $j->canonical;
-  my $json_data = $j->encode($data);
-  return if $self->parent->_cache_raw_data && $json_data eq $self->parent->_cache_raw_data;
-  write_file($self->_cache_filename,{atomic=>1},$json_data);
+  my $sereal_data = eval{ encode_serial($data) };
+  return unless $sereal_data;
+  write_file($self->_cache_filename,{atomic=>1},$sereal_data);
 }
 
 sub delete_cache($self) {

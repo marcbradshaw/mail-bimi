@@ -9,7 +9,6 @@ use Mail::BIMI::CacheBackend::File;
 use Mail::BIMI::CacheBackend::Null;
   has _do_not_cache => ( is => 'rw', isa => Int, required => 0 );
   has _cache_read_timestamp => ( is => 'rw', required => 0 );
-  has _cache_raw_data => ( is => 'rw', required => 0);
   has _cache_key => ( is => 'rw' );
   has _cache_fields => ( is => 'rw' );
   has cache_backend => ( is => 'ro', lazy => 1, builder => '_build_cache_backend' );
