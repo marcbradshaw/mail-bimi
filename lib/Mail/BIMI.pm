@@ -163,22 +163,25 @@ sub _build_result($self) {
     }
   }
 
-  if ( $self->spf_object ) {
+  # Optionally check Author Domain SPF
+  if ( $self->OPT_STRICT_SPF ) {
+    if ( $self->spf_object ) {
       my $spf_request = $self->spf_object->request;
       if ( $spf_request ) {
-          my $spf_record = $spf_request->record;
-          if ( $spf_record ) {
-              my @spf_terms = $spf_record->terms;
-              if ( @spf_terms ) {
-                    my $last_term = pop @spf_terms;
-                    if ( $last_term->name eq 'all' && $last_term->qualifier eq '+') {
-                        $result->set_result( 'skipped', $self->ERR_SPF_PLUS_ALL );
-                        return $result;
-                    }
-                }
+        my $spf_record = $spf_request->record;
+        if ( $spf_record ) {
+          my @spf_terms = $spf_record->terms;
+          if ( @spf_terms ) {
+            my $last_term = pop @spf_terms;
+            if ( $last_term->name eq 'all' && $last_term->qualifier eq '+') {
+              $result->set_result( 'skipped', $self->ERR_SPF_PLUS_ALL );
+              return $result;
             }
+          }
         }
+      }
     }
+  }
 
   if ( ! $self->record->is_valid ) {
     my $has_error;

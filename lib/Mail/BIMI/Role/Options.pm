@@ -32,6 +32,8 @@ Role for capturing caller options, which may be passed to the constructor, or se
     documentation => 'Require VMC validation' );
   has OPT_SSL_ROOT_CERT => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_SSL_ROOT_CERT}//Mozilla::CA::SSL_ca_file},
     documentation => 'Location of SSL Root Cert Bundle' );
+  has OPT_STRICT_SPF => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_STRICT_SPF}},
+    documentation => 'Disallow SPF +all' );
   has OPT_SVG_FROM_FILE => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_SVG_FROM_FILE}},
     documentation => 'Fake SVG with file contents' );
   has OPT_SVG_MAX_FETCH_SIZE  => ( is => 'rw', lazy => 1, builder => sub {return $ENV{MAIL_BIMI_SVG_MAX_FETCH_SIZE}//65535},
