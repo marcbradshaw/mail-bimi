@@ -20,7 +20,7 @@ use File::Temp qw{ tempfile };
   has verifier => ( is => 'rw', isa => class_type('Crypt::OpenSSL::Verify'), lazy => 1, builder => '_build_verifier',
     documentation => 'Crypt::OpenSSL::Verify object for the Certificate' );
   has valid_to_root => ( is => 'rw',
-    documentation => 'Could we validate this certificate to the root certs' );
+    documentation => 'Could we validate this certificate to the root certs, set by Mail::BIMI::VMC::Chain->is_valid' );
   has filename => ( is => 'rw', lazy => 1, builder => '_build_filename',
     documentation => 'Filename of temporary file containing the cert' );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
