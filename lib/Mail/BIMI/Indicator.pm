@@ -53,7 +53,11 @@ sub _build_data_uncompressed($self) {
     };
     if ( my $error = $@ ) {
       $self->add_error( $self->ERR_SVG_UNZIP_ERROR );
-      return;
+      return '';
+    }
+    if ( !$unzipped ) {
+      $self->add_error( $self->ERR_SVG_UNZIP_ERROR );
+      return '';
     }
     return $unzipped;
   }
@@ -102,7 +106,7 @@ sub _build_data_xml($self) {
 sub _build_data($self) {
   if ( ! $self->location ) {
     $self->add_error( $self->ERR_CODE_MISSING_LOCATION );
-    return;
+    return '';
   }
   if ($self->bimi_object->OPT_SVG_FROM_FILE) {
     warn 'Reading SVG from file '.$self->bimi_object->OPT_SVG_FROM_FILE if $self->bimi_object->OPT_VERBOSE;
@@ -134,7 +138,6 @@ sub _build_is_valid($self) {
   }
 
   my $is_valid;
-
   if ( length $self->data_uncompressed > $self->bimi_object->OPT_SVG_MAX_SIZE ) {
     $self->add_error( $self->ERR_SVG_SIZE );
   }
