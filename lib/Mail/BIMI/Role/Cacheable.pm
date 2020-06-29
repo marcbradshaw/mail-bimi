@@ -54,7 +54,7 @@ sub BUILD($self,$args) {
       croak "Attribute $attribute cannot be BOTH is_cacheable AND is_cache_key";
     }
     elsif ( $this_attribute->{is_cache_key} ) {
-      push @cache_key, "$attribute=".$self->{$attribute};
+      push @cache_key, "$attribute=".($self->{$attribute}//'');
     }
     elsif ( $this_attribute->{is_cacheable} ) {
       push @cache_fields, $attribute;
