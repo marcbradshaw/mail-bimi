@@ -199,7 +199,7 @@ Return true if this VMC is self signed
 
 sub is_self_signed($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->object->is_selfsigned;
+  return $self->vmc_object->object->is_selfsigned ? 1 : 0;
 }
 
 =method I<has_valid_usage()>
