@@ -23,6 +23,13 @@ subtest 'empty authority' => sub {
   is_deeply($authority->error_codes,[],'No error codes');
 };
 
+subtest 'invalid authority transport' => sub {
+  my $authority = Mail::BIMI::Record::Authority->new(bimi_object=>$bimi,authority=>'http://example.com');
+  is($authority->is_valid,0,'Is not valid');
+  is($authority->is_relevant,1,'Is relevant');
+  is_deeply($authority->error_codes,['INVALID_TRANSPORT_A'],'Error codes');
+};
+
 subtest 'self authority' => sub {
   # Not strictly to spec, but seen in the wild
   my $authority = Mail::BIMI::Record::Authority->new(bimi_object=>$bimi,authority=>'self');
