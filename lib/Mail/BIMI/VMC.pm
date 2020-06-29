@@ -4,17 +4,12 @@ package Mail::BIMI::VMC;
 use 5.20.0;
 use Moo;
 use Mail::BIMI::Pragmas;
-#use IO::Uncompress::Gunzip;
 use MIME::Base64;
-use Convert::ASN1;
-use Crypt::OpenSSL::X509;
-use Crypt::OpenSSL::Verify;
-use File::Temp qw{ tempfile };
 use Mail::BIMI::Indicator;
+use Mail::BIMI::VMC::Chain;
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
   with 'Mail::BIMI::Role::HTTPClient';
-  with 'Mail::BIMI::Role::Data';
   with 'Mail::BIMI::Role::Cacheable';
   has authority => ( is => 'rw', isa => Str, is_cache_key => 1,
     documentation => 'URI of this VMC', pod_section => 'inputs' );
@@ -22,24 +17,22 @@ use Mail::BIMI::Indicator;
     documentation => 'Raw data of the VMC contents; Fetched from authority URI if not given', pod_section => 'inputs' );
   has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', is_cacheable => 1,
     documentation => 'ArrayRef of individual Certificates in the chain' );
-  has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list', is_cacheable => 0,
-    documentation => 'ArrayRef of Crypt::OpenSSL::X509 objects for the Certificates in the chain' );
-  has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', is_cacheable => 0,
-    documentation => 'Crypt::OpenSSL::X509 object for this VMC' );
+  has chain_object => ( is => 'rw', lazy => 1, builder => '_build_chain_object', is_cacheable => 0,
+    documentation => 'Mail::BIMI::VMC::Chain object for this Chain' );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1,
     documentation => 'Is this VMC valid' );
+  has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', is_cacheable => 0,
+    documentation => 'Mail::BIMI::VMC::Cert object for this VMC Set' );
   has is_cert_valid => ( is => 'rw', lazy => 1, builder => '_build_is_cert_valid', is_cacheable => 1,
-    documentation => 'Is this Certificate chain valid' );
-  has indicator_asn => ( is => 'rw', lazy => 1, builder => '_build_indicator_asn', is_cacheable => 0,
-    documentation => 'Parsed ASN data for the embedded Indicator' );
+    documentation => 'Is this Certificate Set valid' );
   has indicator_uri => ( is => 'rw', lazt => 1, builder => '_build_indicator_uri', is_cacheable => 1,
     documentation => 'The URI of the embedded Indicator' );
   has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
-    documentation => 'Mail::BIMI::Indicator object for the Indicator embedded in this VMC' );
+    documentation => 'Mail::BIMI::Indicator object for the Indicator embedded in this VMC Set' );
 
 =head1 DESCRIPTION
 
-Class for representing, retrieving, validating, and processing a VMC
+Class for representing, retrieving, validating, and processing a VMC Set
 
 =cut
 
@@ -84,51 +77,21 @@ sub _build_cert_list($self) {
   return \@certs;
 }
 
-sub _build_cert_object_list($self) {
-  my @all_x509_certs;
-  eval {
-    @all_x509_certs = map { Crypt::OpenSSL::X509->new_from_string(join("\n",$_->@*)) } $self->cert_list->@*;
-  };
-  if ( my $error = $@ ) {
-    chomp $error;
-    $error =~ s/\. at .*$//;
-    $self->add_error($self->ERR_VMC_PARSE_ERROR($error));
-  }
-  return \@all_x509_certs;
+
+sub _build_chain_object($self) {
+  return Mail::BIMI::VMC::Chain->new( bimi_object => $self->bimi_object, cert_list => $self->cert_list );
 }
 
+
 sub _build_vmc_object($self) {
-  return if !$self->cert_object_list->@*;
-  return $self->cert_object_list->[0];
+  return if !$self->chain_object;
+  return if !$self->chain_object->vmc;
+  return $self->chain_object->vmc;
 }
 
 sub _build_is_cert_valid($self) {
   return 1 if $self->bimi_object->OPT_NO_VALIDATE_CERT;
-  my $temp_fh = File::Temp->new(UNLINK=>0);
-  my $temp_name = $temp_fh->filename;
-  close $temp_fh;
-  my $chain;
-  my $cert_is_valid = 1;
-  for (my  $i=scalar $self->cert_object_list->@* - 1;$i>=0;$i--) {
-    my $ca = $chain
-           ? Crypt::OpenSSL::Verify->new(CAfile => $temp_name)
-           : Crypt::OpenSSL::Verify->new(CAfile => $self->bimi_object->OPT_SSL_ROOT_CERT);
-    eval{$ca->verify($self->cert_object_list->[$i])};
-    if ( my $error = $@ ) {
-      $self->add_error($self->ERR_VMC_VALIDATION_ERROR($error));
-      $cert_is_valid = 0;
-      last;
-    }
-
-    $chain = join("\n",$self->cert_list->[$i]->@*);
-    open $temp_fh, '>', $temp_name;
-    print $temp_fh $chain;
-    close $temp_fh;
-  }
-  unlink $temp_name;
-  warn 'Cert is '.($cert_is_valid?'valid':'invalid') if $self->bimi_object->OPT_VERBOSE;
-
-  return $cert_is_valid;
+  return $self->chain_object->is_valid;
 }
 
 =method I<subject()>
@@ -139,7 +102,7 @@ Return the subject of the VMC
 
 sub subject($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->subject;
+  return $self->vmc_object->object->subject;
 }
 
 =method I<not_before()>
@@ -150,7 +113,7 @@ Return not before of the vmc
 
 sub not_before($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->notBefore;
+  return $self->vmc_object->object->notBefore;
 }
 
 =method I<not_after()>
@@ -161,7 +124,7 @@ Return not after of the vmc
 
 sub not_after($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->notAfter;
+  return $self->vmc_object->object->notAfter;
 }
 
 =method I<issuer()>
@@ -172,7 +135,7 @@ Return the issuer string of the VMC
 
 sub issuer($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->issuer;
+  return $self->vmc_object->object->issuer;
 }
 
 =method I<is_expired()>
@@ -184,7 +147,7 @@ Return true if this VMC has expired
 sub is_expired($self) {
   return if !$self->vmc_object;
   my $seconds = 0;
-  if ($self->vmc_object->checkend($seconds)) {
+  if ($self->vmc_object->object->checkend($seconds)) {
     warn 'Cert is expired' if $self->bimi_object->OPT_VERBOSE;
     return 1;
   }
@@ -201,7 +164,7 @@ Return the alt name string for the VMC
 
 sub alt_name($self) {
   return if !$self->vmc_object;
-  my $exts = $self->vmc_object->extensions_by_oid();
+  my $exts = $self->vmc_object->object->extensions_by_oid();
   my $alt_name = $exts->{'2.5.29.17'}->to_string;
   warn 'Cert alt name '.$alt_name if $self->bimi_object->OPT_VERBOSE;
   return $alt_name;
@@ -236,7 +199,7 @@ Return true if this VMC is self signed
 
 sub is_self_signed($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->is_selfsigned;
+  return $self->vmc_object->object->is_selfsigned;
 }
 
 =method I<has_valid_usage()>
@@ -247,37 +210,12 @@ Return true if this VMC has a valid usage extension for BIMI
 
 sub has_valid_usage($self) {
   return if !$self->vmc_object;
-  my $exts = $self->vmc_object->extensions_by_oid();
-  my $extended_usage = $exts->{'2.5.29.37'}->to_string;
-  return 1 if $extended_usage eq '1.3.6.1.5.5.7.3.31';
-  return 0;
+  return $self->vmc_object->has_valid_usage;
 }
 
-sub _build_indicator_asn($self) {
-  return if !$self->vmc_object;
-  my $exts = $self->vmc_object->extensions_by_oid();
-  my $indhex = $exts->{'1.3.6.1.5.5.7.1.12'}->value;
-  $indhex =~ s/^#//;
-  my $indicator = pack("H*",$indhex);
-  my $asn = Convert::ASN1->new;
-  $asn->prepare_file($self->get_file_name('asn1.txt'));
-  my $decoder = $asn->find('LogotypeExtn');
-  die $asn->error if $asn->error;
-  my $decoded = $decoder->decode($indicator);
-  if ( $decoder->error ) {
-    $self->add_error($self->ERR_VMC_PARSE_ERROR($decoder->error));
-    return;
-  }
-
-  #my $image_details = $decoded->{subjectLogo}->{direct}->{image}->[0]->{imageDetails};
-  #my $mime_type = $image_details->{mediaType};
-  #my $logo_hash = $image_details->{logotypeHash}->[0];
-  return $decoded;
-}
- 
 sub _build_indicator_uri($self) {
-  return if !$self->indicator_asn;
-  my $uri = eval{ $self->indicator_asn->{subjectLogo}->{direct}->{image}->[0]->{imageDetails}->{logotypeURI}->[0] };
+  return if !$self->vmc_object->indicator_asn;
+  my $uri = eval{ $self->vmc_object->indicator_asn->{subjectLogo}->{direct}->{image}->[0]->{imageDetails}->{logotypeURI}->[0] };
   if ( my $error = $@ ) {
     $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not extract SVG from VMC'));
   }
@@ -308,6 +246,10 @@ sub _build_is_valid($self) {
   $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Missing usage flag')) if !$self->has_valid_usage;
   $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Invalid alt name')) if !$self->is_valid_alt_name;
   $self->is_cert_valid;
+
+  if ( $self->chain_object && !$self->chain_object->is_valid ) {
+    $self->add_error( $self->chain_object->error );
+  }
 
   if ( $self->indicator && !$self->indicator->is_valid ) {
     $self->add_error( $self->indicator->error );

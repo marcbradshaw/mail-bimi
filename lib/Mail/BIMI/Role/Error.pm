@@ -82,7 +82,7 @@ if ( ref $error eq 'ARRAY' ) {
     warn join(' : ',
       'Error',
       $error->code,
-      $error->description
+      $error->description,
       ( $error->detail ? $error->detail : () ),
     ) if $self->bimi_object->OPT_VERBOSE;
     push $self->error->@*, $error;
