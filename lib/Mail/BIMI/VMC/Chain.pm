@@ -6,7 +6,7 @@ use Moo;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
-use Crypt::OpenSSL::Verify;
+use Crypt::OpenSSL::Verify 0.19;
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
   has cert_list => ( is => 'rw', isa => ArrayRef,
@@ -26,19 +26,27 @@ Class for representing, retrieving, validating, and processing a VMC Certificate
 
 sub _build_is_valid($self) {
   # Start with root cert validations
-  my $root_ca = Crypt::OpenSSL::Verify->new(CAfile => $self->bimi_object->OPT_SSL_ROOT_CERT);
+  my $root_ca = Crypt::OpenSSL::Verify->new($self->bimi_object->OPT_SSL_ROOT_CERT,{noCApath=>0});
+  my $root_ca_ascii = scalar read_file $self->bimi_object->OPT_SSL_ROOT_CERT;
   foreach my $cert ( $self->cert_object_list->@* ) {
+    my $i = $cert->index;
+    if ($cert->is_expired) {
+      warn "Certificate $i is expired" if $self->bimi_object->OPT_VERBOSE;
+      next;
+    }
     eval{$root_ca->verify($cert->object)};
     if ( my $error = $@ ) {
+      warn "Certificate $i not directly validated to root" if $self->bimi_object->OPT_VERBOSE;
       # NOP
     }
     else {
+      warn "Certificate $i directly validated to root" if $self->bimi_object->OPT_VERBOSE;
+      $cert->validated_by($root_ca_ascii);
       $cert->valid_to_root(1);
     }
     if ( !$cert->is_valid ) {
-      $self->add_error( $cert->error );
+      $self->add_error($self->ERR_VMC_VALIDATION_ERROR($cert->error));
     }
-
   }
 
   my $work_done;
@@ -47,21 +55,28 @@ sub _build_is_valid($self) {
     VALIDATED_CERT:
     foreach my $validated_cert ( $self->cert_object_list->@* ) {
       next VALIDATED_CERT if ! $validated_cert->valid_to_root;
+      my $validated_i = $validated_cert->index;
       VALIDATING_CERT:
       foreach my $validating_cert ( $self->cert_object_list->@* ) {
         next VALIDATING_CERT if $validating_cert->valid_to_root;
+        my $validating_i = $validating_cert->index;
+        if ($validating_cert->is_expired) {
+          warn "Certificate $validating_i is expired" if $self->bimi_object->OPT_VERBOSE;
+          next;
+        }
         eval{$validated_cert->verifier->verify($validating_cert->object)};
         if ( my $error = $@ ) {
           # NOP
         }
         else {
+          warn "Certificate $validating_i validated to root via certificate $validated_i" if $self->bimi_object->OPT_VERBOSE;
+          $validating_cert->validated_by($validated_cert->full_chain);
           $validating_cert->valid_to_root(1);
           $work_done = 1;
         }
       }
     }
   } until !$work_done;
-
   if ( !$self->vmc->valid_to_root ) {
      $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not verify VMC'));
   }
@@ -90,43 +105,16 @@ sub vmc($self) {
 
 sub _build_cert_object_list($self) {
   my @objects;
+  my $i = 1;
   foreach my $cert ( $self->cert_list->@* ) {
     push @objects, Mail::BIMI::VMC::Cert->new(
       bimi_object => $self->bimi_object,
       chain => $self,
       ascii => $cert,
+      index => $i++,
     );
   }
   return \@objects;
-}
-
-sub _build_is_cert_valid($self) {
-  return 1 if $self->bimi_object->OPT_NO_VALIDATE_CERT;
-  my $temp_fh = File::Temp->new(UNLINK=>0);
-  my $temp_name = $temp_fh->filename;
-  close $temp_fh;
-  my $chain;
-  my $cert_is_valid = 1;
-  for (my  $i=scalar $self->cert_object_list->@* - 1;$i>=0;$i--) {
-    my $ca = $chain
-           ? Crypt::OpenSSL::Verify->new(CAfile => $temp_name)
-           : Crypt::OpenSSL::Verify->new(CAfile => $self->bimi_object->OPT_SSL_ROOT_CERT);
-    eval{$ca->verify($self->cert_object_list->[$i])};
-    if ( my $error = $@ ) {
-      $self->add_error($self->ERR_VMC_VALIDATION_ERROR($error));
-      $cert_is_valid = 0;
-      last;
-    }
-
-    $chain = join("\n",$self->cert_list->[$i]->@*);
-    open $temp_fh, '>', $temp_name;
-    print $temp_fh $chain;
-    close $temp_fh;
-  }
-  unlink $temp_name;
-  warn 'Cert is '.($cert_is_valid?'valid':'invalid') if $self->bimi_object->OPT_VERBOSE;
-
-  return $cert_is_valid;
 }
 
 1;

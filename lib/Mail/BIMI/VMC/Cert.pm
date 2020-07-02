@@ -6,7 +6,7 @@ use Moo;
 use Mail::BIMI::Pragmas;
 use Convert::ASN1;
 use Crypt::OpenSSL::X509;
-use Crypt::OpenSSL::Verify;
+use Crypt::OpenSSL::Verify 0.19;
 use File::Temp qw{ tempfile };
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Data';
@@ -27,6 +27,10 @@ use File::Temp qw{ tempfile };
     documentation => 'Is this a valid Cert?' );
   has indicator_asn => ( is => 'rw', lazy => 1, builder => '_build_indicator_asn',
     documentation => 'Parsed ASN data for the embedded Indicator' );
+  has index => ( is => 'rw', required => 1,
+    documentation => 'Index of this certificate in the chain' );
+  has validated_by => ( is => 'rw',
+    documentation => 'Root and/or intermediate certificate in the chain used to verify this certificate' );
 
 =head1 DESCRIPTION
 
@@ -77,7 +81,21 @@ sub _build_object($self) {
 }
 
 sub _build_verifier($self) {
-  return Crypt::OpenSSL::Verify->new(CAfile => $self->filename);
+  return Crypt::OpenSSL::Verify->new($self->filename);
+}
+
+=method I<is_expired()>
+
+Return true if this cert has expired
+
+=cut
+
+sub is_expired($self) {
+  my $seconds = 0;
+ if ($self->object->checkend($seconds)) {
+   return 1;
+ }
+ return 0;
 }
 
 =method I<has_valid_usage()>
@@ -97,12 +115,21 @@ sub has_valid_usage($self) {
   return 0;
 }
 
+=method I<full_chain()>
+
+The full chain of this certificate as verified to root
+
+=cut
+
+sub full_chain($self) {
+  return join("\n",$self->ascii->@*,$self->validated_by);
+}
+
 sub _build_filename($self) {
   my $temp_fh = File::Temp->new(UNLINK=>0);
   my $temp_name = $temp_fh->filename;
   close $temp_fh;
-  my $cert = join("\n",$self->ascii->@*);
-  write_file($temp_name,$cert);
+  write_file($temp_name,$self->full_chain);
   return $temp_name;
 }
 
