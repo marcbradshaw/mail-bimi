@@ -6,7 +6,7 @@ use Moo;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
-use Crypt::OpenSSL::Verify 0.19;
+use Crypt::OpenSSL::Verify 0.20;
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Error';
   has cert_list => ( is => 'rw', isa => ArrayRef,

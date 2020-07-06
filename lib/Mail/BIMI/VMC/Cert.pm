@@ -6,7 +6,7 @@ use Moo;
 use Mail::BIMI::Pragmas;
 use Convert::ASN1;
 use Crypt::OpenSSL::X509;
-use Crypt::OpenSSL::Verify 0.19;
+use Crypt::OpenSSL::Verify 0.20;
 use File::Temp qw{ tempfile };
   with 'Mail::BIMI::Role::Base';
   with 'Mail::BIMI::Role::Data';
@@ -81,7 +81,7 @@ sub _build_object($self) {
 }
 
 sub _build_verifier($self) {
-  return Crypt::OpenSSL::Verify->new($self->filename);
+  return Crypt::OpenSSL::Verify->new($self->filename,{noCApath=>1});
 }
 
 =method I<is_expired()>
