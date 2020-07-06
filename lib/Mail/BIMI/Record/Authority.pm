@@ -43,6 +43,7 @@ sub is_relevant($self) {
   return 0 if !defined $self->authority;
   return 0 if $self->authority eq '';
   return 0 if $self->authority eq 'self';
+  return 0 if $self->bimi_object->OPT_NO_VALIDATE_CERT;
   warn 'Authority is relevant' if $self->bimi_object->OPT_VERBOSE;
   return 1;
 }

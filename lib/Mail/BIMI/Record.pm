@@ -95,7 +95,7 @@ sub _build_is_valid($self) {
     $self->add_error( $self->ERR_INVALID_V_TAG ) if lc $self->record->{v} ne 'bimi1';
     return 0 if $self->error->@*;
   }
-  if (!$self->authority->is_valid) {
+  if ($self->authority->is_relevant && !$self->authority->is_valid) {
     $self->add_error( $self->authority->error );
   }
   if ($self->location_is_relevant && !$self->location->is_valid) {
