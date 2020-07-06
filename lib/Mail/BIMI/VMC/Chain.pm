@@ -26,6 +26,7 @@ Class for representing, retrieving, validating, and processing a VMC Certificate
 
 sub _build_is_valid($self) {
   # Start with root cert validations
+  return 0 if !$self->vmc;
   my $root_ca = Crypt::OpenSSL::Verify->new($self->bimi_object->OPT_SSL_ROOT_CERT,{noCApath=>0});
   my $root_ca_ascii = scalar read_file $self->bimi_object->OPT_SSL_ROOT_CERT;
   foreach my $cert ( $self->cert_object_list->@* ) {
@@ -90,7 +91,7 @@ sub vmc($self) {
   foreach my $cert ( $self->cert_object_list->@* ) {
     my $object = $cert->object;
     next if !$object;
-    my $exts = $object->extensions_by_oid();
+    my $exts = eval{ $object->extensions_by_oid() };
     if ( $cert->has_valid_usage && exists $exts->{'1.3.6.1.5.5.7.1.12'}) {
       # Has both extended usage and embedded Indicator
       $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Multiple VMCs found in chain')) if $vmc;

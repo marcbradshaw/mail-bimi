@@ -51,7 +51,7 @@ sub _build_is_valid($self) {
 
 sub _build_indicator_asn($self) {
   return if !$self->object;
-  my $exts = $self->object->extensions_by_oid();
+  my $exts = eval{ $self->object->extensions_by_oid() };
   my $indhex = $exts->{'1.3.6.1.5.5.7.1.12'}->value;
   $indhex =~ s/^#//;
   my $indicator = pack("H*",$indhex);
@@ -106,7 +106,7 @@ Return true if this VMC has a valid usage extension for BIMI
 
 sub has_valid_usage($self) {
   return if !$self->object;
-  my $exts = $self->object->extensions_by_oid();
+  my $exts = eval{ $self->object->extensions_by_oid() };
   return if !$exts;
   my $extended_usage = $exts->{'2.5.29.37'};
   return if !$extended_usage;
