@@ -70,6 +70,10 @@ sub _build_is_valid($self) {
           warn "Certificate $validating_i is expired" if $self->bimi_object->OPT_VERBOSE;
           next;
         }
+        if ( !$validating_cert->is_valid ) {
+          warn "Certificate $validating_i is not valid" if $self->bimi_object->OPT_VERBOSE;
+          next VALIDATING_VERT;
+        }
         eval{
           $validated_cert->verifier->verify($validating_cert->object);
           warn "Certificate $validating_i validated to root via certificate $validated_i" if $self->bimi_object->OPT_VERBOSE;
