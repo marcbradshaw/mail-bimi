@@ -35,8 +35,16 @@ sub _build_is_valid($self) {
       warn "Certificate $i is expired" if $self->bimi_object->OPT_VERBOSE;
       next;
     }
-    eval{$root_ca->verify($cert->object)};
-    if ( my $error = $@ ) {
+    if ( !$cert->is_valid ) {
+      warn "Certificate $i is not valid" if $self->bimi_object->OPT_VERBOSE;
+      next;
+    }
+    my $is_valid = 0;
+    eval {
+      $root_ca->verify($cert->object);
+      $is_valid = 1;
+    };
+    if ( !$is_valid ) {
       warn "Certificate $i not directly validated to root" if $self->bimi_object->OPT_VERBOSE;
       # NOP
     }
@@ -44,9 +52,6 @@ sub _build_is_valid($self) {
       warn "Certificate $i directly validated to root" if $self->bimi_object->OPT_VERBOSE;
       $cert->validated_by($root_ca_ascii);
       $cert->valid_to_root(1);
-    }
-    if ( !$cert->is_valid ) {
-      $self->add_error($self->ERR_VMC_VALIDATION_ERROR($cert->error));
     }
   }
 
@@ -65,16 +70,13 @@ sub _build_is_valid($self) {
           warn "Certificate $validating_i is expired" if $self->bimi_object->OPT_VERBOSE;
           next;
         }
-        eval{$validated_cert->verifier->verify($validating_cert->object)};
-        if ( my $error = $@ ) {
-          # NOP
-        }
-        else {
+        eval{
+          $validated_cert->verifier->verify($validating_cert->object);
           warn "Certificate $validating_i validated to root via certificate $validated_i" if $self->bimi_object->OPT_VERBOSE;
           $validating_cert->validated_by($validated_cert->full_chain);
           $validating_cert->valid_to_root(1);
           $work_done = 1;
-        }
+        };
       }
     }
   } until !$work_done;
@@ -92,6 +94,7 @@ sub vmc($self) {
     my $object = $cert->object;
     next if !$object;
     my $exts = eval{ $object->extensions_by_oid() };
+    next if !$exts;
     if ( $cert->has_valid_usage && exists $exts->{'1.3.6.1.5.5.7.1.12'}) {
       # Has both extended usage and embedded Indicator
       $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Multiple VMCs found in chain')) if $vmc;

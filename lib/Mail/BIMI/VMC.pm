@@ -165,6 +165,8 @@ Return the alt name string for the VMC
 sub alt_name($self) {
   return if !$self->vmc_object;
   my $exts = eval{ $self->vmc_object->object->extensions_by_oid() };
+  return if !$exts;
+  return if !exists $exts->{'2.5.29.17'};
   my $alt_name = $exts->{'2.5.29.17'}->to_string;
   warn 'Cert alt name '.$alt_name if $self->bimi_object->OPT_VERBOSE;
   return $alt_name;
@@ -216,10 +218,14 @@ sub has_valid_usage($self) {
 sub _build_indicator_uri($self) {
   return if !$self->vmc_object;
   return if !$self->vmc_object->indicator_asn;
-  my $uri = eval{ $self->vmc_object->indicator_asn->{subjectLogo}->{direct}->{image}->[0]->{imageDetails}->{logotypeURI}->[0] };
-  if ( my $error = $@ ) {
+  my $uri;
+  eval{
+    $uri = $self->vmc_object->indicator_asn->{subjectLogo}->{direct}->{image}->[0]->{imageDetails}->{logotypeURI}->[0];
+    1;
+  } || do {
+    my $error = $@;
     $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not extract SVG from VMC'));
-  }
+  };
   return $uri;
 }
 

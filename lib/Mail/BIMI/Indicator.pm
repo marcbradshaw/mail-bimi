@@ -48,13 +48,13 @@ sub _build_data_uncompressed($self) {
   if ( $data =~ /^\037\213/ ) {
     warn 'Uncompressing SVG' if $self->bimi_object->OPT_VERBOSE;
     my $unzipped;
-    eval{
+    eval {
       IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
-    };
-    if ( my $error = $@ ) {
+      1;
+    } || do {
       $self->add_error( $self->ERR_SVG_UNZIP_ERROR );
       return '';
-    }
+    };
     if ( !$unzipped ) {
       $self->add_error( $self->ERR_SVG_UNZIP_ERROR );
       return '';
@@ -86,11 +86,11 @@ sub _build_data_xml($self) {
   }
   eval {
     $xml = XML::LibXML->new->load_xml(string => $self->data_uncompressed);
-  };
-  if ( my $error = $@ ) {
+    1;
+  } || do {
     $self->add_error( $self->ERR_SVG_INVALID_XML );
     return;
-  }
+  };
   return $xml;
 }
 
@@ -151,11 +151,12 @@ sub _build_is_valid($self) {
         $self->parser->validate( $self->data_xml );
         $is_valid=1;
         warn 'SVG is valid' if $self->bimi_object->OPT_VERBOSE;
-      };
-      if ( my $validation_error = $@ ) {
+        1;
+      } || do {
+        my $validation_error = $@;
         my $error_text = ref $validation_error eq 'XML::LibXML::Error' ? $validation_error->as_string : $validation_error;
         $self->add_error($self->ERR_SVG_VALIDATION_ERROR($error_text));
-      }
+      };
     }
   }
 

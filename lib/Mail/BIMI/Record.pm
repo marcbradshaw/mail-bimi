@@ -130,12 +130,18 @@ sub _build_record($self) {
   my $fallback_selector = 'default';
   my $fallback_domain   = Mail::DMARC::PurePerl->new->get_organizational_domain($domain);
 
-  my @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($selector,$domain); };
-  if ( my $error = $@ ) {
+  my @records;
+  eval {
+    @records = $self->_get_from_dns($selector,$domain);
+    1;
+  } || do {
+    my $error = $@;
     $error =~ s/ at \/.*$//;
     $self->add_error($self->ERR_DNS_ERROR($error));
     return {};
-  }
+  };
+
+  @records = grep { $_ =~ /^v=bimi1;/i } @records;
 
   if ( !@records ) {
     if ( $domain eq $fallback_domain && $selector eq $fallback_selector ) {
@@ -145,12 +151,19 @@ sub _build_record($self) {
     }
 
     warn 'Trying fallback domain' if $self->bimi_object->OPT_VERBOSE;
-    @records = grep { $_ =~ /^v=bimi1;/i } eval { $self->_get_from_dns($fallback_selector,$fallback_domain); };
-    if ( my $error = $@ ) {
+    my @records;
+    eval {
+      @records = $self->_get_from_dns($fallback_selector,$fallback_domain);
+      1;
+    } || do {
+      my $error = $@;
       $error =~ s/ at \/.*$//;
       $self->add_error($self->ERR_DNS_ERROR($error));
       return {};
-    }
+    };
+
+    @records = grep { $_ =~ /^v=bimi1;/i } @records;
+
     if ( !@records ) {
       $self->add_error( $self->ERR_NO_BIMI_RECORD );
       return {};

@@ -52,6 +52,8 @@ sub _build_is_valid($self) {
 sub _build_indicator_asn($self) {
   return if !$self->object;
   my $exts = eval{ $self->object->extensions_by_oid() };
+  return if !$exts;
+  return if !exists $exts->{'1.3.6.1.5.5.7.1.12'};
   my $indhex = $exts->{'1.3.6.1.5.5.7.1.12'}->value;
   $indhex =~ s/^#//;
   my $indicator = pack("H*",$indhex);
