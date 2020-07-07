@@ -15,7 +15,7 @@ use File::Temp qw{ tempfile };
     documentation => 'Back reference to the chain' );
   has ascii => ( is => 'rw', isa => ArrayRef, required => 1,
     documentation => 'Raw data of the Cert contents', pod_section => 'inputs' );
-  has object => ( is => 'rw', isa => class_type('Crypt::OpenSSL::X509'), lazy => 1, builder => '_build_object',
+  has object => ( is => 'rw', isa => sub{!defined $_[0] || class_type('Crypt::OpenSSL::X509')}, lazy => 1, builder => '_build_object',
     documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );
   has verifier => ( is => 'rw', isa => class_type('Crypt::OpenSSL::Verify'), lazy => 1, builder => '_build_verifier',
     documentation => 'Crypt::OpenSSL::Verify object for the Certificate' );
@@ -74,12 +74,18 @@ sub _build_indicator_asn($self) {
 }
 
 sub _build_object($self) {
-  return Crypt::OpenSSL::X509->new_from_string(join("\n",$self->ascii->@*));
-  if ( my $error = $@ ) {
+  my $cert;
+  eval{
+    $cert = Crypt::OpenSSL::X509->new_from_string(join("\n",$self->ascii->@*));
+    1;
+  } || do {
+    my $error = $@;
     chomp $error;
     $error =~ s/\. at .*$//;
     $self->add_error($self->ERR_VMC_PARSE_ERROR($error));
-  }
+    return;
+  };
+  return $cert;
 }
 
 sub _build_verifier($self) {
@@ -93,11 +99,12 @@ Return true if this cert has expired
 =cut
 
 sub is_expired($self) {
+  return 0 if !$self->object;
   my $seconds = 0;
- if ($self->object->checkend($seconds)) {
-   return 1;
- }
- return 0;
+  if ($self->object->checkend($seconds)) {
+    return 1;
+  }
+  return 0;
 }
 
 =method I<has_valid_usage()>
