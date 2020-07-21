@@ -8,11 +8,13 @@ use IO::Uncompress::Gunzip;
 use MIME::Base64;
 use XML::LibXML;
 our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
-  with 'Mail::BIMI::Role::Base';
-  with 'Mail::BIMI::Role::Error';
-  with 'Mail::BIMI::Role::HTTPClient';
-  with 'Mail::BIMI::Role::Data';
-  with 'Mail::BIMI::Role::Cacheable';
+  with(
+    'Mail::BIMI::Role::Base',
+    'Mail::BIMI::Role::Error',
+    'Mail::BIMI::Role::HTTPClient',
+    'Mail::BIMI::Role::Data',
+    'Mail::BIMI::Role::Cacheable',
+  );
   has location => ( is => 'rw', isa => Str, is_cache_key => 1,
     documentation => 'URL to retrieve Indicator from', pod_section => 'inputs' );
   has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1,

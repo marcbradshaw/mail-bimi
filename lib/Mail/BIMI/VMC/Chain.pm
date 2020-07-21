@@ -7,8 +7,10 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
-  with 'Mail::BIMI::Role::Base';
-  with 'Mail::BIMI::Role::Error';
+  with(
+    'Mail::BIMI::Role::Base',
+    'Mail::BIMI::Role::Error',
+  );
   has cert_list => ( is => 'rw', isa => ArrayRef,
     documentation => 'ArrayRef of individual Certificates in the chain' );
   has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list',

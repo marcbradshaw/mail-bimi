@@ -8,9 +8,11 @@ use Convert::ASN1;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
 use File::Temp qw{ tempfile };
-  with 'Mail::BIMI::Role::Base';
-  with 'Mail::BIMI::Role::Data';
-  with 'Mail::BIMI::Role::Error';
+  with(
+    'Mail::BIMI::Role::Base',
+    'Mail::BIMI::Role::Data',
+    'Mail::BIMI::Role::Error',
+  );
   has chain => ( is => 'rw', isa => class_type('Mail::BIMI::VMC::Chain'), required => 1, weaken => 1,
     documentation => 'Back reference to the chain' );
   has ascii => ( is => 'rw', isa => ArrayRef, required => 1,

@@ -7,10 +7,12 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::Record::Authority;
 use Mail::BIMI::Record::Location;
 use Mail::DMARC::PurePerl;
-  with 'Mail::BIMI::Role::Base';
-  with 'Mail::BIMI::Role::Error';
-  with 'Mail::BIMI::Role::Resolver';
-  with 'Mail::BIMI::Role::Cacheable';
+  with(
+    'Mail::BIMI::Role::Base',
+    'Mail::BIMI::Role::Error',
+    'Mail::BIMI::Role::Resolver',
+    'Mail::BIMI::Role::Cacheable',
+  );
   has domain => ( is => 'rw', isa => Str, required => 1, is_cache_key => 1,
     documentation => 'Domain the for the record; will become fallback domain if used', pod_section => 'inputs' );
   has retrieved_record => ( is => 'rwp', is_cacheable => 1,

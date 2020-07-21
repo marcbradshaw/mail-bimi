@@ -7,10 +7,12 @@ use Mail::BIMI::Pragmas;
 use MIME::Base64;
 use Mail::BIMI::Indicator;
 use Mail::BIMI::VMC::Chain;
-  with 'Mail::BIMI::Role::Base';
-  with 'Mail::BIMI::Role::Error';
-  with 'Mail::BIMI::Role::HTTPClient';
-  with 'Mail::BIMI::Role::Cacheable';
+  with(
+    'Mail::BIMI::Role::Base',
+    'Mail::BIMI::Role::Error',
+    'Mail::BIMI::Role::HTTPClient',
+    'Mail::BIMI::Role::Cacheable',
+  );
   has authority => ( is => 'rw', isa => Str, is_cache_key => 1,
     documentation => 'URI of this VMC', pod_section => 'inputs' );
   has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', is_cacheable => 1,

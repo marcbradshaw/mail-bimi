@@ -7,9 +7,11 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
 use Mail::DMARC::PurePerl;
-  with 'Mail::BIMI::Role::Options';
-  with 'Mail::BIMI::Role::Resolver';
-  with 'Mail::BIMI::Role::Error';
+  with(
+    'Mail::BIMI::Role::Options',
+    'Mail::BIMI::Role::Resolver',
+    'Mail::BIMI::Role::Error',
+  );
   has domain => ( is => 'rw', isa => Str, required => 0,
     documentation => 'Domain to lookup/domain record was retrieved from', pod_section => 'inputs' );
   has selector => ( is => 'rw', isa => Str, lazy => 1, builder => sub{ return 'default' }, documentation => 'The selector to query, assume default if null',

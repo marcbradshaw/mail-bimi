@@ -5,8 +5,10 @@ use 5.20.0;
 use Moo;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Indicator;
-  with 'Mail::BIMI::Role::Base';
-  with 'Mail::BIMI::Role::Error';
+  with(
+    'Mail::BIMI::Role::Base',
+    'Mail::BIMI::Role::Error',
+  );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
   has location => ( is => 'rw', isa => sub{!defined$_[0] || Str }, required => 1,
     documentation => 'URI of Indicator', pod_section => 'inputs' );
