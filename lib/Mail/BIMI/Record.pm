@@ -77,7 +77,6 @@ If we don't have a relevant authority, or we are checking BOTH authority and loc
 sub location_is_relevant($self) {
   # True if we don't have a relevant authority OR if we are checking VMC AND Location
   return 1 unless $self->bimi_object->OPT_NO_LOCATION_WITH_VMC;
-  warn $self->authority->is_relevant;
   if ( $self->authority && $self->authority->is_relevant ) {
     warn 'Location is not relevant' if $self->bimi_object->OPT_VERBOSE;
     return 0;
