@@ -26,7 +26,7 @@ use Mail::DMARC::PurePerl;
   has location => ( is => 'rw', isa => class_type('Mail::BIMI::Record::Location'), lazy => 1, builder => '_build_location',
     documentation => 'Mail::BIMI::Record::Location object for this record' );
   has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record', is_cacheable => 1,
-    documentation => 'Hashref of record valies' );
+    documentation => 'Hashref of record values' );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', is_cacheable => 1,
     documentation => 'Is this record valid' );
 
