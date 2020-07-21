@@ -72,7 +72,7 @@ sub _build_is_valid($self) {
         }
         if ( !$validating_cert->is_valid ) {
           warn "Certificate $validating_i is not valid" if $self->bimi_object->OPT_VERBOSE;
-          next VALIDATING_VERT;
+          next VALIDATING_CERT;
         }
         eval{
           $validated_cert->verifier->verify($validating_cert->object);
