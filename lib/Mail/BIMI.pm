@@ -37,7 +37,7 @@ Brand Indicators for Message Identification (BIMI) retrieval, validation, and pr
 
 =head1 SYNOPSIS
 
-  # Assuming we have a message, and have verified it has exactly one Header domain, and passes
+  # Assuming we have a message, and have verified it has exactly one From Header domain, and passes
   # any other BIMI and local site requirements not related to BIMI record validation...
   # For example, relevant DKIM coverage of any BIMI-Selector header
   my $message = ...Specifics of adding headers and Authentication-Results is left to the reader...
@@ -58,7 +58,7 @@ Brand Indicators for Message Identification (BIMI) retrieval, validation, and pr
   my $auth_results = $bimi->get_authentication_results_object;
   my $bimi_result = $bimi->result;
 
-  $message=>add_auth_results($auth_results); # See Mail::AuthenticationResults POD for usage
+  $message->add_auth_results($auth_results); # See Mail::AuthenticationResults POD for usage
 
   if ( $bimi_result->result eq 'pass' ) {
     my $headers = $result->headers;
