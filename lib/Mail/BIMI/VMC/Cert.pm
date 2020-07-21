@@ -13,7 +13,7 @@ use File::Temp qw{ tempfile };
     'Mail::BIMI::Role::Data',
     'Mail::BIMI::Role::Error',
   );
-  has chain => ( is => 'rw', isa => class_type('Mail::BIMI::VMC::Chain'), required => 1, weaken => 1,
+  has chain => ( is => 'rw', isa => class_type('Mail::BIMI::VMC::Chain'), required => 1, weak_ref => 1,
     documentation => 'Back reference to the chain' );
   has ascii => ( is => 'rw', isa => ArrayRef, required => 1,
     documentation => 'Raw data of the Cert contents', pod_section => 'inputs' );

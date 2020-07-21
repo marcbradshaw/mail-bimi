@@ -97,9 +97,10 @@ sub DEMOLISH($self,$in_global_destruction) {
 sub _write_cache($self) {
   return if $self->_do_not_cache;
   $self->_do_not_cache(1);
+  my $time = $self->bimi_object ? $self->bimi_object->time : time;
   my $data = {
     cache_key => $self->_cache_key,
-    timestamp => $self->_cache_read_timestamp // $self->bimi_object->time,
+    timestamp => $self->_cache_read_timestamp // $time,
     data => {},
   };
   foreach my $cache_field ( $self->_cache_fields->@* ) {

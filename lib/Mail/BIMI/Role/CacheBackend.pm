@@ -5,7 +5,7 @@ use 5.20.0;
 use Moo::Role;
 use Mail::BIMI::Pragmas;
 use Digest::SHA256;
-  has parent => ( is => 'ro', required => 1, weaken => 1,
+  has parent => ( is => 'ro', required => 1, weak_ref => 1,
     documentation => 'Parent class for cacheing' );
   has _cache_hash => ( is => 'ro', lazy => 1, builder => '_build_cache_hash' );
   with 'Mail::BIMI::Role::Base';
