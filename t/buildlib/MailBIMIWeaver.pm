@@ -34,7 +34,6 @@ sub weave_section {
 
   return unless ref $meta;
   return if $meta->isa('Moose::Meta::Role');
-  my @attributes = $meta->get_all_attributes;
   my @attributes = eval{ sort keys Moo->_constructor_maker_for($class_name)->{attribute_specs}->%* };
   if( @attributes ) {
     foreach my $attribute (@attributes) {
