@@ -365,7 +365,7 @@
         <attribute name="viewBox"/>
       </optional>
       <attribute name="baseProfile">
-        <value>tiny</value>
+        <value>tiny-ps</value>
       </attribute>
       <optional>
         <attribute name="contentScriptType">
@@ -404,20 +404,18 @@
           <value>onLoad</value>
         </attribute>
       </optional>
-      <optional>
-        <attribute name="version">
-          <value>1.2</value>
-        </attribute>
-      </optional>
+      <attribute name="version">
+        <value>1.2</value>
+      </attribute>
       <optional>
         <attribute name="zoomAndPan">
           <value>disable</value>
         </attribute>
       </optional>
+      <ref name="svgTitle"/>
       <zeroOrMore>
         <choice>
           <ref name="desc"/>
-          <ref name="svgTitle"/>
           <ref name="path"/>
           <ref name="rect"/>
           <ref name="circle"/>
