@@ -6,6 +6,7 @@ use Moose;
 use Mail::BIMI::Pragmas;
 use IO::Uncompress::Gunzip;
 use MIME::Base64;
+use Term::ANSIColor qw{ :constants };
 use XML::LibXML;
 our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
   with(
@@ -91,6 +92,7 @@ sub _build_data_xml($self) {
     1;
   } || do {
     $self->add_error( $self->ERR_SVG_INVALID_XML );
+    warn "Invalid XML :\n".$self->data_uncompressed if $self->bimi_object->OPT_VERBOSE;
     return;
   };
   return $xml;
@@ -187,11 +189,11 @@ Output human readable validation status of this object
 =cut
 
 sub app_validate($self) {
-  say 'Indicator Returned:';
-  say '  GZipped        : '.($self->data_uncompressed eq $self->data?'No':'Yes');
-  say '  BIMI-Indicator : '.$self->header if $self->is_valid;
-  say '  Profile Used   : '.$self->validator_profile;
-  say '  Is Valid       : '.($self->is_valid?'Yes':'No');
+  say 'Indicator Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
+  say YELLOW.'  GZipped        '.WHITE.': '.CYAN.($self->data_uncompressed eq $self->data?'No':'Yes').RESET;
+  say YELLOW.'  BIMI-Indicator '.WHITE.': '.CYAN.$self->header.RESET if $self->is_valid;
+  say YELLOW.'  Profile Used   '.WHITE.': '.CYAN.$self->validator_profile.RESET;
+  say YELLOW.'  Is Valid       '.WHITE.': '.($self->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   if ( ! $self->is_valid ) {
     say "Errors:";
     foreach my $error ( $self->error->@* ) {
@@ -199,7 +201,7 @@ sub app_validate($self) {
       my $error_text = $error->description;
       my $error_detail = $error->detail // '';
       $error_detail =~ s/\n/\n    /g;
-      say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
+      say BRIGHT_RED."  $error_code ".WHITE.': '.CYAN.$error_text.($error_detail?"\n    ".$error_detail:'').RESET;
     }
   }
 }

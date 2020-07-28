@@ -4,6 +4,7 @@ package Mail::BIMI::Record;
 use 5.20.0;
 use Moose;
 use Mail::BIMI::Pragmas;
+use Term::ANSIColor qw{ :constants };
 use Mail::BIMI::Record::Authority;
 use Mail::BIMI::Record::Location;
 use Mail::DMARC::PurePerl;
@@ -247,16 +248,16 @@ Output human readable validation status of this object
 =cut
 
 sub app_validate($self) {
-  say 'Record Returned:';
+  say 'Record Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
   $self->is_valid; # To set retrieved record and actual domain/selector
-  say '  Record    : '.($self->retrieved_record//'-none-');
+  say YELLOW.'  Record    : '.($self->retrieved_record//'-none-').RESET;
   if ($self->retrieved_record){
-    say '  Version   : '.($self->version//'-none-');
-    say '  Domain    : '.($self->domain//'-none-');
-    say '  Selector  : '.($self->selector//'-none-');
-    say '  Authority : '.($self->authority->authority//'-none-') if $self->authority;
-    say '  Location  : '.($self->location->location//'-none-') if $self->location_is_relevant && $self->location;
-    say '  Is Valid  : '.($self->is_valid?'Yes':'No');
+    say YELLOW.'  Version   '.WHITE.': '.CYAN.($self->version//'-none-').RESET;
+    say YELLOW.'  Domain    '.WHITE.': '.CYAN.($self->domain//'-none-').RESET;
+    say YELLOW.'  Selector  '.WHITE.': '.CYAN.($self->selector//'-none-').RESET;
+    say YELLOW.'  Authority '.WHITE.': '.CYAN.($self->authority->authority//'-none-').RESET if $self->authority;
+    say YELLOW.'  Location  '.WHITE.': '.CYAN.($self->location->location//'-none-').RESET if $self->location_is_relevant && $self->location;
+    say YELLOW.'  Is Valid  '.WHITE.': '.($self->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   }
 
   if ( ! $self->is_valid ) {
@@ -266,7 +267,7 @@ sub app_validate($self) {
       my $error_text = $error->description;
       my $error_detail = $error->detail // '';
       $error_detail =~ s/\n/\n    /g;
-      say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
+      say BRIGHT_RED."  $error_code ".WHITE.': '.CYAN.$error_text.($error_detail?"\n    ".$error_detail:'').RESET;
     }
   }
 }

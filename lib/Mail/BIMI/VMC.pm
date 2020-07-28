@@ -5,6 +5,7 @@ use 5.20.0;
 use Moose;
 use Mail::BIMI::Pragmas;
 use MIME::Base64;
+use Term::ANSIColor qw{ :constants };
 use Mail::BIMI::Indicator;
 use Mail::BIMI::VMC::Chain;
   with(
@@ -288,17 +289,17 @@ Output human readable validation status of this object
 =cut
 
 sub app_validate($self) {
-  say 'VMC Returned:';
-  say '  Subject         : '.($self->subject//'-none-');
-  say '  Not Before      : '.($self->not_before//'-none-');
-  say '  Not After       : '.($self->not_after//'-none-');
-  say '  Issuer          : '.($self->issuer//'-none-');
-  say '  Expired         : '.($self->is_expired ? 'Yes' : 'No' );
-  say '  Alt Name        : '.($self->alt_name//'-none-');
-  say '  Alt Name Valid  : '.($self->is_valid_alt_name?'Yes':'No');
-  say '  Has Valid Usage : '.($self->has_valid_usage?'Yes':'No');
-  say '  Cert Valid      : '.($self->is_cert_valid?'Yes':'No');
-  say '  Is Valid        : '.($self->is_valid?'Yes':'No');
+  say 'VMC Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
+  say YELLOW.'  Subject         '.WHITE.': '.CYAN.($self->subject//'-none-').RESET;
+  say YELLOW.'  Not Before      '.WHITE.': '.CYAN.($self->not_before//'-none-').RESET;
+  say YELLOW.'  Not After       '.WHITE.': '.CYAN.($self->not_after//'-none-').RESET;
+  say YELLOW.'  Issuer          '.WHITE.': '.CYAN.($self->issuer//'-none-').RESET;
+  say YELLOW.'  Expired         '.WHITE.': '.($self->is_expired?BRIGHT_RED.'Yes':GREEN.'No').RESET;
+  say YELLOW.'  Alt Name        '.WHITE.': '.CYAN.($self->alt_name//'-none-').RESET;
+  say YELLOW.'  Alt Name Valid  '.WHITE.': '.CYAN.($self->is_valid_alt_name?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+  say YELLOW.'  Has Valid Usage '.WHITE.': '.CYAN.($self->has_valid_usage?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+  say YELLOW.'  Cert Valid      '.WHITE.': '.CYAN.($self->is_cert_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+  say YELLOW.'  Is Valid        '.WHITE.': '.CYAN.($self->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   if ( ! $self->is_valid ) {
     say "Errors:";
     foreach my $error ( $self->error->@* ) {
@@ -306,7 +307,7 @@ sub app_validate($self) {
       my $error_text = $error->description;
       my $error_detail = $error->detail // '';
       $error_detail =~ s/\n/\n    /g;
-      say "  $error_code : $error_text".($error_detail?"\n    ".$error_detail:'');
+      say BRIGHT_RED."  $error_code ".WHITE.': '.CYAN.$error_text.($error_detail?"\n    ".$error_detail:'').RESET;
     }
   }
 }
