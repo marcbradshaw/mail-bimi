@@ -2,7 +2,7 @@ package Mail::BIMI::Record::Authority;
 # ABSTRACT: Class to model a BIMI authority
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::VMC;
   with(
@@ -10,8 +10,8 @@ use Mail::BIMI::VMC;
     'Mail::BIMI::Role::Error',
   );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
-  has authority => ( is => 'rw', isa => sub{!defined $_[0] || Str}, required => 1,
-    documentation => 'URI of VMC', pod_section => 'inputs' );
+  has authority => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
+    documentation => 'inputs: URI of VMC', );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
     documentation => 'Is this Authority valid' );
   has vmc => ( is => 'rw', lazy => 1, builder => '_build_vmc',

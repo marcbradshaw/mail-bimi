@@ -2,7 +2,7 @@ package Mail::BIMI::CacheBackend::Null;
 # ABSTRACT: Cache handling
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Digest::SHA256;
   with 'Mail::BIMI::Role::CacheBackend';

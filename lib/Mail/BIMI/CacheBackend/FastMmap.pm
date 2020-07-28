@@ -2,7 +2,7 @@ package Mail::BIMI::CacheBackend::FastMmap;
 # ABSTRACT: Cache handling
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Cache::FastMmap;
   with 'Mail::BIMI::Role::CacheBackend';

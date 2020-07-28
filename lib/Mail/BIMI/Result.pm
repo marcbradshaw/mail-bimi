@@ -2,7 +2,7 @@ package Mail::BIMI::Result;
 # ABSTRACT: Class to model a BIMI result
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Mail::AuthenticationResults::Header::Entry;
 use Mail::AuthenticationResults::Header::SubEntry;

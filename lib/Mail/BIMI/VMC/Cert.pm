@@ -2,7 +2,7 @@ package Mail::BIMI::VMC::Cert;
 # ABSTRACT: Class to model a VMC Cert
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Convert::ASN1;
 use Crypt::OpenSSL::X509;
@@ -13,13 +13,13 @@ use File::Temp qw{ tempfile };
     'Mail::BIMI::Role::Data',
     'Mail::BIMI::Role::Error',
   );
-  has chain => ( is => 'rw', isa => class_type('Mail::BIMI::VMC::Chain'), required => 1, weak_ref => 1,
+  has chain => ( is => 'rw', isa => 'Mail::BIMI::VMC::Chain', required => 1, weak_ref => 1,
     documentation => 'Back reference to the chain' );
   has ascii => ( is => 'rw', isa => ArrayRef, required => 1,
-    documentation => 'Raw data of the Cert contents', pod_section => 'inputs' );
-  has object => ( is => 'rw', isa => sub{!defined $_[0] || class_type('Crypt::OpenSSL::X509')}, lazy => 1, builder => '_build_object',
+    documentation => 'inputs: Raw data of the Cert contents', );
+  has object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, builder => '_build_object',
     documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );
-  has verifier => ( is => 'rw', isa => class_type('Crypt::OpenSSL::Verify'), lazy => 1, builder => '_build_verifier',
+  has verifier => ( is => 'rw', isa => 'Crypt::OpenSSL::Verify', lazy => 1, builder => '_build_verifier',
     documentation => 'Crypt::OpenSSL::Verify object for the Certificate' );
   has valid_to_root => ( is => 'rw',
     documentation => 'Could we validate this certificate to the root certs, set by Mail::BIMI::VMC::Chain->is_valid' );

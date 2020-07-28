@@ -2,7 +2,7 @@ package Mail::BIMI::Role::Data;
 # ABSTRACT: Class to retrieve data files
 # VERSION
 use 5.20.0;
-use Moo::Role;
+use Moose::Role;
 use Mail::BIMI::Pragmas;
 
 =head1 DESCRIPTION

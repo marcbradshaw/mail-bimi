@@ -2,7 +2,7 @@ package Mail::BIMI::Record::Location;
 # ABSTRACT: Class to model a BIMI location
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Indicator;
   with(
@@ -10,13 +10,13 @@ use Mail::BIMI::Indicator;
     'Mail::BIMI::Role::Error',
   );
   has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
-  has location => ( is => 'rw', isa => sub{!defined$_[0] || Str }, required => 1,
-    documentation => 'URI of Indicator', pod_section => 'inputs' );
+  has location => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
+    documentation => 'inputs: URI of Indicator', );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
     documentation => 'Is this Location record valid' );
   has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
     documentation => 'Mail::BIMI::Indicator object for this location' );
-  has is_relevant => ( is => 'rw', lazy => 1, builder => sub{return 1;},
+  has is_relevant => ( is => 'rw', lazy => 1, default => sub{return 1},
     documentation => 'Is the location relevant' );
 
 =head1 DESCRIPTION

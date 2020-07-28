@@ -2,7 +2,7 @@ package Mail::BIMI;
 # ABSTRACT: BIMI object
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
@@ -12,23 +12,34 @@ use Mail::DMARC::PurePerl;
     'Mail::BIMI::Role::Resolver',
     'Mail::BIMI::Role::Error',
   );
+
+use Moose::Util::TypeConstraints;
+subtype 'MaybeDMARC'
+  => as 'Any'
+  => where {
+    !defined $_
+    || ref $_ eq 'Mail::DMARC::PurePerl'
+    || ref $_ eq 'Mail::DMARC::Result'
+  }
+  => message {"dmarc_object Must be a Mail::DMARC::PurePerl, Mail::DMARC::Result, or Undefined"};
+
   has domain => ( is => 'rw', isa => Str, required => 0,
-    documentation => 'Domain to lookup/domain record was retrieved from', pod_section => 'inputs' );
-  has selector => ( is => 'rw', isa => Str, lazy => 1, builder => sub{ return 'default' }, documentation => 'The selector to query, assume default if null',
-    documentation => 'Selector to lookup/selector record was retrieved from', pod_section => 'inputs' );
-  has dmarc_object => ( is => 'rw', isa => AnyOf[Undef,class_type('Mail::DMARC::PurePerl'),class_type('Mail::DMARC::Result')],
-    documentation => 'validated Mail::DMARC::PurePerl object from parsed message', pod_section => 'inputs' );
-  has spf_object => ( is => 'rw', isa => class_type('Mail::SPF::Result'),
-    documentation => 'Mail::SPF::Result object from parsed message', pod_section => 'inputs' );
-  has dmarc_result_object => ( is => 'rw', isa => sub{!defined $_[0] || class_type('Mail::DMARC::Result')}, lazy => 1, builder => '_build_dmarc_result_object',
+    documentation => 'inputs: Domain to lookup/domain record was retrieved from', );
+  has selector => ( is => 'rw', isa => Str, lazy => 1, default => sub{ return 'default' },
+    documentation => 'inputs: Selector to lookup/selector record was retrieved from', );
+  has dmarc_object => ( is => 'rw', isa => 'MaybeDMARC',
+    documentation => 'inputs: Validated Mail::DMARC::PurePerl object from parsed message', );
+  has spf_object => ( is => 'rw', isa => 'Mail::SPF::Result',
+    documentation => 'inputs: Mail::SPF::Result object from parsed message', );
+  has dmarc_result_object => ( is => 'rw', isa => 'Maybe[Mail::DMARC::Result]', lazy => 1, builder => '_build_dmarc_result_object',
     documentation => 'Relevant Mail::DMARC::Result object' );
-  has dmarc_pp_object => ( is => 'rw', isa => sub{!defined $_[0] || class_type('Mail::DMARC::PurePerl')}, lazy => 1, builder => '_build_dmarc_pp_object',
+  has dmarc_pp_object => ( is => 'rw', isa => 'Maybe[Mail::DMARC::PurePerl]', lazy => 1, builder => '_build_dmarc_pp_object',
     documentation => 'Relevant Mail::DMARC::PurePerl object' );
   has record => ( is => 'rw', lazy => 1, builder => '_build_record',
     documentation => 'Mail::BIMI::Record object' );
   has result => ( is => 'rw', lazy => 1, builder => '_build_result',
     documentation => 'Mail::BIMI::Result object' );
-  has time => ( is => 'ro', lazy => 1, builder => sub{return time},
+  has time => ( is => 'ro', lazy => 1, default => sub{return time},
     documentation => 'time of retrieval - useful in testing' );
 
 =head1 DESCRIPTION

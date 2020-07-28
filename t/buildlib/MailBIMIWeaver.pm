@@ -34,23 +34,27 @@ sub weave_section {
 
   return unless ref $meta;
   return if $meta->isa('Moose::Meta::Role');
-  my @attributes = eval{ sort keys Moo->_constructor_maker_for($class_name)->{attribute_specs}->%* };
+
+  my @attributes = sort $meta->get_attribute_list;
   if( @attributes ) {
     foreach my $attribute (@attributes) {
       next if $attribute =~ /^_/;
-      my $moo_attribute = %{Moo->_constructor_maker_for($class_name)}{attribute_specs}->{$attribute};
+      my $moose_attribute = $meta->get_attribute($attribute);
+      my $documentation = $moose_attribute->{documentation} // '';
       my $attribute_type = 'attributes';
       $attribute_type = 'options' if $attribute =~ /^OPT_/;
-      $attribute_type = $moo_attribute->{pod_section} if exists $moo_attribute->{pod_section};
+      if ( $documentation =~ s/^inputs: // ) {
+        $attribute_type = 'inputs';
+      }
       my @attribute_parts;
       my @definition;
-      push @definition, 'is='.$moo_attribute->{is} if ( $attribute_type eq 'attributes' || $attribute_type eq 'inputs');
-      push @definition, 'required'  if $moo_attribute->{required};
-      push @definition, 'cacheable' if $moo_attribute->{is_cacheable};
-      push @definition, 'cache_key' if $moo_attribute->{is_cache_key};
+      push @definition, 'is='.$moose_attribute->{is} if ( $attribute_type eq 'attributes' || $attribute_type eq 'inputs');
+      push @definition, 'required'  if $moose_attribute->{required};
+      push @definition, 'cacheable' if $moose_attribute->{is_cacheable};
+      push @definition, 'cache_key' if $moose_attribute->{is_cache_key};
       push @attribute_parts, Pod::Elemental::Element::Pod5::Ordinary->new({ content => join(' ',@definition) }) if @definition;
-      if ($moo_attribute->{documentation}) {
-        push @attribute_parts, Pod::Elemental::Element::Pod5::Ordinary->new({ content => $moo_attribute->{documentation} });
+      if ($documentation) {
+        push @attribute_parts, Pod::Elemental::Element::Pod5::Ordinary->new({ content => $documentation });
       }
       push @section_parts, {
         attribute_type => $attribute_type,

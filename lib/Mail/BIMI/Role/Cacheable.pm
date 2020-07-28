@@ -2,8 +2,10 @@ package Mail::BIMI::Role::Cacheable;
 # ABSTRACT: Cache handling
 # VERSION
 use 5.20.0;
-use Moo::Role;
+use Moose::Role;
 use Mail::BIMI::Pragmas;
+use Mail::BIMI::Trait::Cacheable;
+use Mail::BIMI::Trait::CacheKey;
 use Mail::BIMI::CacheBackend::FastMmap;
 use Mail::BIMI::CacheBackend::File;
 use Mail::BIMI::CacheBackend::Null;
@@ -48,15 +50,18 @@ sub _build_cache_backend($self) {
 sub BUILD($self,$args) {
   my @cache_key;
   my @cache_fields;
-  foreach my $attribute ( sort keys %{Moo->_constructor_maker_for(ref $self)}{attribute_specs}->%* ) {
-    my $this_attribute = %{Moo->_constructor_maker_for(ref $self)}{attribute_specs}->{$attribute};
-    if ( $this_attribute->{is_cacheable} && $this_attribute->{is_cache_key}) {
-      croak "Attribute $attribute cannot be BOTH is_cacheable AND is_cache_key";
+
+  my $meta = $self->meta;
+
+  foreach my $attribute_name ( sort $meta->get_attribute_list ) {
+    my $attribute = $meta->get_attribute($attribute_name);
+    if ( $attribute->does('Mail::BIMI::Trait::CacheKey') && $attribute->does('Mail::BIMI::Trait::Cacheable') ) {
+      croak "Attribute $attribute_name cannot be BOTH is_cacheable AND is_cache_key";
     }
-    elsif ( $this_attribute->{is_cache_key} ) {
+    elsif ( $attribute->does('Mail::BIMI::Trait::CacheKey') ) {
       push @cache_key, "$attribute=".($self->{$attribute}//'');
     }
-    elsif ( $this_attribute->{is_cacheable} ) {
+    elsif ( $attribute->does('Mail::BIMI::Trait::Cacheable') ) {
       push @cache_fields, $attribute;
     }
   }

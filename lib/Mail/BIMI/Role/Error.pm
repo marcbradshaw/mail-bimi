@@ -2,10 +2,10 @@ package Mail::BIMI::Role::Error;
 # ABSTRACT: Class to model an error
 # VERSION
 use 5.20.0;
-use Moo::Role;
+use Moose::Role;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Error;
-  has error => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => sub{return []}, is_cacheable => 1 );
+  has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable'] );
 
 =head1 DESCRIPTION
 

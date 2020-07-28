@@ -2,7 +2,7 @@ package Mail::BIMI::VMC::Chain;
 # ABSTRACT: Class to model a VMC Chain
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;

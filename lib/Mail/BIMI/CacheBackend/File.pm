@@ -2,7 +2,7 @@ package Mail::BIMI::CacheBackend::File;
 # ABSTRACT: Cache handling
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
 use Sereal qw{encode_sereal decode_sereal};
   with 'Mail::BIMI::Role::CacheBackend';

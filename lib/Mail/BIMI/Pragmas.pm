@@ -18,8 +18,6 @@ use Carp;
 use English;
 use File::Slurp;
 use JSON;
-use MooX::Types::MooseLike::Base qw{AnyOf};
-use Type::Utils qw{class_type};
 use Types::Standard qw{Str HashRef ArrayRef Enum Undef};
 
 sub import {
@@ -32,8 +30,6 @@ sub import {
   English->import::into(scalar caller);
   File::Slurp->import::into(scalar caller, qw{ read_file write_file } );
   JSON->import::into(scalar caller);
-  MooX::Types::MooseLike::Base->import::into(scalar caller, qw{AnyOf} );
-  Type::Utils->import::into(scalar caller, qw{ class_type } );
   Types::Standard->import::into(scalar caller, qw{ Str Int HashRef ArrayRef Enum Undef} );
 }
 

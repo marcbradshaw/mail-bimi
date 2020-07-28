@@ -2,14 +2,14 @@ package Mail::BIMI::Error;
 # ABSTRACT: Class to represent an error condition
 # VERSION
 use 5.20.0;
-use Moo;
+use Moose;
 use Mail::BIMI::Pragmas;
   has code => ( is => 'ro', isa => Str, required => 1,
-    documentation => 'Error code', pod_section => 'inputs' );
+    documentation => 'inputs: Error code', );
   has description => ( is => 'ro', isa => Str, required => 1,
-    documentation => 'Human readable error descriptionn', pod_section => 'inputs' );
+    documentation => 'inputs: Human readable error descriptionn', );
   has detail => ( is => 'ro', isa => Str, required => 0,
-    documentation => 'Human readable details', pod_section => 'inputs' );
+    documentation => 'inputs: Human readable details', );
 
 =head1 DESCRIPTION
 

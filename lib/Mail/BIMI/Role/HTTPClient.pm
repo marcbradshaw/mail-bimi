@@ -2,7 +2,7 @@ package Mail::BIMI::Role::HTTPClient;
 # ABSTRACT: Class to model a DNS resolver
 # VERSION
 use 5.20.0;
-use Moo::Role;
+use Moose::Role;
 use Mail::BIMI::Pragmas;
 use HTTP::Tiny::Paranoid;
   has http_client => ( is => 'rw', lazy => 1, builder => '_build_http_client',
