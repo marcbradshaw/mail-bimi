@@ -46,6 +46,8 @@ Role for capturing caller options, which may be passed to the constructor, or se
     documentation => 'Be More Verbose' );
   has OPT_VMC_FROM_FILE => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_VMC_FROM_FILE}},
     documentation => 'Fake VMC with file contents' );
+  has OPT_VMC_NO_CHECK_ALT => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_VMC_NO_CHECK_ALT}},
+    documentation => 'Do not check the alt name of a VMC' );
   has OPT_VMC_MAX_FETCH_SIZE  => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_VMC_MAX_FETCH_SIZE}//65535},
     documentation => 'Maximum fetch size for VMC retrieval' );
 

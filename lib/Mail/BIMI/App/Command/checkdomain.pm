@@ -1,5 +1,5 @@
-package Mail::BIMI::App::Command::checkrecord;
-# ABSTRACT: Check a BIMI record for validation
+package Mail::BIMI::App::Command::checkdomain;
+# ABSTRACT: Validate the BIMI assertion record for a given domain
 # VERSION
 use 5.20.0;
 BEGIN { $ENV{MAIL_BIMI_CACHE_DEFAULT_BACKEND} = 'Null' };
@@ -11,13 +11,12 @@ use Mail::DMARC;
 
 =head1 DESCRIPTION
 
-App::Cmd class implementing the 'mailbimi checkrecord' command
+App::Cmd class implementing the 'mailbimi checkdomain' command
 
 =cut
 
-sub abstract { 'Validate a given BIMI record' }
-sub description { 'Mail::BIMI record validator' };
-sub usage_desc { "%c checkrecord %o <DOMAIN>" }
+sub description { 'Check the BIMI assertion record for a given domain' };
+sub usage_desc { "%c checkdomain %o <DOMAIN>" }
 
 sub opt_spec {
   return (
@@ -46,7 +45,7 @@ sub execute($self,$opt,$args) {
 
   my $record = $bimi->record;
   #  my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );
-  say "BIMI record checker";
+  say "BIMI domain checker";
   say '';
   say 'Requested:';
   say "  Domain    : $domain";

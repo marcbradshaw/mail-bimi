@@ -182,6 +182,7 @@ Return true if the VMC has a valid alt name for the domain of the current operat
 
 sub is_valid_alt_name($self) {
   return 1 if ! $self->authority_object; # Cannot check without context
+  return 1 if $self->bimi_object->OPT_VMC_NO_CHECK_ALT;
   my $domain = lc $self->authority_object->record_object->domain;
   return 0 if !$self->alt_name;
   my @alt_names = split( ',', lc $self->alt_name );
