@@ -3,6 +3,7 @@ package Mail::BIMI;
 # VERSION
 use 5.20.0;
 use Moose;
+use Moose::Util::TypeConstraints;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
@@ -13,7 +14,6 @@ use Mail::DMARC::PurePerl;
     'Mail::BIMI::Role::Error',
   );
 
-use Moose::Util::TypeConstraints;
 subtype 'MaybeDMARC'
   => as 'Any'
   => where {
