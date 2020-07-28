@@ -96,13 +96,9 @@ sub _build_data_xml($self) {
   return $xml;
 }
 
-{
-  my $parser;
-  sub _build_parser($self) {
-    return $parser if $parser;
-    $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file($self->validator_profile.'.rng'));
-    return $parser;
-  }
+sub _build_parser($self) {
+  state $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file($self->validator_profile.'.rng'));
+  return $parser;
 }
 
 sub _build_data($self) {
