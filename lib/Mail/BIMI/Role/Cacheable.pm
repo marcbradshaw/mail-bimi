@@ -47,12 +47,14 @@ sub _build_cache_backend($self) {
   return $backend;
 }
 
-sub BUILD($self,$args) {
+around new => sub{
+  my $original = shift;
+  my $class = shift;
+  my $self = $class->$original(@_);
   my @cache_key;
   my @cache_fields;
 
   my $meta = $self->meta;
-
   foreach my $attribute_name ( sort $meta->get_attribute_list ) {
     my $attribute = $meta->get_attribute($attribute_name);
     if ( $attribute->does('Mail::BIMI::Trait::CacheKey') && $attribute->does('Mail::BIMI::Trait::Cacheable') ) {
@@ -76,13 +78,13 @@ sub BUILD($self,$args) {
   $self->_cache_fields( \@cache_fields );
 
   my $data = $self->cache_backend->get_from_cache;
-  return if !$data;
+  return $self if !$data;
   warn 'Build '.(ref $self).' from cache' if $self->bimi_object->OPT_VERBOSE;
 
   return if $data->{cache_key} ne $self->_cache_key;
   if ($data->{timestamp}+$self->cache_valid_for < $self->bimi_object->time) {
     $self->cache_backend->delete_cache;
-    return;
+    return $self;
   }
 
   $self->_cache_read_timestamp($data->{timestamp});
@@ -92,7 +94,8 @@ sub BUILD($self,$args) {
     }
   }
 
-}
+  return $self;
+};
 
 sub DEMOLISH($self,$in_global_destruction) {
   return if $in_global_destruction;
