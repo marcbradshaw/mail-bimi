@@ -99,7 +99,7 @@ sub _build_dmarc_pp_object($self) {
 
 sub _build_record($self) {
   croak 'Domain required' if ! $self->domain;
-  return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector, resolver => $self->resolver, bimi_object => $self );
+  return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector, bimi_object => $self );
 }
 
 sub _build_result($self) {

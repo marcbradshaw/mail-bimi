@@ -11,7 +11,6 @@ use Mail::DMARC::PurePerl;
   with(
     'Mail::BIMI::Role::Base',
     'Mail::BIMI::Role::Error',
-    'Mail::BIMI::Role::Resolver',
     'Mail::BIMI::Role::Cacheable',
   );
   has domain => ( is => 'rw', isa => Str, required => 1, traits => ['CacheKey'],
@@ -200,7 +199,7 @@ sub _get_from_dns($self,$selector,$domain) {
     push @matches, $self->bimi_object->OPT_FORCE_RECORD;
     return @matches;
   }
-  my $res     = $self->resolver;
+  my $res     = $self->bimi_object->resolver;
   my $query   = $res->query( "$selector._bimi.$domain", 'TXT' ) or do {
     return @matches;
   };
