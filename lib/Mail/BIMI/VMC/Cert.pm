@@ -33,6 +33,8 @@ use File::Temp qw{ tempfile };
     documentation => 'Index of this certificate in the chain' );
   has validated_by => ( is => 'rw',
     documentation => 'Root and/or intermediate certificate in the chain used to verify this certificate' );
+  has validated_by_id => ( is => 'rw',
+    documentation => 'Index of cert which validated this cert' );
 
 =head1 DESCRIPTION
 

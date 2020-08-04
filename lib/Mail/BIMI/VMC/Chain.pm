@@ -7,6 +7,7 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
+use Term::ANSIColor qw{ :constants };
   with(
     'Mail::BIMI::Role::Base',
     'Mail::BIMI::Role::Error',
@@ -53,8 +54,10 @@ sub _build_is_valid($self) {
     else {
       warn "Certificate $i directly validated to root" if $self->bimi_object->OPT_VERBOSE;
       $cert->validated_by($root_ca_ascii);
+      $cert->validated_by_id(0);
       $cert->valid_to_root(1);
     }
+    my $exts = eval{ $cert->object->extensions_by_oid() };
   }
 
   my $work_done;
@@ -80,6 +83,7 @@ sub _build_is_valid($self) {
           $validated_cert->verifier->verify($validating_cert->object);
           warn "Certificate $validating_i validated to root via certificate $validated_i" if $self->bimi_object->OPT_VERBOSE;
           $validating_cert->validated_by($validated_cert->full_chain);
+          $validating_cert->validated_by_id($validated_i);
           $validating_cert->valid_to_root(1);
           $work_done = 1;
         };
@@ -125,6 +129,41 @@ sub _build_cert_object_list($self) {
     );
   }
   return \@objects;
+}
+
+=method I<app_validate()>
+
+Output human readable validation status of this object
+
+=cut
+
+sub app_validate($self) {
+  say 'Certificate Chain Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
+  foreach my $cert ( $self->cert_object_list->@* ) {
+    my $i = $cert->index;
+    my $obj = $cert->object;
+    say '';
+    say YELLOW.'  Certificate '.$i.WHITE.': '.($cert->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
+    if ( $obj ) {
+      say YELLOW.'  Subject          '.WHITE.': '.CYAN.($obj->subject//'-none-').RESET;
+      say YELLOW.'  Not Before       '.WHITE.': '.CYAN.($obj->notBefore//'-none-').RESET;
+      say YELLOW.'  Not After        '.WHITE.': '.CYAN.($obj->notAfter//'-none-').RESET;
+      say YELLOW.'  Issuer           '.WHITE.': '.CYAN.($obj->issuer//'-none-').RESET;
+      say YELLOW.'  Expired          '.WHITE.': '.($obj->checkend(0)?BRIGHT_RED.'Yes':GREEN.'No').RESET;
+      my $exts = eval{ $obj->extensions_by_oid() };
+      if ( $exts ) {
+        my $alt_name = exists $exts->{'2.5.29.17'} ? $exts->{'2.5.29.17'}->to_string : '-none-';
+        say YELLOW.'  Alt Name         '.WHITE.': '.CYAN.($alt_name//'-none-').RESET;
+        say YELLOW.'  Has LogotypeExtn '.WHITE.': '.CYAN.(exists($exts->{'1.3.6.1.5.5.7.1.12'})?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+      }
+      else {
+        say YELLOW.'  Extensions       '.WHITE.': '.BRIGHT_RED.'NOT FOUND'.RESET;
+      }
+      say YELLOW.'  Has Valid Usage  '.WHITE.': '.CYAN.($cert->has_valid_usage?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+    }
+    say YELLOW.'  Valid to Root    '.WHITE.': '.CYAN.($cert->valid_to_root?GREEN.($cert->validated_by_id == 0?'Direct':'Via cert '.$cert->validated_by_id):BRIGHT_RED.'No').RESET;
+    say YELLOW.'  Is Valid         '.WHITE.': '.CYAN.($cert->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+  }
 }
 
 1;

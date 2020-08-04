@@ -310,6 +310,10 @@ sub app_validate($self) {
       say BRIGHT_RED."  $error_code ".WHITE.': '.CYAN.$error_text.($error_detail?"\n    ".$error_detail:'').RESET;
     }
   }
+  if ($self->chain_object){
+    say '';
+    $self->chain_object->app_validate;
+  }
 }
 
 1;
