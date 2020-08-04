@@ -62,7 +62,7 @@ Role for handling validation errors
         return Mail::BIMI::Error->new(
           code => $error,
           description => $error_hash->{$error},
-          $detail ? ( detail => $detail ) : (),
+          ( $detail ? ( detail => $detail ) : () ),
         );
       },
     });
