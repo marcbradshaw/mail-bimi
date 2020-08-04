@@ -3,7 +3,7 @@ package Mail::BIMI::Role::Error;
 # VERSION
 use 5.20.0;
 use Moose::Role;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mail::BIMI::Error;
 use Sub::Install;
   has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable'] );

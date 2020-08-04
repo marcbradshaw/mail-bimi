@@ -3,7 +3,7 @@ package Mail::BIMI::Role::HTTPClient;
 # VERSION
 use 5.20.0;
 use Moose::Role;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use HTTP::Tiny::Paranoid;
   has http_client => ( is => 'rw', lazy => 1, builder => '_build_http_client',
     documentation => 'HTTP::Tiny::Paranoid (or similar) object used for HTTP operations' );

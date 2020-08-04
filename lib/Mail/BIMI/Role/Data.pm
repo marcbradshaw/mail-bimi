@@ -3,7 +3,7 @@ package Mail::BIMI::Role::Data;
 # VERSION
 use 5.20.0;
 use Moose::Role;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 
 =head1 DESCRIPTION
 

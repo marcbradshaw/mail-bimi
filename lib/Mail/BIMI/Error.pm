@@ -3,7 +3,7 @@ package Mail::BIMI::Error;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
   has code => ( is => 'ro', isa => Str, required => 1,
     documentation => 'inputs: Error code', );
   has description => ( is => 'ro', isa => Str, required => 1,

@@ -3,7 +3,7 @@ package Mail::BIMI::CacheBackend::Null;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Digest::SHA256;
   with 'Mail::BIMI::Role::CacheBackend';
 

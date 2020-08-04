@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
 use lib 't';
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Test::Class;
 use Test::More;
 use Mail::BIMI;

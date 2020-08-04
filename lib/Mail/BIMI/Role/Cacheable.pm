@@ -3,7 +3,7 @@ package Mail::BIMI::Role::Cacheable;
 # VERSION
 use 5.20.0;
 use Moose::Role;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mail::BIMI::Trait::Cacheable;
 use Mail::BIMI::Trait::CacheKey;
 use Mail::BIMI::CacheBackend::FastMmap;

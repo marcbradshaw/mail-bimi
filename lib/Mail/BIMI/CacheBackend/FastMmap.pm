@@ -3,7 +3,7 @@ package Mail::BIMI::CacheBackend::FastMmap;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Cache::FastMmap;
   with 'Mail::BIMI::Role::CacheBackend';
   has _cache_fastmmap => ( is => 'rw', lazy => 1, builder => '_build_cache_fastmmap' );

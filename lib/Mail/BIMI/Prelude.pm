@@ -1,5 +1,5 @@
-package Mail::BIMI::Pragmas;
-# ABSTRACT: Setup system wide pragmas
+package Mail::BIMI::Prelude;
+# ABSTRACT: Setup system wide prelude
 # VERSION
 use 5.20.0;
 use strict;

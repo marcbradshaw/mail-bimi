@@ -3,7 +3,7 @@ package Mail::BIMI::VMC::Chain;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;

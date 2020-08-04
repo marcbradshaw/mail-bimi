@@ -3,7 +3,7 @@ use 5.20.0;
 use strict;
 use warnings FATAL => 'all';
 BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Test::More;
 
 BEGIN {
@@ -20,7 +20,7 @@ BEGIN {
     Mail::BIMI::CacheBackend::Null
     Mail::BIMI::Error
     Mail::BIMI::Indicator
-    Mail::BIMI::Pragmas
+    Mail::BIMI::Prelude
     Mail::BIMI::Record
     Mail::BIMI::Record::Authority
     Mail::BIMI::Record::Location

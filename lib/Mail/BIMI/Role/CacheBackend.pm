@@ -3,7 +3,7 @@ package Mail::BIMI::Role::CacheBackend;
 # VERSION
 use 5.20.0;
 use Moose::Role;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Digest::SHA256;
   has parent => ( is => 'ro', required => 1, weak_ref => 1,
     documentation => 'Parent class for cacheing' );

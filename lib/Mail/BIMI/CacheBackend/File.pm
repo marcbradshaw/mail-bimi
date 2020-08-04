@@ -3,7 +3,7 @@ package Mail::BIMI::CacheBackend::File;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Sereal qw{encode_sereal decode_sereal};
   with 'Mail::BIMI::Role::CacheBackend';
   has _cache_filename => ( is => 'ro', lazy => 1, builder => '_build_cache_filename' );

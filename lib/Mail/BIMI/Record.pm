@@ -3,7 +3,7 @@ package Mail::BIMI::Record;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Term::ANSIColor qw{ :constants };
 use Mail::BIMI::Record::Authority;
 use Mail::BIMI::Record::Location;

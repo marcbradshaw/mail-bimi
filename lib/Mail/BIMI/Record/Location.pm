@@ -3,7 +3,7 @@ package Mail::BIMI::Record::Location;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mail::BIMI::Indicator;
   with(
     'Mail::BIMI::Role::Base',

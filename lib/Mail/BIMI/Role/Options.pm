@@ -3,7 +3,7 @@ package Mail::BIMI::Role::Options;
 # VERSION
 use 5.20.0;
 use Moose::Role;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mozilla::CA;
 
 =head1 DESCRIPTION

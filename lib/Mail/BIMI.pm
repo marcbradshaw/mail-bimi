@@ -4,7 +4,7 @@ package Mail::BIMI;
 use 5.20.0;
 use Moose;
 use Moose::Util::TypeConstraints;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
 use Mail::DMARC::PurePerl;

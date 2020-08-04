@@ -3,7 +3,7 @@ package Mail::BIMI::App::Command::checkdomain;
 # VERSION
 use 5.20.0;
 BEGIN { $ENV{MAIL_BIMI_CACHE_DEFAULT_BACKEND} = 'Null' };
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mail::BIMI::App -command;
 use Mail::BIMI;
 use Mail::BIMI::Record;

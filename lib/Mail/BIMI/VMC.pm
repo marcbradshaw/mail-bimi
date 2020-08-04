@@ -3,7 +3,7 @@ package Mail::BIMI::VMC;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use MIME::Base64;
 use Term::ANSIColor qw{ :constants };
 use Mail::BIMI::Indicator;

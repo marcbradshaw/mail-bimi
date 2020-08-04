@@ -3,7 +3,7 @@ package Mail::BIMI::Record::Authority;
 # VERSION
 use 5.20.0;
 use Moose;
-use Mail::BIMI::Pragmas;
+use Mail::BIMI::Prelude;
 use Mail::BIMI::VMC;
   with(
     'Mail::BIMI::Role::Base',
