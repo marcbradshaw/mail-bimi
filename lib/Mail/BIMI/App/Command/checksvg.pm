@@ -7,6 +7,7 @@ use Mail::BIMI::Pragmas;
 use Mail::BIMI::App -command;
 use Mail::BIMI;
 use Mail::BIMI::Indicator;
+use Term::ANSIColor qw{ :constants };
 
 =head1 DESCRIPTION
 
@@ -50,7 +51,7 @@ sub execute($self,$opt,$args) {
   say "BIMI SVG checker";
   say '';
   say 'Requested:';
-  say ''.($opt->fromfile ? 'File' : 'URI') . ": $uri";
+  say YELLOW.($opt->fromfile?'File':'URI').WHITE.': '.$uri.RESET;
   say '';
   $indicator->app_validate;
   say '';

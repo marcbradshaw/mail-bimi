@@ -8,6 +8,7 @@ use Mail::BIMI::App -command;
 use Mail::BIMI;
 use Mail::BIMI::Record;
 use Mail::DMARC;
+use Term::ANSIColor qw{ :constants };
 
 =head1 DESCRIPTION
 
@@ -48,8 +49,8 @@ sub execute($self,$opt,$args) {
   say "BIMI domain checker";
   say '';
   say 'Requested:';
-  say "  Domain    : $domain";
-  say "  Selector  : $selector";
+  say YELLOW.'  Domain    '.WHITE.': '.CYAN.$domain.RESET;
+  say YELLOW.'  Selector  '.WHITE.': '.CYAN.$selector.RESET;
   say '';
   $record->app_validate;
   if ( $record->location && $record->location->indicator ) {
