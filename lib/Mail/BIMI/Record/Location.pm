@@ -9,7 +9,7 @@ use Mail::BIMI::Indicator;
     'Mail::BIMI::Role::Base',
     'Mail::BIMI::Role::Error',
   );
-  has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
+  has is_location_valid => ( is => 'rw', lazy => 1, builder => '_build_is_location_valid' );
   has location => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
     documentation => 'inputs: URI of Indicator', );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
@@ -25,7 +25,7 @@ Class for representing, validating, and processing a BIMI location attribute
 
 =cut
 
-sub _build__is_valid($self) {
+sub _build_is_location_valid($self) {
   # Check is_valid without checking indicator, because recursion!
   if ( !defined $self->location ) {
     $self->add_error( $self->ERR_MISSING_L_TAG );
@@ -44,7 +44,7 @@ sub _build__is_valid($self) {
 }
 
 sub _build_is_valid($self) {
-  return 0 if !$self->_is_valid;
+  return 0 if !$self->is_location_valid;
   if ( !$self->indicator->is_valid ) {
     $self->add_error( $self->indicator->error );
   }
@@ -55,7 +55,7 @@ sub _build_is_valid($self) {
 }
 
 sub _build_indicator($self) {
-  return if !$self->_is_valid;
+  return if !$self->is_location_valid;
   return if !$self->is_relevant;
   return Mail::BIMI::Indicator->new( location => $self->location, bimi_object => $self->bimi_object );
 }

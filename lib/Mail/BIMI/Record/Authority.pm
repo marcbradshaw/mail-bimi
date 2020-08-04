@@ -9,7 +9,7 @@ use Mail::BIMI::VMC;
     'Mail::BIMI::Role::Base',
     'Mail::BIMI::Role::Error',
   );
-  has _is_valid => ( is => 'rw', lazy => 1, builder => '_build__is_valid' );
+  has is_authority_valid => ( is => 'rw', lazy => 1, builder => '_build_is_authority_valid' );
   has authority => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
     documentation => 'inputs: URI of VMC', );
   has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
@@ -23,7 +23,7 @@ Class for representing, validating, and processing a BIMI authority attribute
 
 =cut
 
-sub _build__is_valid($self) {
+sub _build_is_authority_valid($self) {
   return 1 if !defined $self->authority;
   return 1 if $self->authority eq '';
   return 1 if $self->authority eq 'self';
@@ -51,7 +51,7 @@ sub is_relevant($self) {
 }
 
 sub _build_is_valid($self) {
-  return 0 if !$self->_is_valid;
+  return 0 if !$self->is_authority_valid;
   if ( $self->is_relevant && !$self->vmc->is_valid ) {
     $self->add_error( $self->vmc->error );
   }
@@ -62,7 +62,7 @@ sub _build_is_valid($self) {
 }
 
 sub _build_vmc($self) {
-  return if !$self->_is_valid;
+  return if !$self->is_authority_valid;
   return if !$self->is_relevant;
   return Mail::BIMI::VMC->new( authority => $self->authority, bimi_object => $self->bimi_object );
 }
