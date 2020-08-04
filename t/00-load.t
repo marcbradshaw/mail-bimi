@@ -11,9 +11,10 @@ BEGIN {
   foreach my $module (qw{
     Mail::BIMI
     Mail::BIMI::App
-    Mail::BIMI::App::Command::checklookup
+    Mail::BIMI::App::Command::checkdomain
     Mail::BIMI::App::Command::checkrecord
     Mail::BIMI::App::Command::checksvg
+    Mail::BIMI::App::Command::checkvmc
     Mail::BIMI::CacheBackend::FastMmap
     Mail::BIMI::CacheBackend::File
     Mail::BIMI::CacheBackend::Null
