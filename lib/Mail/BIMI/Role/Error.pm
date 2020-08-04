@@ -5,6 +5,7 @@ use 5.20.0;
 use Moose::Role;
 use Mail::BIMI::Pragmas;
 use Mail::BIMI::Error;
+use Sub::Install;
   has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable'] );
 
 =head1 DESCRIPTION
@@ -54,14 +55,17 @@ Role for handling validation errors
   no strict 'refs';
   foreach my $error ( sort keys $error_hash->%* ) {
     my $method_name = 'ERR_'.$error;
-    *$method_name = sub{
-      my ( $self, $detail ) = @_;
-      return Mail::BIMI::Error->new(
-        code => $error,
-        description => $error_hash->{$error},
-        $detail ? ( detail => $detail ) : (),
-      );
-    };
+    Sub::Install::install_sub({
+      as => $method_name,
+      code => sub{
+        my ( $self, $detail ) = @_;
+        return Mail::BIMI::Error->new(
+          code => $error,
+          description => $error_hash->{$error},
+          $detail ? ( detail => $detail ) : (),
+        );
+      },
+    });
   }
 }
 
