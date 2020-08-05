@@ -11,7 +11,7 @@ use Mail::DMARC::PurePerl;
 
 with(
   'Mail::BIMI::Role::Options',
-  'Mail::BIMI::Role::Resolver',
+  'Mail::BIMI::Role::HasResolver',
   'Mail::BIMI::Role::Error',
 );
 

@@ -1,4 +1,4 @@
-package Mail::BIMI::Role::Resolver;
+package Mail::BIMI::Role::HasResolver;
 # ABSTRACT: Class to model a DNS resolver
 # VERSION
 use 5.20.0;
