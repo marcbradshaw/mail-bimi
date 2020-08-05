@@ -5,8 +5,9 @@ use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
 use Cache::FastMmap;
-  with 'Mail::BIMI::Role::CacheBackend';
-  has _cache_fastmmap => ( is => 'rw', lazy => 1, builder => '_build_cache_fastmmap' );
+
+with 'Mail::BIMI::Role::CacheBackend';
+has _cache_fastmmap => ( is => 'rw', lazy => 1, builder => '_build_cache_fastmmap' );
 
 =head1 DESCRIPTION
 

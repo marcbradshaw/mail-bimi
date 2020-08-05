@@ -5,11 +5,12 @@ use 5.20.0;
 use Moose::Role;
 use Mail::BIMI::Prelude;
 use HTTP::Tiny::Paranoid;
-  has http_client => ( is => 'rw', lazy => 1, builder => '_build_http_client',
-    documentation => 'HTTP::Tiny::Paranoid (or similar) object used for HTTP operations' );
-  has http_client_response => ( is => 'rw',
-    documentation => 'HTTP Response as returned by client' );
-  requires 'http_client_max_fetch_size';
+
+has http_client => ( is => 'rw', lazy => 1, builder => '_build_http_client',
+  documentation => 'HTTP::Tiny::Paranoid (or similar) object used for HTTP operations' );
+has http_client_response => ( is => 'rw',
+  documentation => 'HTTP Response as returned by client' );
+requires 'http_client_max_fetch_size';
 
 =head1 DESCRIPTION
 

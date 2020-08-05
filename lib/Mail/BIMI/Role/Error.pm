@@ -6,7 +6,8 @@ use Moose::Role;
 use Mail::BIMI::Prelude;
 use Mail::BIMI::Error;
 use Sub::Install;
-  has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable'] );
+
+has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable'] );
 
 =head1 DESCRIPTION
 

@@ -8,18 +8,19 @@ use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
 use Term::ANSIColor qw{ :constants };
-  with(
-    'Mail::BIMI::Role::Base',
-    'Mail::BIMI::Role::Error',
-  );
-  has cert_list => ( is => 'rw', isa => ArrayRef,
-    documentation => 'ArrayRef of individual Certificates in the chain' );
-  has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list',
-    documentation => 'ArrayRef of Crypt::OpenSSL::X509 objects for the Certificates in the chain' );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
-    documentation => 'Does the VMC of this chain validate back to root?' );
-  has root_cert => ( is => 'rw', isa => Str,
-    documentation => 'Root certificate file' );
+
+with(
+  'Mail::BIMI::Role::Base',
+  'Mail::BIMI::Role::Error',
+);
+has cert_list => ( is => 'rw', isa => ArrayRef,
+  documentation => 'ArrayRef of individual Certificates in the chain' );
+has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list',
+  documentation => 'ArrayRef of Crypt::OpenSSL::X509 objects for the Certificates in the chain' );
+has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
+  documentation => 'Does the VMC of this chain validate back to root?' );
+has root_cert => ( is => 'rw', isa => Str,
+  documentation => 'Root certificate file' );
 
 =head1 DESCRIPTION
 

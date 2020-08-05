@@ -5,8 +5,9 @@ use 5.20.0;
 use Moose::Role;
 use Mail::BIMI::Prelude;
 use Net::DNS::Resolver;
-  has resolver => ( is => 'rw', lazy => 1, builder => '_build_resolver',
-    documentation => 'inputs: Net::DNS::Resolver object to use for DNS lookups; default used if not set', );
+
+has resolver => ( is => 'rw', lazy => 1, builder => '_build_resolver',
+  documentation => 'inputs: Net::DNS::Resolver object to use for DNS lookups; default used if not set', );
 
 =head1 DESCRIPTION
 

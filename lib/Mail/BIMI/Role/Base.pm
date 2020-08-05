@@ -4,8 +4,9 @@ package Mail::BIMI::Role::Base;
 use 5.20.0;
 use Moose::Role;
 use Mail::BIMI::Prelude;
-  has bimi_object => ( is => 'ro', isa => 'Mail::BIMI', required => 1, weak_ref => 1,
-    documentation => 'Base Mail::BIMI object for this operation' );
+
+has bimi_object => ( is => 'ro', isa => 'Mail::BIMI', required => 1, weak_ref => 1,
+  documentation => 'Base Mail::BIMI object for this operation' );
 
 =head1 DESCRIPTION
 

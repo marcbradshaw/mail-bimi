@@ -8,33 +8,34 @@ use Convert::ASN1;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
 use File::Temp qw{ tempfile };
-  with(
-    'Mail::BIMI::Role::Base',
-    'Mail::BIMI::Role::Data',
-    'Mail::BIMI::Role::Error',
-  );
-  has chain => ( is => 'rw', isa => 'Mail::BIMI::VMC::Chain', required => 1, weak_ref => 1,
-    documentation => 'Back reference to the chain' );
-  has ascii => ( is => 'rw', isa => ArrayRef, required => 1,
-    documentation => 'inputs: Raw data of the Cert contents', );
-  has object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, builder => '_build_object',
-    documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );
-  has verifier => ( is => 'rw', isa => 'Crypt::OpenSSL::Verify', lazy => 1, builder => '_build_verifier',
-    documentation => 'Crypt::OpenSSL::Verify object for the Certificate' );
-  has valid_to_root => ( is => 'rw',
-    documentation => 'Could we validate this certificate to the root certs, set by Mail::BIMI::VMC::Chain->is_valid' );
-  has filename => ( is => 'rw', lazy => 1, builder => '_build_filename',
-    documentation => 'Filename of temporary file containing the cert' );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
-    documentation => 'Is this a valid Cert?' );
-  has indicator_asn => ( is => 'rw', lazy => 1, builder => '_build_indicator_asn',
-    documentation => 'Parsed ASN data for the embedded Indicator' );
-  has index => ( is => 'rw', required => 1,
-    documentation => 'Index of this certificate in the chain' );
-  has validated_by => ( is => 'rw',
-    documentation => 'Root and/or intermediate certificate in the chain used to verify this certificate' );
-  has validated_by_id => ( is => 'rw',
-    documentation => 'Index of cert which validated this cert' );
+
+with(
+  'Mail::BIMI::Role::Base',
+  'Mail::BIMI::Role::Data',
+  'Mail::BIMI::Role::Error',
+);
+has chain => ( is => 'rw', isa => 'Mail::BIMI::VMC::Chain', required => 1, weak_ref => 1,
+  documentation => 'Back reference to the chain' );
+has ascii => ( is => 'rw', isa => ArrayRef, required => 1,
+  documentation => 'inputs: Raw data of the Cert contents', );
+has object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, builder => '_build_object',
+  documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );
+has verifier => ( is => 'rw', isa => 'Crypt::OpenSSL::Verify', lazy => 1, builder => '_build_verifier',
+  documentation => 'Crypt::OpenSSL::Verify object for the Certificate' );
+has valid_to_root => ( is => 'rw',
+  documentation => 'Could we validate this certificate to the root certs, set by Mail::BIMI::VMC::Chain->is_valid' );
+has filename => ( is => 'rw', lazy => 1, builder => '_build_filename',
+  documentation => 'Filename of temporary file containing the cert' );
+has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
+  documentation => 'Is this a valid Cert?' );
+has indicator_asn => ( is => 'rw', lazy => 1, builder => '_build_indicator_asn',
+  documentation => 'Parsed ASN data for the embedded Indicator' );
+has index => ( is => 'rw', required => 1,
+  documentation => 'Index of this certificate in the chain' );
+has validated_by => ( is => 'rw',
+  documentation => 'Root and/or intermediate certificate in the chain used to verify this certificate' );
+has validated_by_id => ( is => 'rw',
+  documentation => 'Index of cert which validated this cert' );
 
 =head1 DESCRIPTION
 

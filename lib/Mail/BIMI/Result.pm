@@ -7,15 +7,16 @@ use Mail::BIMI::Prelude;
 use Mail::AuthenticationResults::Header::Entry;
 use Mail::AuthenticationResults::Header::SubEntry;
 use Mail::AuthenticationResults::Header::Comment;
-  with 'Mail::BIMI::Role::Base';
-  has result => ( is => 'rw', isa => Str,
-    documentation => 'Text result' );
-  has comment => ( is => 'rw', isa => Str,
-    documentation => 'Text comment' );
-  has error => ( is => 'rw',
-    documentation => 'Optional Mail::BIMI::Error object detailing failure' );
-  has headers => ( is => 'rw', isa => HashRef,
-    documentation => 'Hashref of headers to add to message' );
+
+with 'Mail::BIMI::Role::Base';
+has result => ( is => 'rw', isa => Str,
+  documentation => 'Text result' );
+has comment => ( is => 'rw', isa => Str,
+  documentation => 'Text comment' );
+has error => ( is => 'rw',
+  documentation => 'Optional Mail::BIMI::Error object detailing failure' );
+has headers => ( is => 'rw', isa => HashRef,
+  documentation => 'Hashref of headers to add to message' );
 
 =head1 DESCRIPTION
 

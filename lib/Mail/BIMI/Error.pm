@@ -4,12 +4,13 @@ package Mail::BIMI::Error;
 use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
-  has code => ( is => 'ro', isa => Str, required => 1,
-    documentation => 'inputs: Error code', );
-  has description => ( is => 'ro', isa => Str, required => 1,
-    documentation => 'inputs: Human readable error descriptionn', );
-  has detail => ( is => 'ro', isa => Str, required => 0,
-    documentation => 'inputs: Human readable details', );
+
+has code => ( is => 'ro', isa => Str, required => 1,
+  documentation => 'inputs: Error code', );
+has description => ( is => 'ro', isa => Str, required => 1,
+  documentation => 'inputs: Human readable error descriptionn', );
+has detail => ( is => 'ro', isa => Str, required => 0,
+  documentation => 'inputs: Human readable details', );
 
 =head1 DESCRIPTION
 

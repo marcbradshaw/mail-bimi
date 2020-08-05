@@ -5,17 +5,18 @@ use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
 use Mail::BIMI::VMC;
-  with(
-    'Mail::BIMI::Role::Base',
-    'Mail::BIMI::Role::Error',
-  );
-  has is_authority_valid => ( is => 'rw', lazy => 1, builder => '_build_is_authority_valid' );
-  has authority => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
-    documentation => 'inputs: URI of VMC', );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
-    documentation => 'Is this Authority valid' );
-  has vmc => ( is => 'rw', lazy => 1, builder => '_build_vmc',
-    documentation => 'Mail::BIMI::VMC object for this Authority' );
+
+with(
+  'Mail::BIMI::Role::Base',
+  'Mail::BIMI::Role::Error',
+);
+has is_authority_valid => ( is => 'rw', lazy => 1, builder => '_build_is_authority_valid' );
+has authority => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
+  documentation => 'inputs: URI of VMC', );
+has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
+  documentation => 'Is this Authority valid' );
+has vmc => ( is => 'rw', lazy => 1, builder => '_build_vmc',
+  documentation => 'Mail::BIMI::VMC object for this Authority' );
 
 =head1 DESCRIPTION
 

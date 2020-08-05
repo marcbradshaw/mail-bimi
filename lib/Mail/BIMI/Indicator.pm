@@ -9,29 +9,30 @@ use MIME::Base64;
 use Term::ANSIColor qw{ :constants };
 use XML::LibXML;
 our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
-  with(
-    'Mail::BIMI::Role::Base',
-    'Mail::BIMI::Role::Error',
-    'Mail::BIMI::Role::HTTPClient',
-    'Mail::BIMI::Role::Data',
-    'Mail::BIMI::Role::Cacheable',
-  );
-  has location => ( is => 'rw', isa => Str, traits => ['CacheKey'],
-    documentation => 'inputs: URL to retrieve Indicator from', );
-  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
-    documentation => 'inputs: Raw data representing the Indicator; Fetches from location if not given', );
-  has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', traits => ['Cacheable'],
-    documentation => 'Raw data in uncompressed form' );
-  has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml',
-    documentation => 'XML::LibXML object representing the Indicator' );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', traits => ['Cacheable'],
-    documentation => 'Is this indicator valid' );
-  has parser => ( is => 'rw', lazy => 1, builder => '_build_parser',
-    documentation => 'XML::LibXML::RelaxNG parser object used to validate the Indicator XML' );
-  has header => ( is => 'rw', lazy => 1, builder => '_build_header', traits => ['Cacheable'],
-    documentation => 'Indicator data encoded as Base64 ready for insertion as BIMI-Indicator header' );
-  has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', traits => ['Cacheable'],
-    documentation => 'inputs: Validator profile used to validate the Indicator', );
+
+with(
+  'Mail::BIMI::Role::Base',
+  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HTTPClient',
+  'Mail::BIMI::Role::Data',
+  'Mail::BIMI::Role::Cacheable',
+);
+has location => ( is => 'rw', isa => Str, traits => ['CacheKey'],
+  documentation => 'inputs: URL to retrieve Indicator from', );
+has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
+  documentation => 'inputs: Raw data representing the Indicator; Fetches from location if not given', );
+has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', traits => ['Cacheable'],
+  documentation => 'Raw data in uncompressed form' );
+has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml',
+  documentation => 'XML::LibXML object representing the Indicator' );
+has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', traits => ['Cacheable'],
+  documentation => 'Is this indicator valid' );
+has parser => ( is => 'rw', lazy => 1, builder => '_build_parser',
+  documentation => 'XML::LibXML::RelaxNG parser object used to validate the Indicator XML' );
+has header => ( is => 'rw', lazy => 1, builder => '_build_header', traits => ['Cacheable'],
+  documentation => 'Indicator data encoded as Base64 ready for insertion as BIMI-Indicator header' );
+has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', traits => ['Cacheable'],
+  documentation => 'inputs: Validator profile used to validate the Indicator', );
 
 =head1 DESCRIPTION
 

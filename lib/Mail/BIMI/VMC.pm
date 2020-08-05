@@ -8,30 +8,31 @@ use MIME::Base64;
 use Term::ANSIColor qw{ :constants };
 use Mail::BIMI::Indicator;
 use Mail::BIMI::VMC::Chain;
-  with(
-    'Mail::BIMI::Role::Base',
-    'Mail::BIMI::Role::Error',
-    'Mail::BIMI::Role::HTTPClient',
-    'Mail::BIMI::Role::Cacheable',
-  );
-  has authority => ( is => 'rw', isa => Str, traits => ['CacheKey'],
-    documentation => 'inputs: URI of this VMC', );
-  has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
-    documentation => 'inputs: Raw data of the VMC contents; Fetched from authority URI if not given', );
-  has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', traits => ['Cacheable'],
-    documentation => 'ArrayRef of individual Certificates in the chain' );
-  has chain_object => ( is => 'rw', lazy => 1, builder => '_build_chain_object', traits => ['Cacheable'],
-    documentation => 'Mail::BIMI::VMC::Chain object for this Chain' );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', traits => ['Cacheable'],
-    documentation => 'Is this VMC valid' );
-  has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', traits => ['Cacheable'],
-    documentation => 'Mail::BIMI::VMC::Cert object for this VMC Set' );
-  has is_cert_valid => ( is => 'rw', lazy => 1, builder => '_build_is_cert_valid', traits => ['Cacheable'],
-    documentation => 'Is this Certificate Set valid' );
-  has indicator_uri => ( is => 'rw', lazy => 1, builder => '_build_indicator_uri', traits => ['Cacheable'],
-    documentation => 'The URI of the embedded Indicator' );
-  has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
-    documentation => 'Mail::BIMI::Indicator object for the Indicator embedded in this VMC Set' );
+
+with(
+  'Mail::BIMI::Role::Base',
+  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HTTPClient',
+  'Mail::BIMI::Role::Cacheable',
+);
+has authority => ( is => 'rw', isa => Str, traits => ['CacheKey'],
+  documentation => 'inputs: URI of this VMC', );
+has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
+  documentation => 'inputs: Raw data of the VMC contents; Fetched from authority URI if not given', );
+has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', traits => ['Cacheable'],
+  documentation => 'ArrayRef of individual Certificates in the chain' );
+has chain_object => ( is => 'rw', lazy => 1, builder => '_build_chain_object', traits => ['Cacheable'],
+  documentation => 'Mail::BIMI::VMC::Chain object for this Chain' );
+has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', traits => ['Cacheable'],
+  documentation => 'Is this VMC valid' );
+has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', traits => ['Cacheable'],
+  documentation => 'Mail::BIMI::VMC::Cert object for this VMC Set' );
+has is_cert_valid => ( is => 'rw', lazy => 1, builder => '_build_is_cert_valid', traits => ['Cacheable'],
+  documentation => 'Is this Certificate Set valid' );
+has indicator_uri => ( is => 'rw', lazy => 1, builder => '_build_indicator_uri', traits => ['Cacheable'],
+  documentation => 'The URI of the embedded Indicator' );
+has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
+  documentation => 'Mail::BIMI::Indicator object for the Indicator embedded in this VMC Set' );
 
 =head1 DESCRIPTION
 

@@ -5,19 +5,20 @@ use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
 use Mail::BIMI::Indicator;
-  with(
-    'Mail::BIMI::Role::Base',
-    'Mail::BIMI::Role::Error',
-  );
-  has is_location_valid => ( is => 'rw', lazy => 1, builder => '_build_is_location_valid' );
-  has location => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
-    documentation => 'inputs: URI of Indicator', );
-  has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
-    documentation => 'Is this Location record valid' );
-  has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
-    documentation => 'Mail::BIMI::Indicator object for this location' );
-  has is_relevant => ( is => 'rw', lazy => 1, default => sub{return 1},
-    documentation => 'Is the location relevant' );
+
+with(
+  'Mail::BIMI::Role::Base',
+  'Mail::BIMI::Role::Error',
+);
+has is_location_valid => ( is => 'rw', lazy => 1, builder => '_build_is_location_valid' );
+has location => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
+  documentation => 'inputs: URI of Indicator', );
+has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
+  documentation => 'Is this Location record valid' );
+has indicator => ( is => 'rw', lazy => 1, builder => '_build_indicator',
+  documentation => 'Mail::BIMI::Indicator object for this location' );
+has is_relevant => ( is => 'rw', lazy => 1, default => sub{return 1},
+  documentation => 'Is the location relevant' );
 
 =head1 DESCRIPTION
 
