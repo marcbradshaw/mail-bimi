@@ -8,10 +8,10 @@ use Mail::BIMI::Prelude;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
 use Mail::DMARC::PurePerl;
+use Net::DNS::Resolver;
 
 with(
   'Mail::BIMI::Role::Options',
-  'Mail::BIMI::Role::HasResolver',
   'Mail::BIMI::Role::Error',
 );
 
@@ -38,6 +38,8 @@ has dmarc_pp_object => ( is => 'rw', isa => 'Maybe[Mail::DMARC::PurePerl]', lazy
   documentation => 'Relevant Mail::DMARC::PurePerl object' );
 has record => ( is => 'rw', lazy => 1, builder => '_build_record',
   documentation => 'Mail::BIMI::Record object' );
+has resolver => ( is => 'rw', lazy => 1, builder => '_build_resolver',
+  documentation => 'inputs: Net::DNS::Resolver object to use for DNS lookups; default used if not set', );
 has result => ( is => 'rw', lazy => 1, builder => '_build_result',
   documentation => 'Mail::BIMI::Result object' );
 has time => ( is => 'ro', lazy => 1, default => sub{return time},
@@ -81,6 +83,14 @@ Brand Indicators for Message Identification (BIMI) retrieval, validation, and pr
   }
 
 =cut
+
+sub _build_resolver($self) {
+  my $timeout = 5;
+  my $resolver = Net::DNS::Resolver->new(dnsrch => 0);
+  $resolver->tcp_timeout( $timeout );
+  $resolver->udp_timeout( $timeout );
+  return $resolver;
+}
 
 sub _build_dmarc_result_object($self) {
   return $self->dmarc_object->result if ref $self->dmarc_object eq 'Mail::DMARC::PurePerl';

@@ -32,7 +32,6 @@ BEGIN {
     Mail::BIMI::Role::Error
     Mail::BIMI::Role::HTTPClient
     Mail::BIMI::Role::Options
-    Mail::BIMI::Role::Resolver
     Mail::BIMI::VMC
     Mail::BIMI::VMC::Cert
     Mail::BIMI::VMC::Chain
