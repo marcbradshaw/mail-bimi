@@ -129,8 +129,6 @@ sub _write_cache($self) {
       if ( $attribute->does('Mail::BIMI::Trait::CacheSerial') ) {
         my $method_name = 'serialize_'.$cache_field;
         $value = $self->$method_name;
-        use Data::Dumper;
-        warn Dumper $value;
       }
 
       $data->{data}->{$cache_field} = $value;
