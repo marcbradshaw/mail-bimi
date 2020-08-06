@@ -62,10 +62,10 @@ around new => sub{
       croak "Attribute $attribute_name cannot be BOTH is_cacheable AND is_cache_key";
     }
     elsif ( $attribute->does('Mail::BIMI::Trait::CacheKey') ) {
-      push @cache_key, "$attribute=".($self->{$attribute}//'');
+      push @cache_key, "$attribute_name=".($self->{$attribute_name}//'');
     }
     elsif ( $attribute->does('Mail::BIMI::Trait::Cacheable') ) {
-      push @cache_fields, $attribute;
+      push @cache_fields, $attribute_name;
     }
   }
 
@@ -91,7 +91,15 @@ around new => sub{
   $self->_cache_read_timestamp($data->{timestamp});
   foreach my $cache_field ( $self->_cache_fields->@* ) {
     if ( exists ( $data->{data}->{$cache_field} )) {
-      $self->{$cache_field} = $data->{data}->{$cache_field};
+      my $value = $data->{data}->{$cache_field};
+      my $attribute = $meta->get_attribute($cache_field);
+      if ( $attribute->does('Mail::BIMI::Trait::CacheSerial') ) {
+        my $method_name = 'deserialize_'.$cache_field;
+        $self->$method_name($value);
+      }
+      else {
+        $self->{$cache_field} = $value;
+      }
     }
   }
 
@@ -106,6 +114,7 @@ sub DEMOLISH($self,$in_global_destruction) {
 sub _write_cache($self) {
   return if $self->_do_not_cache;
   $self->_do_not_cache(1);
+  my $meta = $self->meta;
   my $time = $self->bimi_object ? $self->bimi_object->time : time;
   my $data = {
     cache_key => $self->_cache_key,
@@ -114,7 +123,17 @@ sub _write_cache($self) {
   };
   foreach my $cache_field ( $self->_cache_fields->@* ) {
     if ( defined ( $self->{$cache_field} )) {
-      $data->{data}->{$cache_field} = $self->{$cache_field};
+
+      my $value = $self->{$cache_field};
+      my $attribute = $meta->get_attribute($cache_field);
+      if ( $attribute->does('Mail::BIMI::Trait::CacheSerial') ) {
+        my $method_name = 'serialize_'.$cache_field;
+        $value = $self->$method_name;
+        use Data::Dumper;
+        warn Dumper $value;
+      }
+
+      $data->{data}->{$cache_field} = $value;
     }
   }
 

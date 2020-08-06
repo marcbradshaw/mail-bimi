@@ -4,16 +4,38 @@ package Mail::BIMI::Role::Error;
 use 5.20.0;
 use Moose::Role;
 use Mail::BIMI::Prelude;
+use Mail::BIMI::Trait::Cacheable;
+use Mail::BIMI::Trait::CacheSerial;
 use Mail::BIMI::Error;
 use Sub::Install;
 
-has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable'] );
+has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable','CacheSerial'] );
 
 =head1 DESCRIPTION
 
 Role for handling validation errors
 
 =cut
+
+sub serialize_error($self) {
+  my @data = map {{
+    code => $_->code,
+    description => $_->description,
+    detail => $_->detail,
+  }} $self->error->@*;
+  return \@data;
+}
+
+sub deserialize_error($self,$value) {
+  foreach my $error ($value->@*) {
+    my $error_object = Mail::BIMI::Error->new(
+      code => $error->{code},
+      description => $error->{description},
+    );
+    $error_object->detail($error->{detail}) if $error->{detail};
+    $self->add_error($error_object);
+  }
+}
 
 {
   my $error_hash = {

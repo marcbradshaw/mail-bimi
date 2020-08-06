@@ -19,12 +19,15 @@ sub get_from_cache($self) {
   my $cache_file = $self->_cache_filename;
   return if !-e $cache_file;
   my $raw = scalar read_file($self->_cache_filename);
-  return eval{ decode_sereal($raw) };
+  my $value = eval{ decode_sereal($raw) };
+  warn "Error reading from cache: $@" if $@;
+  return $value;
 }
 
 sub put_to_cache($self,$data) {
-  warn 'Writing '.(ref $self->parent).' to cache' if $self->bimi_object->OPT_VERBOSE;
-  my $sereal_data = eval{ encode_serial($data) };
+  warn 'Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename if $self->bimi_object->OPT_VERBOSE;
+  my $sereal_data = eval{ encode_sereal($data) };
+  warn "Error writing to cachce: $@" if $@;
   return unless $sereal_data;
   write_file($self->_cache_filename,{atomic=>1},$sereal_data);
 }
