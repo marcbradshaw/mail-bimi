@@ -11,7 +11,7 @@ with(
   'Mail::BIMI::Role::Error',
 );
 has is_location_valid => ( is => 'rw', lazy => 1, builder => '_build_is_location_valid' );
-has location => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
+has uri => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
   documentation => 'inputs: URI of Indicator', );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
   documentation => 'Is this Location record valid' );
@@ -28,13 +28,13 @@ Class for representing, validating, and processing a BIMI location attribute
 
 sub _build_is_location_valid($self) {
   # Check is_valid without checking indicator, because recursion!
-  if ( !defined $self->location ) {
+  if ( !defined $self->uri ) {
     $self->add_error( $self->ERR_MISSING_L_TAG );
   }
-  elsif ( $self->location eq '' ) {
+  elsif ( $self->uri eq '' ) {
     $self->add_error( $self->ERR_EMPTY_L_TAG );
   }
-  elsif ( ! ( $self->location =~ /^https:\/\// ) ) {
+  elsif ( ! ( $self->uri =~ /^https:\/\// ) ) {
     $self->add_error( $self->ERR_INVALID_TRANSPORT_L );
   }
   else {
@@ -58,7 +58,7 @@ sub _build_is_valid($self) {
 sub _build_indicator($self) {
   return if !$self->is_location_valid;
   return if !$self->is_relevant;
-  return Mail::BIMI::Indicator->new( location => $self->location, bimi_object => $self->bimi_object );
+  return Mail::BIMI::Indicator->new( uri => $self->uri, bimi_object => $self->bimi_object );
 }
 
 =method I<finish()>

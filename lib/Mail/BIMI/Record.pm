@@ -48,22 +48,22 @@ sub _build_version($self) {
 }
 
 sub _build_authority($self) {
-  my $record;
+  my $uri;
   if ( exists $self->record->{a} ) {
-    $record = $self->record->{a} // '';
+    $uri = $self->record->{a} // '';
   }
   # TODO better parser here
-  return Mail::BIMI::Record::Authority->new( authority => $record, bimi_object => $self->bimi_object );
+  return Mail::BIMI::Record::Authority->new( uri => $uri, bimi_object => $self->bimi_object );
 }
 
 sub _build_location($self) {
-  my $record;
+  my $uri;
   if ( exists $self->record->{l} ) {
-    $record = $self->record->{l} // '';
+    $uri = $self->record->{l} // '';
   }
   # TODO better parser here
   # Need to decode , and ; as per spec>
-  my $location = Mail::BIMI::Record::Location->new( location => $record, is_relevant => $self->location_is_relevant, bimi_object => $self->bimi_object );
+  my $location = Mail::BIMI::Record::Location->new( uri => $uri, is_relevant => $self->location_is_relevant, bimi_object => $self->bimi_object );
   return $location;
 }
 

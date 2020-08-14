@@ -11,7 +11,7 @@ with(
   'Mail::BIMI::Role::Error',
 );
 has is_authority_valid => ( is => 'rw', lazy => 1, builder => '_build_is_authority_valid' );
-has authority => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
+has uri => ( is => 'rw', isa => 'Maybe[Str]', required => 1,
   documentation => 'inputs: URI of VMC', );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
   documentation => 'Is this Authority valid' );
@@ -25,10 +25,10 @@ Class for representing, validating, and processing a BIMI authority attribute
 =cut
 
 sub _build_is_authority_valid($self) {
-  return 1 if !defined $self->authority;
-  return 1 if $self->authority eq '';
-  return 1 if $self->authority eq 'self';
-  if ( ! ( $self->authority =~ /^https:\/\// ) ) {
+  return 1 if !defined $self->uri;
+  return 1 if $self->uri eq '';
+  return 1 if $self->uri eq 'self';
+  if ( ! ( $self->uri =~ /^https:\/\// ) ) {
     $self->add_error( $self->ERR_INVALID_TRANSPORT_A );
   }
 
@@ -43,9 +43,9 @@ Return trus if this Authority is relevant to validation
 =cut
 
 sub is_relevant($self) {
-  return 0 if !defined $self->authority;
-  return 0 if $self->authority eq '';
-  return 0 if $self->authority eq 'self';
+  return 0 if !defined $self->uri;
+  return 0 if $self->uri eq '';
+  return 0 if $self->uri eq 'self';
   return 0 if $self->bimi_object->OPT_NO_VALIDATE_CERT;
   warn 'Authority is relevant' if $self->bimi_object->OPT_VERBOSE;
   return 1;
@@ -65,7 +65,7 @@ sub _build_is_valid($self) {
 sub _build_vmc($self) {
   return if !$self->is_authority_valid;
   return if !$self->is_relevant;
-  return Mail::BIMI::VMC->new( authority => $self->authority, bimi_object => $self->bimi_object );
+  return Mail::BIMI::VMC->new( uri => $self->uri, bimi_object => $self->bimi_object );
 }
 
 =method I<finish()>

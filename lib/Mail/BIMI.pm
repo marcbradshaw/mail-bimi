@@ -260,12 +260,12 @@ sub _build_result($self) {
 
   my @bimi_location;
   if ( $self->record->authority && $self->record->authority->is_relevant ) {
-    push @bimi_location, '    l='.$self->record->location->location if $self->record->location_is_relevant;
-    push @bimi_location, '    a='.$self->record->authority->authority;
+    push @bimi_location, '    l='.$self->record->location->uri if $self->record->location_is_relevant;
+    push @bimi_location, '    a='.$self->record->authority->uri;
     $result->headers->{'BIMI-Indicator'} = $self->record->authority->vmc->indicator->header;
   }
   else {
-    push @bimi_location, '    l='.$self->record->location->location;
+    push @bimi_location, '    l='.$self->record->location->uri;
     $result->headers->{'BIMI-Indicator'} = $self->record->location->indicator->header;
   }
 

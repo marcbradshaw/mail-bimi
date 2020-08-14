@@ -13,7 +13,7 @@ use Mail::BIMI::Record::Authority;
 my $bimi = Mail::BIMI->new;
 my $record = Mail::BIMI::Record->new(bimi_object=>$bimi,domain=>'example.com');
 $bimi->record($record);
-my $authority = Mail::BIMI::Record::Authority->new(bimi_object=>$bimi,authority=>'');
+my $authority = Mail::BIMI::Record::Authority->new(bimi_object=>$bimi,uri=>'');
 $record->authority($authority);
 
 subtest 'on record' => sub {

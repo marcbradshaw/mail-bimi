@@ -17,10 +17,10 @@ with(
   'Mail::BIMI::Role::Data',
   'Mail::BIMI::Role::Cacheable',
 );
-has location => ( is => 'rw', isa => Str, traits => ['CacheKey'],
+has uri => ( is => 'rw', isa => Str, traits => ['CacheKey'],
   documentation => 'inputs: URL to retrieve Indicator from', );
 has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
-  documentation => 'inputs: Raw data representing the Indicator; Fetches from location if not given', );
+  documentation => 'inputs: Raw data representing the Indicator; Fetches from uri if not given', );
 has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', traits => ['Cacheable'],
   documentation => 'Raw data in uncompressed form' );
 has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml',
@@ -105,7 +105,7 @@ sub _build_parser($self) {
 }
 
 sub _build_data($self) {
-  if ( ! $self->location ) {
+  if ( ! $self->uri ) {
     $self->add_error( $self->ERR_CODE_MISSING_LOCATION );
     return '';
   }
@@ -113,7 +113,7 @@ sub _build_data($self) {
     warn 'Reading SVG from file '.$self->bimi_object->OPT_SVG_FROM_FILE if $self->bimi_object->OPT_VERBOSE;
     return scalar read_file $self->bimi_object->OPT_SVG_FROM_FILE;
   }
-  my $data = $self->http_client_get( $self->location );
+  my $data = $self->http_client_get( $self->uri );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
       $self->add_error($self->ERR_SVG_FETCH_ERROR($self->http_client_response->{content}));
@@ -128,7 +128,7 @@ sub _build_data($self) {
 
 sub _build_is_valid($self) {
 
-  if (!($self->data||$self->location)) {
+  if (!($self->data||$self->uri)) {
     $self->add_error( $self->ERR_CODE_NOTHING_TO_VALIDATE );
     return 0;
   }

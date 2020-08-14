@@ -15,7 +15,7 @@ with(
   'Mail::BIMI::Role::HTTPClient',
   'Mail::BIMI::Role::Cacheable',
 );
-has authority => ( is => 'rw', isa => Str, traits => ['CacheKey'],
+has uri => ( is => 'rw', isa => Str, traits => ['CacheKey'],
   documentation => 'inputs: URI of this VMC', );
 has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
   documentation => 'inputs: Raw data of the VMC contents; Fetched from authority URI if not given', );
@@ -44,14 +44,14 @@ sub cache_valid_for($self) { return 3600 }
 sub http_client_max_fetch_size($self) { return $self->bimi_object->OPT_VMC_MAX_FETCH_SIZE };
 
 sub _build_data($self) {
-  if ( ! $self->authority ) {
+  if ( ! $self->uri ) {
     $self->add_error( $self->ERR_CODE_MISSING_AUTHORITY );
     return;
   }
   if ($self->bimi_object->OPT_VMC_FROM_FILE) {
     return scalar read_file $self->bimi_object->OPT_VMC_FROM_FILE;
   }
-  my $data = $self->http_client_get( $self->authority );
+  my $data = $self->http_client_get( $self->uri );
   if ( !$self->http_client_response->{success} ) {
     if ( $self->http_client_response->{status} == 599 ) {
       $self->add_error($self->ERR_VMC_FETCH_ERROR($self->http_client_response->{content}));
