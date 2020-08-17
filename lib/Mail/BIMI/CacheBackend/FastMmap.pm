@@ -16,7 +16,7 @@ Cache worker role for Cache::FastMmap backend
 =cut
 
 sub _build_cache_fastmmap($self) {
-  my $cache_filename = $self->bimi_object->options->cache_fastmmap_share_file;
+  my $cache_filename = $self->parent->bimi_object->options->cache_fastmmap_share_file;
   my $init_file = -e $cache_filename ? 0 : 1;
   my $cache = Cache::FastMmap->new( share_file => $cache_filename, serializer => 'sereal', init_file => $init_file, unlink_on_exit => 0 );
   return $cache;
