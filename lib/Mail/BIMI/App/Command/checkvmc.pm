@@ -29,7 +29,7 @@ sub opt_spec {
 sub validate_args($self,$opt,$args) {
  $self->usage_error('No URI specified') if !@$args;
  $self->usage_error('Multiple URIs specified') if scalar @$args > 1;
- $self->usage_error('Unknown SVG Profile') if $opt->profile && !grep {$opt->profile} @Mail::BIMI::Indicator::VALIDATOR_PROFILES
+ $self->usage_error('Unknown SVG Profile') if $opt->profile && !grep {;$_ eq $opt->profile} @Mail::BIMI::Indicator::VALIDATOR_PROFILES
 }
 
 sub execute($self,$opt,$args) {
