@@ -23,7 +23,7 @@ sub _build_cache_hash($self) {
   my $context = Digest::SHA->new;
   ## TODO make sure there are no wide characters present in cache key
   $context->add($self->parent->_cache_key);
-  my $hash = $context->hexhash;
+  my $hash = $context->hexdigest;
   $hash =~ s/ //g;
   return $hash;
 }
