@@ -36,7 +36,7 @@ is_deeply(
 
 my $expected_data = {};
 
-is_deeply( $record->record, $expected_data, 'Parsed data' );
+is_deeply( $record->record_hashref, $expected_data, 'Parsed data' );
 
 my $expected_url = undef;
 is_deeply( $record->location->uri, $expected_url, 'URL' );

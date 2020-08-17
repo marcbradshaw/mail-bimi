@@ -77,7 +77,7 @@ sub test_record {
   my ( $entry, $domain, $selector ) = @_;
   my $bimi = Mail::BIMI->new;
   my $record = Mail::BIMI::Record->new( bimi_object => $bimi, domain => $domain, selector => $selector );
-  $record->record( $record->_parse_record( $entry ) );
+  $record->record_hashref( $record->_parse_record( $entry ) );
   $record->is_valid;
   return [ $record->is_valid, $record->error_codes ];
 }

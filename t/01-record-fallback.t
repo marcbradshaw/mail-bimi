@@ -31,7 +31,7 @@ $resolver->zonefile_read('t/zonefile');
   $bimi->selector( 'FAKEfoobar' );
 
   my $record = $bimi->record;
-  $record->record;
+  $record->record_hashref;
   is_deeply( $record->domain, 'gallifreyburning.com', 'Fallback domain' );
   is_deeply( $record->selector, 'default', 'Fallback selector' );
 }
@@ -49,7 +49,7 @@ $resolver->zonefile_read('t/zonefile');
   $bimi->selector( 'FAKEfoobar' );
 
   my $record = $bimi->record;
-  $record->record;
+  $record->record_hashref;
 
   is_deeply( $record->domain, 'gallifreyburning.com', 'Fallback domain' );
   is_deeply( $record->selector, 'default', 'Fallback selector' );

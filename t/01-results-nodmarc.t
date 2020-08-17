@@ -11,7 +11,7 @@ use Mail::BIMI::Record;
 
 my $bimi = Mail::BIMI->new( domain => 'test.example.com', selector => 'default' );
 my $record = Mail::BIMI::Record->new( bimi_object => $bimi, domain => 'test.example.com', selector => 'default' );
-$record->record( $record->_parse_record( 'v=bimi1; l=https://bimi.example.com/marks/' ) );
+$record->record_hashref( $record->_parse_record( 'v=bimi1; l=https://bimi.example.com/marks/' ) );
 $bimi->record($record);
 
 my $result = $bimi->result;

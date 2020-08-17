@@ -38,7 +38,7 @@ my $expected_data = {
     'v' => 'bimi1'
 };
 
-is_deeply( $record->record, $expected_data, 'Parsed data' );
+is_deeply( $record->record_hashref, $expected_data, 'Parsed data' );
 
 my $expected_url = 'https://fastmaildmarc.com/FM_BIMI.svg';
 is_deeply( $record->location->uri, $expected_url, 'URL' );
