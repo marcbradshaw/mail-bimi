@@ -1,4 +1,4 @@
-package Mail::BIMI::Role::HTTPClient;
+package Mail::BIMI::Role::HasHTTPClient;
 # ABSTRACT: Class to model a DNS resolver
 # VERSION
 use 5.20.0;

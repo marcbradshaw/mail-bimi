@@ -31,7 +31,7 @@ BEGIN {
     Mail::BIMI::Role::Cacheable
     Mail::BIMI::Role::Data
     Mail::BIMI::Role::HasError
-    Mail::BIMI::Role::HTTPClient
+    Mail::BIMI::Role::HasHTTPClient
     Mail::BIMI::VMC
     Mail::BIMI::VMC::Cert
     Mail::BIMI::VMC::Chain

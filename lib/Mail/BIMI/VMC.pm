@@ -12,7 +12,7 @@ use Mail::BIMI::VMC::Chain;
 with(
   'Mail::BIMI::Role::Base',
   'Mail::BIMI::Role::HasError',
-  'Mail::BIMI::Role::HTTPClient',
+  'Mail::BIMI::Role::HasHTTPClient',
   'Mail::BIMI::Role::Cacheable',
 );
 has uri => ( is => 'rw', isa => Str, traits => ['CacheKey'],
