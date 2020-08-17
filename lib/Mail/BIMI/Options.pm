@@ -4,7 +4,6 @@ package Mail::BIMI::Options;
 use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
-use Mozilla::CA;
 
 =head1 DESCRIPTION
 
@@ -30,8 +29,8 @@ has no_validate_svg => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL
   documentation => 'Do not validate SVG' );
 has require_vmc => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_REQUIRE_VMC}},
   documentation => 'Require VMC validation' );
-has ssl_root_cert => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_SSL_ROOT_CERT}//Mozilla::CA::SSL_ca_file},
-  documentation => 'Location of SSL Root Cert Bundle' );
+has ssl_root_cert => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_SSL_ROOT_CERT}//undef},
+  documentation => 'Location of SSL Root Cert Bundle - Defaults to Mozilla::CA bundle plus Known BIMI Root Certs' );
 has strict_spf => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_STRICT_SPF}},
   documentation => 'Disallow SPF +all' );
 has svg_from_file => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_SVG_FROM_FILE}},

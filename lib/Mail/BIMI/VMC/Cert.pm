@@ -7,7 +7,7 @@ use Mail::BIMI::Prelude;
 use Convert::ASN1;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
-use File::Temp qw{ tempfile };
+use File::Temp;
 
 extends 'Mail::BIMI::Base';
 with(

@@ -7,18 +7,21 @@ use Mail::BIMI::Prelude;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
+use File::Temp;
+use Mozilla::CA;
 use Term::ANSIColor qw{ :constants };
 
 extends 'Mail::BIMI::Base';
-with 'Mail::BIMI::Role::HasError';
+with(
+  'Mail::BIMI::Role::Data',
+  'Mail::BIMI::Role::HasError',
+);
 has cert_list => ( is => 'rw', isa => ArrayRef,
   documentation => 'ArrayRef of individual Certificates in the chain' );
 has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list',
   documentation => 'ArrayRef of Crypt::OpenSSL::X509 objects for the Certificates in the chain' );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
   documentation => 'Does the VMC of this chain validate back to root?' );
-has root_cert => ( is => 'rw', isa => Str,
-  documentation => 'Root certificate file' );
 
 =head1 DESCRIPTION
 
@@ -29,8 +32,21 @@ Class for representing, retrieving, validating, and processing a VMC Certificate
 sub _build_is_valid($self) {
   # Start with root cert validations
   return 0 if !$self->vmc;
-  my $root_ca = Crypt::OpenSSL::Verify->new($self->bimi_object->options->ssl_root_cert,{noCApath=>0});
-  my $root_ca_ascii = scalar read_file $self->bimi_object->options->ssl_root_cert;
+
+  my $ssl_root_cert = $self->bimi_object->options->ssl_root_cert;
+  my $unlink_root_cert_file = 0;
+  if ( !$ssl_root_cert ) {
+    my $mozilla_root = scalar read_file Mozilla::CA::SSL_ca_file;
+    my $bimi_root = $self->get_data_from_file('CA.pem');
+    my $unlink_root_cert_file = 1;
+    my $temp_fh = File::Temp->new(UNLINK=>0);
+    $ssl_root_cert = $temp_fh->filename;
+    print $temp_fh join("\n",$mozilla_root,$bimi_root);
+    close $temp_fh;
+  }
+
+  my $root_ca = Crypt::OpenSSL::Verify->new($ssl_root_cert,{noCApath=>0});
+  my $root_ca_ascii = scalar read_file $ssl_root_cert;
   foreach my $cert ( $self->cert_object_list->@* ) {
     my $i = $cert->index;
     if ($cert->is_expired) {
@@ -92,6 +108,8 @@ sub _build_is_valid($self) {
   if ( !$self->vmc->valid_to_root ) {
     $self->add_error('VMC_PARSE_ERROR','Could not verify VMC');
   }
+
+  unlink $ssl_root_cert if $unlink_root_cert_file;
 
   return 0 if $self->error->@*;
   return 1;
