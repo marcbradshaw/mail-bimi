@@ -29,7 +29,7 @@ sub _build_is_authority_valid($self) {
   return 1 if $self->uri eq '';
   return 1 if $self->uri eq 'self';
   if ( ! ( $self->uri =~ /^https:\/\// ) ) {
-    $self->add_error( $self->ERR_INVALID_TRANSPORT_A );
+    $self->add_error('INVALID_TRANSPORT_A');
   }
 
   return 0 if $self->error->@*;
@@ -54,7 +54,7 @@ sub is_relevant($self) {
 sub _build_is_valid($self) {
   return 0 if !$self->is_authority_valid;
   if ( $self->is_relevant && !$self->vmc->is_valid ) {
-    $self->add_error( $self->vmc->error );
+    $self->add_error_object( $self->vmc->error );
   }
 
   return 0 if $self->error->@*;

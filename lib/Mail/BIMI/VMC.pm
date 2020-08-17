@@ -45,7 +45,7 @@ sub http_client_max_fetch_size($self) { return $self->bimi_object->options->vmc_
 
 sub _build_data($self) {
   if ( ! $self->uri ) {
-    $self->add_error( $self->ERR_CODE_MISSING_AUTHORITY );
+    $self->add_error('CODE_MISSING_AUTHORITY');
     return;
   }
   if ($self->bimi_object->options->vmc_from_file) {
@@ -55,10 +55,10 @@ sub _build_data($self) {
   my $response = $self->http_client->get( $self->uri );
   if ( !$response->{success} ) {
     if ( $response->{status} == 599 ) {
-      $self->add_error($self->ERR_VMC_FETCH_ERROR($response->{content}));
+      $self->add_error('VMC_FETCH_ERROR',$response->{content});
     }
       else {
-      $self->add_error($self->ERR_VMC_FETCH_ERROR($response->{status}));
+      $self->add_error('VMC_FETCH_ERROR',$response->{status});
     }
     return '';
   }
@@ -230,7 +230,7 @@ sub _build_indicator_uri($self) {
     1;
   } || do {
     my $error = $@;
-    $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not extract SVG from VMC'));
+    $self->add_error('VMC_PARSE_ERROR','Could not extract SVG from VMC');
   };
   return $uri;
 }
@@ -247,7 +247,7 @@ sub _build_indicator($self) {
     return Mail::BIMI::Indicator->new( location => $self->indicator_uri, data => $data, bimi_object => $self->bimi_object );
   }
   else {
-    $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not extract SVG from VMC'));
+    $self->add_error('VMC_PARSE_ERROR','Could not extract SVG from VMC');
     return;
   }
 }
@@ -255,17 +255,17 @@ sub _build_indicator($self) {
 
 sub _build_is_valid($self) {
 
-  $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Expired')) if $self->is_expired;
-  $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Missing usage flag')) if !$self->has_valid_usage;
-  $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Invalid alt name')) if !$self->is_valid_alt_name;
+  $self->add_error('VMC_VALIDATION_ERROR','Expired') if $self->is_expired;
+  $self->add_error('VMC_VALIDATION_ERROR','Missing usage flag') if !$self->has_valid_usage;
+  $self->add_error('VMC_VALIDATION_ERROR','Invalid alt name') if !$self->is_valid_alt_name;
   $self->is_cert_valid;
 
   if ( $self->chain_object && !$self->chain_object->is_valid ) {
-    $self->add_error( $self->chain_object->error );
+    $self->add_error_object( $self->chain_object->error );
   }
 
   if ( $self->indicator && !$self->indicator->is_valid ) {
-    $self->add_error( $self->indicator->error );
+    $self->add_error_object( $self->indicator->error );
   }
 
   return 0 if $self->error->@*;

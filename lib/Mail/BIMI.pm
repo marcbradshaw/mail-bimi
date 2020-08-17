@@ -123,11 +123,11 @@ sub _build_result($self) {
 
   # does DMARC pass
   if ( ! $self->dmarc_result_object ) {
-    $result->set_result( 'skipped', $self->ERR_NO_DMARC );
+    $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
     return $result;
   }
   if ( $self->dmarc_result_object->result ne 'pass' ) {
-      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_PASS($self->dmarc_result_object->result));
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_PASS',detail=>$self->dmarc_result_object->result));
       return $result;
   }
 
@@ -139,20 +139,20 @@ sub _build_result($self) {
     my $published_policy_pct = $dmarc->result->published->pct // 100;
     my $effective_published_policy = ( $dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
     if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
-      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
       return $result;
     }
     if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
-      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
       return $result;
     }
     if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
-      $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
       return $result;
     }
   }
   else {
-    $result->set_result( 'skipped', $self->ERR_NO_DMARC );
+    $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
     return $result;
   }
 
@@ -169,20 +169,20 @@ sub _build_result($self) {
       my $published_policy_pct = $org_dmarc->result->published->pct // 100;
       my $effective_published_policy = ( $org_dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
       if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
-        $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+        $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
         return $result;
       }
       if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
-        $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+        $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
         return $result;
       }
       if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
-        $result->set_result( 'skipped', $self->ERR_DMARC_NOT_ENFORCING );
+        $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
         return $result;
       }
     }
     else {
-      $result->set_result( 'skipped', $self->ERR_NO_DMARC );
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
       return $result;
     }
   }
@@ -198,7 +198,7 @@ sub _build_result($self) {
           if ( @spf_terms ) {
             my $last_term = pop @spf_terms;
             if ( $last_term->name eq 'all' && $last_term->qualifier eq '+') {
-              $result->set_result( 'skipped', $self->ERR_SPF_PLUS_ALL );
+              $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'SPF_PLUS_ALL'));
               return $result;
             }
           }
@@ -252,7 +252,7 @@ sub _build_result($self) {
         }
       }
       if ( !$found_error ) {
-        $result->set_result( 'fail', $self->ERR_BIMI_INVALID );
+        $result->set_result( 'fail', Mail::BIMI::Error->new(code=>'BIMI_INVALID'));
       }
     }
     return $result;

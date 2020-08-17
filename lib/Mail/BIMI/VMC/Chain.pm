@@ -92,7 +92,7 @@ sub _build_is_valid($self) {
     }
   } until !$work_done;
   if ( !$self->vmc->valid_to_root ) {
-     $self->add_error($self->ERR_VMC_PARSE_ERROR('Could not verify VMC'));
+    $self->add_error('VMC_PARSE_ERROR','Could not verify VMC');
   }
 
   return 0 if $self->error->@*;
@@ -108,12 +108,12 @@ sub vmc($self) {
     next if !$exts;
     if ( $cert->has_valid_usage && exists $exts->{'1.3.6.1.5.5.7.1.12'}) {
       # Has both extended usage and embedded Indicator
-      $self->add_error($self->ERR_VMC_VALIDATION_ERROR('Multiple VMCs found in chain')) if $vmc;
+      $self->add_error('VMC_VALIDATION_ERROR','Multiple VMCs found in chain') if $vmc;
       $vmc = $cert;
     }
   }
   if ( !$vmc ) {
-    $self->add_error($self->ERR_VMC_VALIDATION_ERROR('No valid VMC found in chain'));
+    $self->add_error('VMC_VALIDATION_ERROR','No valid VMC found in chain');
   }
   return $vmc;
 }

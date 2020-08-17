@@ -68,7 +68,7 @@ sub _build_indicator_asn($self) {
   die $asn->error if $asn->error;
   my $decoded = $decoder->decode($indicator);
   if ( $decoder->error ) {
-    $self->add_error($self->ERR_VMC_PARSE_ERROR($decoder->error));
+    $self->add_error('VMC_PARSE_ERROR',$decoder->error);
     return;
   }
 
@@ -87,7 +87,7 @@ sub _build_object($self) {
     my $error = $@;
     chomp $error;
     $error =~ s/\. at .*$//;
-    $self->add_error($self->ERR_VMC_PARSE_ERROR($error));
+    $self->add_error('VMC_PARSE_ERROR',$error);
     return;
   };
   return $cert;

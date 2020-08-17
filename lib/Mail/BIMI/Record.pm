@@ -89,26 +89,26 @@ sub _build_is_valid($self) {
   return 0 if ! keys $self->record_hashref->%*;
 
   if ( ! exists ( $self->record_hashref->{v} ) ) {
-    $self->add_error( $self->ERR_MISSING_V_TAG );
+    $self->add_error('MISSING_V_TAG');
     return 0;
   }
   else {
-    $self->add_error( $self->ERR_EMPTY_V_TAG )   if lc $self->record_hashref->{v} eq '';
-    $self->add_error( $self->ERR_INVALID_V_TAG ) if lc $self->record_hashref->{v} ne 'bimi1';
+    $self->add_error('EMPTY_V_TAG')   if lc $self->record_hashref->{v} eq '';
+    $self->add_error('INVALID_V_TAG') if lc $self->record_hashref->{v} ne 'bimi1';
     return 0 if $self->error->@*;
   }
   if ($self->authority->is_relevant && !$self->authority->is_valid) {
-    $self->add_error( $self->authority->error );
+    $self->add_error_object( $self->authority->error );
   }
   if ($self->location_is_relevant && !$self->location->is_valid) {
-    $self->add_error( $self->location->error );
+    $self->add_error_object( $self->location->error );
   }
 
   return 0 if $self->error->@*;
 
   if ( $self->bimi_object->options->require_vmc ) {
       unless ( $self->authority && $self->authority->vmc && $self->authority->vmc->is_valid ) {
-          $self->add_error( $self->ERR_VMC_REQUIRED );
+          $self->add_error('VMC_REQUIRED');
       }
   }
 
@@ -117,7 +117,7 @@ sub _build_is_valid($self) {
     ## Compare raw? or Uncompressed?
     if ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed ne $self->location->indicator->data_uncompressed ) {
     #if ( $self->authority->vmc->indicator->data_maybe_compressed ne $self->location->indicator->data_maybe_compressed ) {
-      $self->add_error( $self->ERR_SVG_MISMATCH );
+      $self->add_error('SVG_MISMATCH');
     }
   }
 
@@ -139,7 +139,7 @@ sub _build_record_hashref($self) {
   } || do {
     my $error = $@;
     $error =~ s/ at \/.*$//;
-    $self->add_error($self->ERR_DNS_ERROR($error));
+    $self->add_error('DNS_ERROR',$error);
     return {};
   };
 
@@ -148,7 +148,7 @@ sub _build_record_hashref($self) {
   if ( !@records ) {
     if ( $domain eq $fallback_domain && $selector eq $fallback_selector ) {
       # nothing to fall back to
-      $self->add_error( $self->ERR_NO_BIMI_RECORD );
+      $self->add_error('NO_BIMI_RECORD');
       return {};
     }
 
@@ -160,18 +160,18 @@ sub _build_record_hashref($self) {
     } || do {
       my $error = $@;
       $error =~ s/ at \/.*$//;
-      $self->add_error($self->ERR_DNS_ERROR($error));
+      $self->add_error('DNS_ERROR',$error);
       return {};
     };
 
     @records = grep { $_ =~ /^v=bimi1;/i } @records;
 
     if ( !@records ) {
-      $self->add_error( $self->ERR_NO_BIMI_RECORD );
+      $self->add_error('NO_BIMI_RECORD');
       return {};
     }
     elsif ( scalar @records > 1 ) {
-      $self->add_error( $self->ERR_MULTI_BIMI_RECORD );
+      $self->add_error('MULTI_BIMI_RECORD');
       return {};
     }
     else {
@@ -183,7 +183,7 @@ sub _build_record_hashref($self) {
     }
   }
   elsif ( scalar @records > 1 ) {
-    $self->add_error( $self->ERR_MULTI_BIMI_RECORD );
+    $self->add_error('MULTI_BIMI_RECORD');
     return {};
   }
   else {
@@ -220,7 +220,7 @@ sub _parse_record($self,$record) {
     my ( $key, $value ) = split '=', $part, 2;
     $key = lc $key;
     if ( exists $data->{ $key } ) {
-      $self->add_error( $self->ERR_DUPLICATE_KEY );
+      $self->add_error('DUPLICATE_KEY');
     }
     if ( grep { $key eq $_ } ( qw{ v l a } ) ) {
       $data->{$key} = $value;

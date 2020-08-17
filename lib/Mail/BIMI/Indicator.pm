@@ -56,11 +56,11 @@ sub _build_data_uncompressed($self) {
       IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
       1;
     } || do {
-      $self->add_error( $self->ERR_SVG_UNZIP_ERROR );
+      $self->add_error('SVG_UNZIP_ERROR');
       return '';
     };
     if ( !$unzipped ) {
-      $self->add_error( $self->ERR_SVG_UNZIP_ERROR );
+      $self->add_error('SVG_UNZIP_ERROR');
       return '';
     }
     return $unzipped;
@@ -85,14 +85,14 @@ sub _build_data_xml($self) {
   my $xml;
   my $data = $self->data_uncompressed;
   if ( !$data ) {
-    $self->add_error( $self->ERR_SVG_GET_ERROR );
+    $self->add_error('SVG_GET_ERROR');
     return;
   }
   eval {
     $xml = XML::LibXML->new->load_xml(string => $self->data_uncompressed);
     1;
   } || do {
-    $self->add_error( $self->ERR_SVG_INVALID_XML );
+    $self->add_error('SVG_INVALID_XML');
     warn "Invalid XML :\n".$self->data_uncompressed if $self->bimi_object->options->verbose;
     return;
   };
@@ -106,7 +106,7 @@ sub _build_parser($self) {
 
 sub _build_data($self) {
   if ( ! $self->uri ) {
-    $self->add_error( $self->ERR_CODE_MISSING_LOCATION );
+    $self->add_error('CODE_MISSING_LOCATION');
     return '';
   }
   if ($self->bimi_object->options->svg_from_file) {
@@ -117,10 +117,10 @@ sub _build_data($self) {
   my $response = $self->http_client->get( $self->uri );
   if ( !$response->{success} ) {
     if ( $response->{status} == 599 ) {
-      $self->add_error($self->ERR_SVG_FETCH_ERROR($response->{content}));
+      $self->add_error('SVG_FETCH_ERROR',$response->{content});
     }
       else {
-      $self->add_error($self->ERR_SVG_FETCH_ERROR($response->{status}));
+      $self->add_error('SVG_FETCH_ERROR',$response->{status});
     }
     return '';
   }
@@ -130,18 +130,18 @@ sub _build_data($self) {
 sub _build_is_valid($self) {
 
   if (!($self->data||$self->uri)) {
-    $self->add_error( $self->ERR_CODE_NOTHING_TO_VALIDATE );
+    $self->add_error('CODE_NOTHING_TO_VALIDATE');
     return 0;
   }
 
   if (!$self->data) {
-    $self->add_error( $self->ERR_CODE_NO_DATA );
+    $self->add_error('CODE_NO_DATA');
     return 0;
   }
 
   my $is_valid;
   if ( length $self->data_uncompressed > $self->bimi_object->options->svg_max_size ) {
-    $self->add_error( $self->ERR_SVG_SIZE );
+    $self->add_error('SVG_SIZE');
   }
   else {
     if ( $self->bimi_object->options->no_validate_svg ) {
@@ -157,7 +157,7 @@ sub _build_is_valid($self) {
       } || do {
         my $validation_error = $@;
         my $error_text = ref $validation_error eq 'XML::LibXML::Error' ? $validation_error->as_string : $validation_error;
-        $self->add_error($self->ERR_SVG_VALIDATION_ERROR($error_text));
+        $self->add_error('SVG_VALIDATION_ERROR',$error_text);
       };
     }
   }

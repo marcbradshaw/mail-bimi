@@ -20,7 +20,6 @@ Role for handling validation errors
 sub serialize_error($self) {
   my @data = map {{
     code => $_->code,
-    description => $_->description,
     detail => $_->detail,
   }} $self->error->@*;
   return \@data;
@@ -30,79 +29,36 @@ sub deserialize_error($self,$value) {
   foreach my $error ($value->@*) {
     my $error_object = Mail::BIMI::Error->new(
       code => $error->{code},
-      description => $error->{description},
     );
     $error_object->detail($error->{detail}) if $error->{detail};
-    $self->add_error($error_object);
+    $self->add_error_object($error_object);
   }
 }
 
-{
-  my $error_hash = {
-    BIMI_INVALID             => 'Invalid BIMI Record',
-    BIMI_NOT_ENABLED         => 'Domain is not BIMI enabled',
-    CODE_MISSING_AUTHORITY   => 'No authority specified',
-    CODE_MISSING_LOCATION    => 'No location specified',
-    CODE_NOTHING_TO_VALIDATE => 'Nothing To Validate',
-    CODE_NO_DATA             => 'No Data',
-    DMARC_NOT_ENFORCING      => 'DMARC Policy is not at enforcement',
-    DMARC_NOT_PASS           => 'DMARC did not pass',
-    DNS_ERROR                => 'DNS query error',
-    DUPLICATE_KEY            => 'Duplicate key in record',
-    EMPTY_L_TAG              => 'Empty l tag',
-    EMPTY_V_TAG              => 'Empty v tag',
-    INVALID_TRANSPORT_A      => 'Invalid transport in authority',
-    INVALID_TRANSPORT_L      => 'Invalid transport in location',
-    INVALID_V_TAG            => 'Invalid v tag',
-    MISSING_L_TAG            => 'Missing l tag',
-    MISSING_V_TAG            => 'Missing v tag',
-    MULTIPLE_AUTHORITIES     => 'Multiple entries for a found',
-    MULTIPLE_LOCATIONS       => 'Multiple entries for l found',
-    MULTI_BIMI_RECORD        => 'Multiple BIMI records found',
-    NO_BIMI_RECORD           => 'No BIMI records found',
-    NO_DMARC                 => 'No DMARC',
-    SPF_PLUS_ALL             => 'SPF +all detected',
-    SVG_FETCH_ERROR          => 'Could not fetch SVG',
-    SVG_GET_ERROR            => 'Could not fetch SVG',
-    SVG_INVALID_XML          => 'Invalid XML in SVG',
-    SVG_MISMATCH             => 'SVG in bimi-location did not match SVG in VMC',
-    SVG_SIZE                 => 'SVG Document exceeds maximum size',
-    SVG_UNZIP_ERROR          => 'Error unzipping SVG',
-    SVG_VALIDATION_ERROR     => 'SVG did not validate',
-    VMC_FETCH_ERROR          => 'Could not fetch VMC',
-    VMC_PARSE_ERROR          => 'Could not parse VMC',
-    VMC_REQUIRED             => 'VMC is required',
-    VMC_VALIDATION_ERROR     => 'VMC did not validate',
-  };
+=method I<add_error($code,$detail)>
 
-  no strict 'refs';
-  foreach my $error ( sort keys $error_hash->%* ) {
-    my $method_name = 'ERR_'.$error;
-    Sub::Install::install_sub({
-      as => $method_name,
-      code => sub{
-        my ( $self, $detail ) = @_;
-        return Mail::BIMI::Error->new(
-          code => $error,
-          description => $error_hash->{$error},
-          ( $detail ? ( detail => $detail ) : () ),
-        );
-      },
-    });
-  }
-}
-
-
-=method I<add_error($error)>
-
-Add an error, or errors, to the current operation
+Add an error with the given code and optional detail to the current operation.
 
 =cut
 
-sub add_error($self,$error) {
-if ( ref $error eq 'ARRAY' ) {
+sub add_error($self,$code,$detail=undef) {
+  my $error = Mail::BIMI::Error->new(
+    code=>$code,
+    ($detail?(detail=>$detail):()),
+  );
+  $self->add_error_object($error);
+}
+
+=method I<add_error_object($error)>
+
+Add an existing error object, or objects, to the current operation
+
+=cut
+
+sub add_error_object($self,$error) {
+  if ( ref $error eq 'ARRAY' ) {
     foreach my $suberror ( $error->@* ){
-        $self->add_error($suberror);
+        $self->add_error_object($suberror);
     }
   }
   else {

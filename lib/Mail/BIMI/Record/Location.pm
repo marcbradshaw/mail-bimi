@@ -29,13 +29,13 @@ Class for representing, validating, and processing a BIMI location attribute
 sub _build_is_location_valid($self) {
   # Check is_valid without checking indicator, because recursion!
   if ( !defined $self->uri ) {
-    $self->add_error( $self->ERR_MISSING_L_TAG );
+    $self->add_error('MISSING_L_TAG');
   }
   elsif ( $self->uri eq '' ) {
-    $self->add_error( $self->ERR_EMPTY_L_TAG );
+    $self->add_error('EMPTY_L_TAG');
   }
   elsif ( ! ( $self->uri =~ /^https:\/\// ) ) {
-    $self->add_error( $self->ERR_INVALID_TRANSPORT_L );
+    $self->add_error('INVALID_TRANSPORT_L');
   }
   else {
   }
@@ -47,7 +47,7 @@ sub _build_is_location_valid($self) {
 sub _build_is_valid($self) {
   return 0 if !$self->is_location_valid;
   if ( !$self->indicator->is_valid ) {
-    $self->add_error( $self->indicator->error );
+    $self->add_error_object( $self->indicator->error );
   }
 
   return 0 if $self->error->@*;
