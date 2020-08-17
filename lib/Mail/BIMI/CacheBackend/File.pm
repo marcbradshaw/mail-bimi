@@ -25,7 +25,7 @@ sub get_from_cache($self) {
 }
 
 sub put_to_cache($self,$data) {
-  warn 'Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename if $self->bimi_object->OPT_VERBOSE;
+  warn 'Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename if $self->bimi_object->options->verbose;
   my $sereal_data = eval{ encode_sereal($data) };
   warn "Error writing to cachce: $@" if $@;
   return unless $sereal_data;
@@ -37,7 +37,7 @@ sub delete_cache($self) {
 }
 
 sub _build_cache_filename($self) {
-  my $cache_dir = $self->bimi_object->OPT_CACHE_FILE_DIRECTORY;
+  my $cache_dir = $self->bimi_object->options->cache_file_directory;
   return $cache_dir.'mail-bimi-cache-'.$self->_cache_hash.'.cache';
 }
 

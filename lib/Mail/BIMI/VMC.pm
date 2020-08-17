@@ -41,15 +41,15 @@ Class for representing, retrieving, validating, and processing a VMC Set
 =cut
 
 sub cache_valid_for($self) { return 3600 }
-sub http_client_max_fetch_size($self) { return $self->bimi_object->OPT_VMC_MAX_FETCH_SIZE };
+sub http_client_max_fetch_size($self) { return $self->bimi_object->options->vmc_max_fetch_size };
 
 sub _build_data($self) {
   if ( ! $self->uri ) {
     $self->add_error( $self->ERR_CODE_MISSING_AUTHORITY );
     return;
   }
-  if ($self->bimi_object->OPT_VMC_FROM_FILE) {
-    return scalar read_file $self->bimi_object->OPT_VMC_FROM_FILE;
+  if ($self->bimi_object->options->vmc_from_file) {
+    return scalar read_file $self->bimi_object->options->vmc_from_file;
   }
   my $data = $self->http_client_get( $self->uri );
   if ( !$self->http_client_response->{success} ) {
@@ -94,7 +94,7 @@ sub _build_vmc_object($self) {
 }
 
 sub _build_is_cert_valid($self) {
-  return 1 if $self->bimi_object->OPT_NO_VALIDATE_CERT;
+  return 1 if $self->bimi_object->options->no_validate_cert;
   return $self->chain_object->is_valid;
 }
 
@@ -152,7 +152,7 @@ sub is_expired($self) {
   return if !$self->vmc_object;
   my $seconds = 0;
   if ($self->vmc_object->object->checkend($seconds)) {
-    warn 'Cert is expired' if $self->bimi_object->OPT_VERBOSE;
+    warn 'Cert is expired' if $self->bimi_object->options->verbose;
     return 1;
   }
   else {
@@ -172,7 +172,7 @@ sub alt_name($self) {
   return if !$exts;
   return if !exists $exts->{'2.5.29.17'};
   my $alt_name = $exts->{'2.5.29.17'}->to_string;
-  warn 'Cert alt name '.$alt_name if $self->bimi_object->OPT_VERBOSE;
+  warn 'Cert alt name '.$alt_name if $self->bimi_object->options->verbose;
   return $alt_name;
 }
 
@@ -184,7 +184,7 @@ Return true if the VMC has a valid alt name for the domain of the current operat
 
 sub is_valid_alt_name($self) {
   return 1 if ! $self->authority_object; # Cannot check without context
-  return 1 if $self->bimi_object->OPT_VMC_NO_CHECK_ALT;
+  return 1 if $self->bimi_object->options->vmc_no_check_alt;
   my $domain = lc $self->authority_object->record_object->domain;
   return 0 if !$self->alt_name;
   my @alt_names = split( ',', lc $self->alt_name );
@@ -268,7 +268,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
-  warn 'VMC is valid' if $self->bimi_object->OPT_VERBOSE;
+  warn 'VMC is valid' if $self->bimi_object->options->verbose;
   return 1;
 }
 

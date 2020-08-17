@@ -30,7 +30,8 @@ my $spf_request = Mail::SPF::Request->new(
 
 my $spf_result = $spf_server->process($spf_request);
 
-my $bimi = Mail::BIMI->new(OPT_STRICT_SPF=>1);
+my $bimi = Mail::BIMI->new;
+$bimi->options->strict_spf(1);
 $bimi->resolver($resolver);
 
 my $dmarc = Mail::DMARC::PurePerl->new;

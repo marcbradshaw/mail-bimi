@@ -41,9 +41,9 @@ sub execute($self,$opt,$args) {
   my $bimi = Mail::BIMI->new(
     dmarc_object => $dmarc,
     domain => $domain,
-    OPT_FORCE_RECORD => $check_record,
-    OPT_VMC_NO_CHECK_ALT => $opt->domain ? 0 : 1,
   );
+  $bimi->options->force_record($check_record);
+  $bimi->options->vmc_no_check_alt($opt->domain ? 0 : 1);
 
   my $record = $bimi->record;
   #  my $record = Mail::BIMI::Record->new( domain => $domain, selector => $selector );

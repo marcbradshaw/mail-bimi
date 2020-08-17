@@ -46,8 +46,8 @@ sub is_relevant($self) {
   return 0 if !defined $self->uri;
   return 0 if $self->uri eq '';
   return 0 if $self->uri eq 'self';
-  return 0 if $self->bimi_object->OPT_NO_VALIDATE_CERT;
-  warn 'Authority is relevant' if $self->bimi_object->OPT_VERBOSE;
+  return 0 if $self->bimi_object->options->no_validate_cert;
+  warn 'Authority is relevant' if $self->bimi_object->options->verbose;
   return 1;
 }
 
@@ -58,7 +58,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
-  warn 'Authority is valid' if $self->bimi_object->OPT_VERBOSE;
+  warn 'Authority is valid' if $self->bimi_object->options->verbose;
   return 1;
 }
 

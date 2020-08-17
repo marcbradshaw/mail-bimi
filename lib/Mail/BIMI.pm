@@ -5,15 +5,13 @@ use 5.20.0;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Mail::BIMI::Prelude;
+use Mail::BIMI::Options;
 use Mail::BIMI::Record;
 use Mail::BIMI::Result;
 use Mail::DMARC::PurePerl;
 use Net::DNS::Resolver;
 
-with(
-  'Mail::BIMI::Role::Options',
-  'Mail::BIMI::Role::Error',
-);
+with 'Mail::BIMI::Role::Error';
 
 subtype 'MaybeDMARC'
   => as 'Any'
@@ -44,6 +42,8 @@ has result => ( is => 'rw', lazy => 1, builder => '_build_result',
   documentation => 'Mail::BIMI::Result object' );
 has time => ( is => 'ro', lazy => 1, default => sub{return time},
   documentation => 'time of retrieval - useful in testing' );
+has options => ( is => 'rw', default => sub{Mail::BIMI::Options->new},
+  documentation => 'Options class' );
 
 =head1 DESCRIPTION
 
@@ -100,7 +100,7 @@ sub _build_dmarc_result_object($self) {
 
 sub _build_dmarc_pp_object($self) {
   return $self->dmarc_object if ref $self->dmarc_object eq 'Mail::DMARC::PurePerl';
-  warn 'Building our own Mail::DMARC::PurePerl object' if $self->OPT_VERBOSE;
+  warn 'Building our own Mail::DMARC::PurePerl object' if $self->options->verbose;
   my $dmarc = Mail::DMARC::PurePerl->new;
   $dmarc->set_resolver($self->resolver);
   $dmarc->header_from($self->domain);
@@ -188,7 +188,7 @@ sub _build_result($self) {
   }
 
   # Optionally check Author Domain SPF
-  if ( $self->OPT_STRICT_SPF ) {
+  if ( $self->options->strict_spf ) {
     if ( $self->spf_object ) {
       my $spf_request = $self->spf_object->request;
       if ( $spf_request ) {

@@ -18,7 +18,8 @@ subtest 'no location' => sub {
 };
 
 subtest 'svg from file' => sub {
-  my $bimi = Mail::BIMI->new(OPT_SVG_FROM_FILE => 't/data/dummy1');
+  my $bimi = Mail::BIMI->new;
+  $bimi->options->svg_from_file('t/data/dummy1');
   my $indicator = Mail::BIMI::Indicator->new( bimi_object=>$bimi, uri => 'dummy' );
   is($indicator->data,"dummyfile1\n",'Data was read from file');
   is_deeply($indicator->error_codes,[],'No error codes');
@@ -26,7 +27,8 @@ subtest 'svg from file' => sub {
 
 subtest 'svg size (under)' => sub {
   my $xml = '<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><title>FM-Icon-RGB</title><g id="Artwork"><rect width="1024" height="1024" fill="#FFFFFF"/><path d="M120.16,512c0-216.4,175.43-391.84,391.84-391.84,136,0,255.71,69.34,326,174.53l77.19,15.21,9.58-73.06c-89-133.18-240.56-221-412.74-221C238,15.87,15.87,238,15.87,512A493.78,493.78,0,0,0,99.19,787.21l74.72,9.68L186,729.35A390,390,0,0,1,120.16,512Z" fill="#0067b9"/><path d="M926,238.64c-.41-.61-.83-1.2-1.24-1.8L838,294.69c.41.6.83,1.19,1.23,1.8A389.91,389.91,0,0,1,903.83,512c0,216.4-175.43,391.84-391.83,391.84-135.21,0-254.42-68.49-324.84-172.66-.41-.6-.79-1.22-1.19-1.83L99.19,787.21c.41.6.78,1.22,1.19,1.83C189.51,921.2,340.6,1008.13,512,1008.13c274,0,496.13-222.13,496.13-496.13A493.68,493.68,0,0,0,926,238.64Z" fill="#69b3e7"/><path d="M512,512,276.15,354.76V669.23h0l148.2-45.86Z" fill="#ffc107"/><path d="M276.15,669.24H731.27a16.58,16.58,0,0,0,16.58-16.59V354.76Z" fill="#333e48"/></g></svg>';
-  my $bimi = Mail::BIMI->new(OPT_SVG_MAX_SIZE => 1027);
+  my $bimi = Mail::BIMI->new;
+  $bimi->options->svg_max_size(1027);
   my $indicator = Mail::BIMI::Indicator->new( bimi_object=>$bimi, uri => 'dummy',data => $xml );
   is($indicator->is_valid,1,'SVG is valid');
   is($indicator->data,$xml,'Data was returned');
@@ -35,7 +37,8 @@ subtest 'svg size (under)' => sub {
 
 subtest 'svg size (over)' => sub {
   my $xml = '<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><title>FM-Icon-RGB</title><g id="Artwork"><rect width="1024" height="1024" fill="#FFFFFF"/><path d="M120.16,512c0-216.4,175.43-391.84,391.84-391.84,136,0,255.71,69.34,326,174.53l77.19,15.21,9.58-73.06c-89-133.18-240.56-221-412.74-221C238,15.87,15.87,238,15.87,512A493.78,493.78,0,0,0,99.19,787.21l74.72,9.68L186,729.35A390,390,0,0,1,120.16,512Z" fill="#0067b9"/><path d="M926,238.64c-.41-.61-.83-1.2-1.24-1.8L838,294.69c.41.6.83,1.19,1.23,1.8A389.91,389.91,0,0,1,903.83,512c0,216.4-175.43,391.84-391.83,391.84-135.21,0-254.42-68.49-324.84-172.66-.41-.6-.79-1.22-1.19-1.83L99.19,787.21c.41.6.78,1.22,1.19,1.83C189.51,921.2,340.6,1008.13,512,1008.13c274,0,496.13-222.13,496.13-496.13A493.68,493.68,0,0,0,926,238.64Z" fill="#69b3e7"/><path d="M512,512,276.15,354.76V669.23h0l148.2-45.86Z" fill="#ffc107"/><path d="M276.15,669.24H731.27a16.58,16.58,0,0,0,16.58-16.59V354.76Z" fill="#333e48"/></g></svg>';
-  my $bimi = Mail::BIMI->new(OPT_SVG_MAX_SIZE => 1007);
+  my $bimi = Mail::BIMI->new;
+  $bimi->options->svg_max_size(1007);
   my $indicator = Mail::BIMI::Indicator->new( bimi_object=>$bimi, uri => 'dummy',data => $xml );
   is($indicator->is_valid,0,'SVG is not valid');
   is($indicator->data,$xml,'Data was returned');
@@ -52,7 +55,8 @@ subtest 'svg invalid for profile' => sub {
 
 subtest 'svg invalid for profile (no validation)' => sub {
   my $xml = '<svg baseProfile="tiny-ps" style="foo" xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><title>FM-Icon-RGB</title><g id="Artwork"><rect width="1024" height="1024" fill="#FFFFFF"/><path d="M120.16,512c0-216.4,175.43-391.84,391.84-391.84,136,0,255.71,69.34,326,174.53l77.19,15.21,9.58-73.06c-89-133.18-240.56-221-412.74-221C238,15.87,15.87,238,15.87,512A493.78,493.78,0,0,0,99.19,787.21l74.72,9.68L186,729.35A390,390,0,0,1,120.16,512Z" fill="#0067b9"/><path d="M926,238.64c-.41-.61-.83-1.2-1.24-1.8L838,294.69c.41.6.83,1.19,1.23,1.8A389.91,389.91,0,0,1,903.83,512c0,216.4-175.43,391.84-391.83,391.84-135.21,0-254.42-68.49-324.84-172.66-.41-.6-.79-1.22-1.19-1.83L99.19,787.21c.41.6.78,1.22,1.19,1.83C189.51,921.2,340.6,1008.13,512,1008.13c274,0,496.13-222.13,496.13-496.13A493.68,493.68,0,0,0,926,238.64Z" fill="#69b3e7"/><path d="M512,512,276.15,354.76V669.23h0l148.2-45.86Z" fill="#ffc107"/><path d="M276.15,669.24H731.27a16.58,16.58,0,0,0,16.58-16.59V354.76Z" fill="#333e48"/></g></svg>';
-  my $bimi = Mail::BIMI->new(OPT_NO_VALIDATE_SVG => 1);
+  my $bimi = Mail::BIMI->new;
+  $bimi->options->no_validate_svg(1);
   my $indicator = Mail::BIMI::Indicator->new( bimi_object=>$bimi, uri => 'dummy',data => $xml );
   is($indicator->is_valid,1,'SVG is reported valid');
   is($indicator->data,$xml,'Data was returned');

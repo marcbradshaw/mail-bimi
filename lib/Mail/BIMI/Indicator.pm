@@ -41,16 +41,16 @@ Class for representing, retrieving, validating, and processing a BIMI Indicator
 =cut
 
 sub _build_validator_profile($self) {
-  return $self->bimi_object->OPT_SVG_PROFILE;
+  return $self->bimi_object->options->svg_profile;
 }
 
 sub cache_valid_for($self) { return 3600 }
-sub http_client_max_fetch_size($self) { return $self->bimi_object->OPT_SVG_MAX_FETCH_SIZE };
+sub http_client_max_fetch_size($self) { return $self->bimi_object->options->svg_max_fetch_size };
 
 sub _build_data_uncompressed($self) {
   my $data = $self->data;
   if ( $data =~ /^\037\213/ ) {
-    warn 'Uncompressing SVG' if $self->bimi_object->OPT_VERBOSE;
+    warn 'Uncompressing SVG' if $self->bimi_object->options->verbose;
     my $unzipped;
     eval {
       IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
@@ -93,7 +93,7 @@ sub _build_data_xml($self) {
     1;
   } || do {
     $self->add_error( $self->ERR_SVG_INVALID_XML );
-    warn "Invalid XML :\n".$self->data_uncompressed if $self->bimi_object->OPT_VERBOSE;
+    warn "Invalid XML :\n".$self->data_uncompressed if $self->bimi_object->options->verbose;
     return;
   };
   return $xml;
@@ -109,9 +109,9 @@ sub _build_data($self) {
     $self->add_error( $self->ERR_CODE_MISSING_LOCATION );
     return '';
   }
-  if ($self->bimi_object->OPT_SVG_FROM_FILE) {
-    warn 'Reading SVG from file '.$self->bimi_object->OPT_SVG_FROM_FILE if $self->bimi_object->OPT_VERBOSE;
-    return scalar read_file $self->bimi_object->OPT_SVG_FROM_FILE;
+  if ($self->bimi_object->options->svg_from_file) {
+    warn 'Reading SVG from file '.$self->bimi_object->options->svg_from_file if $self->bimi_object->options->verbose;
+    return scalar read_file $self->bimi_object->options->svg_from_file;
   }
   my $data = $self->http_client_get( $self->uri );
   if ( !$self->http_client_response->{success} ) {
@@ -139,19 +139,19 @@ sub _build_is_valid($self) {
   }
 
   my $is_valid;
-  if ( length $self->data_uncompressed > $self->bimi_object->OPT_SVG_MAX_SIZE ) {
+  if ( length $self->data_uncompressed > $self->bimi_object->options->svg_max_size ) {
     $self->add_error( $self->ERR_SVG_SIZE );
   }
   else {
-    if ( $self->bimi_object->OPT_NO_VALIDATE_SVG ) {
+    if ( $self->bimi_object->options->no_validate_svg ) {
       $is_valid=1;
-      warn 'Skipping SVG validation' if $self->bimi_object->OPT_VERBOSE;
+      warn 'Skipping SVG validation' if $self->bimi_object->options->verbose;
     }
     else {
       eval {
         $self->parser->validate( $self->data_xml );
         $is_valid=1;
-        warn 'SVG is valid' if $self->bimi_object->OPT_VERBOSE;
+        warn 'SVG is valid' if $self->bimi_object->options->verbose;
         1;
       } || do {
         my $validation_error = $@;

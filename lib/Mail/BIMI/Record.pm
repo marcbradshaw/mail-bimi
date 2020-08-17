@@ -77,9 +77,9 @@ If we don't have a relevant authority, or we are checking BOTH authority and loc
 
 sub location_is_relevant($self) {
   # True if we don't have a relevant authority OR if we are checking VMC AND Location
-  return 1 unless $self->bimi_object->OPT_NO_LOCATION_WITH_VMC;
+  return 1 unless $self->bimi_object->options->no_location_with_vmc;
   if ( $self->authority && $self->authority->is_relevant ) {
-    warn 'Location is not relevant' if $self->bimi_object->OPT_VERBOSE;
+    warn 'Location is not relevant' if $self->bimi_object->options->verbose;
     return 0;
   }
   return 1;
@@ -106,7 +106,7 @@ sub _build_is_valid($self) {
 
   return 0 if $self->error->@*;
 
-  if ( $self->bimi_object->OPT_REQUIRE_VMC ) {
+  if ( $self->bimi_object->options->require_vmc ) {
       unless ( $self->authority && $self->authority->vmc && $self->authority->vmc->is_valid ) {
           $self->add_error( $self->ERR_VMC_REQUIRED );
       }
@@ -122,7 +122,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
-  warn 'Record is valid' if $self->bimi_object->OPT_VERBOSE;
+  warn 'Record is valid' if $self->bimi_object->options->verbose;
   return 1;
 }
 
@@ -152,7 +152,7 @@ sub _build_record($self) {
       return {};
     }
 
-    warn 'Trying fallback domain' if $self->bimi_object->OPT_VERBOSE;
+    warn 'Trying fallback domain' if $self->bimi_object->options->verbose;
     my @records;
     eval {
       @records = $self->_get_from_dns($fallback_selector,$fallback_domain);
@@ -195,9 +195,9 @@ sub _build_record($self) {
 
 sub _get_from_dns($self,$selector,$domain) {
   my @matches;
-  if ($self->bimi_object->OPT_FORCE_RECORD) {
-    warn 'Using fake record' if $self->bimi_object->OPT_VERBOSE;
-    push @matches, $self->bimi_object->OPT_FORCE_RECORD;
+  if ($self->bimi_object->options->force_record) {
+    warn 'Using fake record' if $self->bimi_object->options->verbose;
+    push @matches, $self->bimi_object->options->force_record;
     return @matches;
   }
   my $res     = $self->bimi_object->resolver;

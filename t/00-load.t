@@ -20,6 +20,7 @@ BEGIN {
     Mail::BIMI::CacheBackend::Null
     Mail::BIMI::Error
     Mail::BIMI::Indicator
+    Mail::BIMI::Options
     Mail::BIMI::Prelude
     Mail::BIMI::Record
     Mail::BIMI::Record::Authority
@@ -31,7 +32,6 @@ BEGIN {
     Mail::BIMI::Role::Data
     Mail::BIMI::Role::Error
     Mail::BIMI::Role::HTTPClient
-    Mail::BIMI::Role::Options
     Mail::BIMI::VMC
     Mail::BIMI::VMC::Cert
     Mail::BIMI::VMC::Chain

@@ -111,7 +111,7 @@ if ( ref $error eq 'ARRAY' ) {
       $error->code,
       $error->description,
       ( $error->detail ? $error->detail : () ),
-    ) if $self->bimi_object->OPT_VERBOSE;
+    ) if $self->bimi_object->options->verbose;
     push $self->error->@*, $error;
   }
 }

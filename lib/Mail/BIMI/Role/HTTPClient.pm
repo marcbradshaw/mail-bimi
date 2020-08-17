@@ -26,7 +26,7 @@ Role for classes which require a HTTP Client implementation
     $http_client = HTTP::Tiny::Paranoid->new(
       agent => $agent,
       max_size => $self->http_client_max_fetch_size,
-      timeout => $self->bimi_object->OPT_HTTP_CLIENT_TIMEOUT,
+      timeout => $self->bimi_object->options->http_client_timeout,
       verify_SSL => 1,     # Certificates MUST verify
     );
     return $http_client;
@@ -42,7 +42,7 @@ Returns the response content and sets http_client_response
 =cut
 
 sub http_client_get($self,$url) {
-  warn 'HTTP Fetch: '.$url if $self->bimi_object->OPT_VERBOSE;
+  warn 'HTTP Fetch: '.$url if $self->bimi_object->options->verbose;
   my $response = $self->http_client->get($url);
   $self->http_client_response($response);
   return $response->{content};
