@@ -12,7 +12,7 @@ use File::Temp qw{ tempfile };
 with(
   'Mail::BIMI::Role::Base',
   'Mail::BIMI::Role::Data',
-  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HasError',
 );
 has chain => ( is => 'rw', isa => 'Mail::BIMI::VMC::Chain', required => 1, weak_ref => 1,
   documentation => 'Back reference to the chain' );

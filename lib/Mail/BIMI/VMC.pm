@@ -11,7 +11,7 @@ use Mail::BIMI::VMC::Chain;
 
 with(
   'Mail::BIMI::Role::Base',
-  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HasError',
   'Mail::BIMI::Role::HTTPClient',
   'Mail::BIMI::Role::Cacheable',
 );

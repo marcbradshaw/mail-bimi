@@ -12,7 +12,7 @@ our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
 
 with(
   'Mail::BIMI::Role::Base',
-  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HasError',
   'Mail::BIMI::Role::HTTPClient',
   'Mail::BIMI::Role::Data',
   'Mail::BIMI::Role::Cacheable',

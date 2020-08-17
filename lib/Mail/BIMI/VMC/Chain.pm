@@ -11,7 +11,7 @@ use Term::ANSIColor qw{ :constants };
 
 with(
   'Mail::BIMI::Role::Base',
-  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HasError',
 );
 has cert_list => ( is => 'rw', isa => ArrayRef,
   documentation => 'ArrayRef of individual Certificates in the chain' );

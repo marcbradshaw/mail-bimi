@@ -8,7 +8,7 @@ use Mail::BIMI::Indicator;
 
 with(
   'Mail::BIMI::Role::Base',
-  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HasError',
 );
 has is_location_valid => ( is => 'rw', lazy => 1, builder => '_build_is_location_valid' );
 has uri => ( is => 'rw', isa => 'Maybe[Str]', required => 1,

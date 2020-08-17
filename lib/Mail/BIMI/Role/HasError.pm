@@ -1,4 +1,4 @@
-package Mail::BIMI::Role::Error;
+package Mail::BIMI::Role::HasError;
 # ABSTRACT: Class to model an error
 # VERSION
 use 5.20.0;

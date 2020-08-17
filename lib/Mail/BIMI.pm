@@ -11,7 +11,7 @@ use Mail::BIMI::Result;
 use Mail::DMARC::PurePerl;
 use Net::DNS::Resolver;
 
-with 'Mail::BIMI::Role::Error';
+with 'Mail::BIMI::Role::HasError';
 
 subtype 'MaybeDMARC'
   => as 'Any'

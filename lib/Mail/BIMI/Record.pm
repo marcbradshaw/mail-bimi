@@ -11,7 +11,7 @@ use Mail::DMARC::PurePerl;
 
 with(
   'Mail::BIMI::Role::Base',
-  'Mail::BIMI::Role::Error',
+  'Mail::BIMI::Role::HasError',
   'Mail::BIMI::Role::Cacheable',
 );
 has domain => ( is => 'rw', isa => Str, required => 1, traits => ['CacheKey'],

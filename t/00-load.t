@@ -30,7 +30,7 @@ BEGIN {
     Mail::BIMI::Role::CacheBackend
     Mail::BIMI::Role::Cacheable
     Mail::BIMI::Role::Data
-    Mail::BIMI::Role::Error
+    Mail::BIMI::Role::HasError
     Mail::BIMI::Role::HTTPClient
     Mail::BIMI::VMC
     Mail::BIMI::VMC::Cert
