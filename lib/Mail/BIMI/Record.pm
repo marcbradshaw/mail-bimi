@@ -26,7 +26,7 @@ has authority => ( is => 'rw', isa => 'Mail::BIMI::Record::Authority', lazy => 1
   documentation => 'Mail::BIMI::Record::Authority object for this record' );
 has location => ( is => 'rw', isa => 'Mail::BIMI::Record::Location', lazy => 1, builder => '_build_location',
   documentation => 'Mail::BIMI::Record::Location object for this record' );
-has record => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record', traits => ['Cacheable'],
+has record_hashref => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record_hashref', traits => ['Cacheable'],
   documentation => 'Hashref of record values' );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', traits => ['Cacheable'],
   documentation => 'Is this record valid' );
@@ -41,16 +41,16 @@ sub cache_valid_for($self) { return 3600 }
 
 sub _build_version($self) {
   my $version;
-  if ( exists $self->record->{v} ) {
-    $version = $self->record->{v} // '';
+  if ( exists $self->record_hashref->{v} ) {
+    $version = $self->record_hashref->{v} // '';
   }
   return $version;
 }
 
 sub _build_authority($self) {
   my $uri;
-  if ( exists $self->record->{a} ) {
-    $uri = $self->record->{a} // '';
+  if ( exists $self->record_hashref->{a} ) {
+    $uri = $self->record_hashref->{a} // '';
   }
   # TODO better parser here
   return Mail::BIMI::Record::Authority->new( uri => $uri, bimi_object => $self->bimi_object );
@@ -58,8 +58,8 @@ sub _build_authority($self) {
 
 sub _build_location($self) {
   my $uri;
-  if ( exists $self->record->{l} ) {
-    $uri = $self->record->{l} // '';
+  if ( exists $self->record_hashref->{l} ) {
+    $uri = $self->record_hashref->{l} // '';
   }
   # TODO better parser here
   # Need to decode , and ; as per spec>
@@ -86,15 +86,15 @@ sub location_is_relevant($self) {
 }
 
 sub _build_is_valid($self) {
-  return 0 if ! keys $self->record->%*;
+  return 0 if ! keys $self->record_hashref->%*;
 
-  if ( ! exists ( $self->record->{v} ) ) {
+  if ( ! exists ( $self->record_hashref->{v} ) ) {
     $self->add_error( $self->ERR_MISSING_V_TAG );
     return 0;
   }
   else {
-    $self->add_error( $self->ERR_EMPTY_V_TAG )   if lc $self->record->{v} eq '';
-    $self->add_error( $self->ERR_INVALID_V_TAG ) if lc $self->record->{v} ne 'bimi1';
+    $self->add_error( $self->ERR_EMPTY_V_TAG )   if lc $self->record_hashref->{v} eq '';
+    $self->add_error( $self->ERR_INVALID_V_TAG ) if lc $self->record_hashref->{v} ne 'bimi1';
     return 0 if $self->error->@*;
   }
   if ($self->authority->is_relevant && !$self->authority->is_valid) {
@@ -126,7 +126,7 @@ sub _build_is_valid($self) {
   return 1;
 }
 
-sub _build_record($self) {
+sub _build_record_hashref($self) {
   my $domain            = $self->domain;
   my $selector          = $self->selector;
   my $fallback_selector = 'default';
