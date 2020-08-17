@@ -22,6 +22,17 @@ subtype 'MaybeDMARC'
   }
   => message {"dmarc_object Must be a Mail::DMARC::PurePerl, Mail::DMARC::Result, or Undefined"};
 
+coerce 'Mail::BIMI::Options'
+  => from 'HashRef'
+  => via {
+    my $args = $_;
+    my $options = Mail::BIMI::Options->new;
+    foreach my $option ( sort keys $args->%* ) {
+      $options->$option($args->{$option});
+    }
+    return $options;
+  };
+
 has domain => ( is => 'rw', isa => Str, required => 0,
   documentation => 'inputs: Domain to lookup/domain record was retrieved from', );
 has selector => ( is => 'rw', isa => Str, lazy => 1, default => sub{ return 'default' },
@@ -42,7 +53,7 @@ has result => ( is => 'rw', lazy => 1, builder => '_build_result',
   documentation => 'Mail::BIMI::Result object' );
 has time => ( is => 'ro', lazy => 1, default => sub{return time},
   documentation => 'time of retrieval - useful in testing' );
-has options => ( is => 'rw', default => sub{Mail::BIMI::Options->new},
+has options => ( is => 'rw', isa => 'Mail::BIMI::Options', default => sub{Mail::BIMI::Options->new}, coerce => 1,
   documentation => 'Options class' );
 
 =head1 DESCRIPTION
