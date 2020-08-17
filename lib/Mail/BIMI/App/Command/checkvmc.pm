@@ -42,10 +42,11 @@ sub execute($self,$opt,$args) {
   else {
     $bimi_opt{domain} = 'example.com';
   }
+  $bimi_opt{options} = {};
+  $bimi_opt{options}->{vmc_no_check_alt} = 1 if !$opt->domain;
+  $bimi_opt{options}->{vmc_from_file} = $uri if $opt->fromfile;
 
   my $bimi = Mail::BIMI->new(%bimi_opt);
-  $bimi->options->vmc_no_check_alt(1) if !$opt->domain;
-  $bimi->options->vmc_from_file($uri) if $opt->fromfile;
 
   my $vmc = Mail::BIMI::VMC->new( uri => $uri, bimi_object => $bimi );
   #  $indicator->validator_profile($opt->profile) if $opt->profile;
