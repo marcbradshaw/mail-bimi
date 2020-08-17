@@ -4,7 +4,7 @@ package Mail::BIMI::Role::CacheBackend;
 use 5.20.0;
 use Moose::Role;
 use Mail::BIMI::Prelude;
-use Digest::SHA256;
+use Digest::SHA;
 
 has parent => ( is => 'ro', required => 1, weak_ref => 1,
   documentation => 'Parent class for cacheing' );
@@ -21,9 +21,10 @@ Role for implementing a cache backend
 =cut
 
 sub _build_cache_hash($self) {
-  my $context = Digest::SHA256::new(512);
+  my $context = Digest::SHA::new;
   ## TODO make sure there are no wide characters present in cache key
-  my $hash = $context->hexhash( $self->parent->_cache_key );
+  $context->add($self->parent->_cache_key);
+  my $hash = $context->hexhash;
   $hash =~ s/ //g;
   return $hash;
 }
