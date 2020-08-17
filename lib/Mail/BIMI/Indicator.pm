@@ -10,8 +10,8 @@ use Term::ANSIColor qw{ :constants };
 use XML::LibXML;
 our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
 
+extends 'Mail::BIMI::Base';
 with(
-  'Mail::BIMI::Role::Base',
   'Mail::BIMI::Role::HasError',
   'Mail::BIMI::Role::HasHTTPClient',
   'Mail::BIMI::Role::Data',

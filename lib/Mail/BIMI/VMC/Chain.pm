@@ -9,10 +9,8 @@ use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
 use Term::ANSIColor qw{ :constants };
 
-with(
-  'Mail::BIMI::Role::Base',
-  'Mail::BIMI::Role::HasError',
-);
+extends 'Mail::BIMI::Base';
+with 'Mail::BIMI::Role::HasError';
 has cert_list => ( is => 'rw', isa => ArrayRef,
   documentation => 'ArrayRef of individual Certificates in the chain' );
 has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list',

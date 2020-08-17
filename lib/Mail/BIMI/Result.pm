@@ -8,7 +8,7 @@ use Mail::AuthenticationResults::Header::Entry;
 use Mail::AuthenticationResults::Header::SubEntry;
 use Mail::AuthenticationResults::Header::Comment;
 
-with 'Mail::BIMI::Role::Base';
+extends 'Mail::BIMI::Base';
 has result => ( is => 'rw', isa => Str,
   documentation => 'Text result' );
 has comment => ( is => 'rw', isa => Str,

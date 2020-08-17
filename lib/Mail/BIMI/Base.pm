@@ -1,8 +1,8 @@
-package Mail::BIMI::Role::Base;
-# ABSTRACT: Base role for Mail::BIMI subclasses
+package Mail::BIMI::Base;
+# ABSTRACT: Base class for Mail::BIMI subclasses
 # VERSION
 use 5.20.0;
-use Moose::Role;
+use Moose;
 use Mail::BIMI::Prelude;
 
 has bimi_object => ( is => 'ro', isa => 'Mail::BIMI', required => 1, weak_ref => 1,
@@ -10,7 +10,7 @@ has bimi_object => ( is => 'ro', isa => 'Mail::BIMI', required => 1, weak_ref =>
 
 =head1 DESCRIPTION
 
-Base BIMI Role with common methods and attributes
+Base BIMI class with common methods and attributes
 
 =cut
 

@@ -15,6 +15,7 @@ BEGIN {
     Mail::BIMI::App::Command::checkrecord
     Mail::BIMI::App::Command::checksvg
     Mail::BIMI::App::Command::checkvmc
+    Mail::BIMI::Base
     Mail::BIMI::CacheBackend::FastMmap
     Mail::BIMI::CacheBackend::File
     Mail::BIMI::CacheBackend::Null
@@ -26,7 +27,6 @@ BEGIN {
     Mail::BIMI::Record::Authority
     Mail::BIMI::Record::Location
     Mail::BIMI::Result
-    Mail::BIMI::Role::Base
     Mail::BIMI::Role::CacheBackend
     Mail::BIMI::Role::Cacheable
     Mail::BIMI::Role::Data

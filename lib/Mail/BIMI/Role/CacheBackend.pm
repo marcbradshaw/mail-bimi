@@ -9,7 +9,6 @@ use Digest::SHA;
 has parent => ( is => 'ro', required => 1, weak_ref => 1,
   documentation => 'Parent class for cacheing' );
 has _cache_hash => ( is => 'ro', lazy => 1, builder => '_build_cache_hash' );
-with 'Mail::BIMI::Role::Base';
 requires 'get_from_cache';
 requires 'put_to_cache';
 requires 'delete_cache';

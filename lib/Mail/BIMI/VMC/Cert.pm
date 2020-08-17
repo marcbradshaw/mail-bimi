@@ -9,8 +9,8 @@ use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
 use File::Temp qw{ tempfile };
 
+extends 'Mail::BIMI::Base';
 with(
-  'Mail::BIMI::Role::Base',
   'Mail::BIMI::Role::Data',
   'Mail::BIMI::Role::HasError',
 );

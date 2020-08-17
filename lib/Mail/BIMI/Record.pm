@@ -9,8 +9,8 @@ use Mail::BIMI::Record::Authority;
 use Mail::BIMI::Record::Location;
 use Mail::DMARC::PurePerl;
 
+extends 'Mail::BIMI::Base';
 with(
-  'Mail::BIMI::Role::Base',
   'Mail::BIMI::Role::HasError',
   'Mail::BIMI::Role::Cacheable',
 );

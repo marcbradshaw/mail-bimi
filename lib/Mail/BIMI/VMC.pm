@@ -9,8 +9,8 @@ use Term::ANSIColor qw{ :constants };
 use Mail::BIMI::Indicator;
 use Mail::BIMI::VMC::Chain;
 
+extends 'Mail::BIMI::Base';
 with(
-  'Mail::BIMI::Role::Base',
   'Mail::BIMI::Role::HasError',
   'Mail::BIMI::Role::HasHTTPClient',
   'Mail::BIMI::Role::Cacheable',
