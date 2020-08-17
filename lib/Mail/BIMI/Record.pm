@@ -255,8 +255,8 @@ sub app_validate($self) {
     say YELLOW.'  Version   '.WHITE.': '.CYAN.($self->version//'-none-').RESET;
     say YELLOW.'  Domain    '.WHITE.': '.CYAN.($self->domain//'-none-').RESET;
     say YELLOW.'  Selector  '.WHITE.': '.CYAN.($self->selector//'-none-').RESET;
-    say YELLOW.'  Authority '.WHITE.': '.CYAN.($self->authority->authority//'-none-').RESET if $self->authority;
-    say YELLOW.'  Location  '.WHITE.': '.CYAN.($self->location->location//'-none-').RESET if $self->location_is_relevant && $self->location;
+    say YELLOW.'  Authority '.WHITE.': '.CYAN.($self->authority->uri//'-none-').RESET if $self->authority;
+    say YELLOW.'  Location  '.WHITE.': '.CYAN.($self->location->uri//'-none-').RESET if $self->location_is_relevant && $self->location;
     say YELLOW.'  Is Valid  '.WHITE.': '.($self->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   }
 
