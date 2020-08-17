@@ -113,17 +113,18 @@ sub _build_data($self) {
     warn 'Reading SVG from file '.$self->bimi_object->options->svg_from_file if $self->bimi_object->options->verbose;
     return scalar read_file $self->bimi_object->options->svg_from_file;
   }
-  my $data = $self->http_client_get( $self->uri );
-  if ( !$self->http_client_response->{success} ) {
-    if ( $self->http_client_response->{status} == 599 ) {
-      $self->add_error($self->ERR_SVG_FETCH_ERROR($self->http_client_response->{content}));
+  warn 'HTTP Fetch: '.$self->url if $self->bimi_object->options->verbose;
+  my $response = $self->http_client->get( $self->uri );
+  if ( !$response->{success} ) {
+    if ( $response->{status} == 599 ) {
+      $self->add_error($self->ERR_SVG_FETCH_ERROR($response->{content}));
     }
       else {
-      $self->add_error($self->ERR_SVG_FETCH_ERROR($self->http_client_response->{status}));
+      $self->add_error($self->ERR_SVG_FETCH_ERROR($response->{status}));
     }
     return '';
   }
-  return $data;
+  return $response->{content};
 }
 
 sub _build_is_valid($self) {
