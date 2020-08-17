@@ -46,7 +46,7 @@ sub http_client_max_fetch_size($self) { return $self->bimi_object->options->vmc_
 sub _build_data($self) {
   if ( ! $self->uri ) {
     $self->add_error('CODE_MISSING_AUTHORITY');
-    return;
+    return '';
   }
   if ($self->bimi_object->options->vmc_from_file) {
     return scalar read_file $self->bimi_object->options->vmc_from_file;

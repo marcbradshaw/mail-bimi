@@ -45,9 +45,9 @@ sub execute($self,$opt,$args) {
 
   my $bimi = Mail::BIMI->new(%bimi_opt);
   $bimi->options->vmc_no_check_alt(1) if !$opt->domain;
-  $bimi->options->vmc_from_file($uri) if $opt->from_file;
+  $bimi->options->vmc_from_file($uri) if $opt->fromfile;
 
-  my $vmc = Mail::BIMI::VMC->new( authority => $uri, bimi_object => $bimi );
+  my $vmc = Mail::BIMI::VMC->new( uri => $uri, bimi_object => $bimi );
   #  $indicator->validator_profile($opt->profile) if $opt->profile;
   say "BIMI VMC checker";
   say '';
