@@ -43,7 +43,7 @@ sub execute($self,$opt,$args) {
     $bimi_opt{data} = $data;
   }
   else {
-    $bimi_opt{location} = $uri;
+    $bimi_opt{uri} = $uri;
   }
 
   my $indicator = Mail::BIMI::Indicator->new(%bimi_opt);
