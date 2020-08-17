@@ -33,11 +33,7 @@ Returns the contents of included file $file
 =cut
 
 sub get_data_from_file($self,$file) {
-  my $base_file = __FILE__;
-  $base_file =~ s/\/Role\/Data.pm$/\/Data\/$file/;
-  if ( ! -e $base_file ) {
-    die "File $file is missing";
-  }
+  my $base_file = $self->get_file_name($file);
   my $body = read_file($base_file);
   return $body;
 }
