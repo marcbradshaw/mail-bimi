@@ -21,6 +21,7 @@ sub usage_desc { "%c checkrecord %o <RECORD>" }
 
 sub opt_spec {
   return (
+    [ 'profile=s', 'SVG Profile to validate against ('.join('|',@Mail::BIMI::Indicator::VALIDATOR_PROFILES).')' ],
     [ 'domain=s', 'Optional domain' ],
   );
 }
@@ -28,6 +29,7 @@ sub opt_spec {
 sub validate_args($self,$opt,$args) {
  $self->usage_error('No Record specified') if !@$args;
  $self->usage_error('Multiple Records specified') if scalar @$args > 1;
+ $self->usage_error('Unknown SVG Profile') if $opt->profile && !grep {;$_ eq $opt->profile} @Mail::BIMI::Indicator::VALIDATOR_PROFILES
 }
 
 sub execute($self,$opt,$args) {
@@ -44,6 +46,7 @@ sub execute($self,$opt,$args) {
     options => {
       force_record => $check_record,
       vmc_no_check_alt => $opt->domain ? 0 : 1,
+      ( $opt->profile ? ( svg_profile => $opt->profile ) : () ),
     }
   );
 

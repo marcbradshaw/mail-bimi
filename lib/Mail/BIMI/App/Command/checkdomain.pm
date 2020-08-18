@@ -21,6 +21,7 @@ sub usage_desc { "%c checkdomain %o <DOMAIN>" }
 
 sub opt_spec {
   return (
+    [ 'profile=s', 'SVG Profile to validate against ('.join('|',@Mail::BIMI::Indicator::VALIDATOR_PROFILES).')' ],
     [ 'selector=s', 'Optional selector' ],
   );
 }
@@ -28,6 +29,7 @@ sub opt_spec {
 sub validate_args($self,$opt,$args) {
  $self->usage_error('No Domain specified') if !@$args;
  $self->usage_error('Multiple Domains specified') if scalar @$args > 1;
+ $self->usage_error('Unknown SVG Profile') if $opt->profile && !grep {;$_ eq $opt->profile} @Mail::BIMI::Indicator::VALIDATOR_PROFILES
 }
 
 sub execute($self,$opt,$args) {
@@ -42,6 +44,9 @@ sub execute($self,$opt,$args) {
     dmarc_object => $dmarc,
     domain => $domain,
     selector => $selector,
+    options => {
+      ( $opt->profile ? ( svg_profile => $opt->profile ) : () ),
+    },
   );
 
   my $record = $bimi->record;
