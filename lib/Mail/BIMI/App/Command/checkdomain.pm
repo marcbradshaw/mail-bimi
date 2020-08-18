@@ -75,7 +75,7 @@ sub execute($self,$opt,$args) {
   say 'An authenticated email with this record would receive the following BIMI results:';
   say '';
   my $result = $bimi->result;
-  say "Authentication-Reults: authservid.example.com; ".$result->get_authentication_results;
+  say "Authentication-Results: authservid.example.com; ".$result->get_authentication_results;
   my $headers = $result->headers;
   foreach my $header ( sort keys $headers->%* ) {
       say "$header: ".$headers->{$header};
