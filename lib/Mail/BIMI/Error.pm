@@ -47,6 +47,12 @@ has code => ( is => 'ro', isa => Enum[sort keys %DESCRIPTIONS_MAP], required => 
 has detail => ( is => 'ro', isa => Str, required => 0,
   documentation => 'inputs: Human readable details', );
 
+=method I<description()>
+
+Return the human readable description for this class of error
+
+=cut
+
 sub description($self) {
   return $DESCRIPTIONS_MAP{$self->code};
 }
