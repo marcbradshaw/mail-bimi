@@ -40,11 +40,10 @@ Class for representing, retrieving, validating, and processing a BIMI Record
 sub cache_valid_for($self) { return 3600 }
 
 sub _build_version($self) {
-  my $version;
-  if ( exists $self->record_hashref->{v} ) {
-    $version = $self->record_hashref->{v} // '';
+  if ( !exists  $self->record_hashref->{v} ) {
+    return undef;
   }
-  return $version;
+  return $self->record_hashref->{v};
 }
 
 sub _build_authority($self) {
@@ -88,13 +87,13 @@ sub location_is_relevant($self) {
 sub _build_is_valid($self) {
   return 0 if ! keys $self->record_hashref->%*;
 
-  if ( ! exists ( $self->record_hashref->{v} ) ) {
+  if ( !defined $self->version ) {
     $self->add_error('MISSING_V_TAG');
     return 0;
   }
   else {
-    $self->add_error('EMPTY_V_TAG')   if lc $self->record_hashref->{v} eq '';
-    $self->add_error('INVALID_V_TAG') if lc $self->record_hashref->{v} ne 'bimi1';
+    $self->add_error('EMPTY_V_TAG')   if lc $self->version eq '';
+    $self->add_error('INVALID_V_TAG') if lc $self->version ne 'bimi1';
     return 0 if $self->error->@*;
   }
   if ($self->authority->is_relevant && !$self->authority->is_valid) {
