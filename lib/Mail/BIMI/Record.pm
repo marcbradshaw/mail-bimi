@@ -20,7 +20,7 @@ has retrieved_record => ( is => 'rw', traits => ['Cacheable'],
   documentation => 'Record as retrieved' );
 has selector => ( is => 'rw', isa => Str, traits => ['CacheKey'],
   documentation => 'inputs: Selector used to retrieve the record; will become default if fallback was used', );
-has version => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_version', traits => ['Cacheable'],
+has version => ( is => 'rw', isa => 'Maybe[Str]', lazy => 1, builder => '_build_version', traits => ['Cacheable'],
   documentation => 'BIMI Version tag' );
 has authority => ( is => 'rw', isa => 'Mail::BIMI::Record::Authority', lazy => 1, builder => '_build_authority',
   documentation => 'Mail::BIMI::Record::Authority object for this record' );
