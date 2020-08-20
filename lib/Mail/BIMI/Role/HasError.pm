@@ -17,6 +17,12 @@ Role for handling validation errors
 
 =cut
 
+=method I<serialize_error()>
+
+Serialize the error property for cache storage
+
+=cut
+
 sub serialize_error($self) {
   my @data = map {{
     code => $_->code,
@@ -25,12 +31,18 @@ sub serialize_error($self) {
   return \@data;
 }
 
+=method I<deserialize_error($value)>
+
+De-serialize the error property for cache storage
+
+=cut
+
 sub deserialize_error($self,$value) {
   foreach my $error ($value->@*) {
     my $error_object = Mail::BIMI::Error->new(
       code => $error->{code},
+      ( $error->{detail} ? ( detail => $error->{detail} ) : () ),
     );
-    $error_object->detail($error->{detail}) if $error->{detail};
     $self->add_error_object($error_object);
   }
 }
