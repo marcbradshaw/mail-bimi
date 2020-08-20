@@ -49,7 +49,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
-  warn 'Location is valid' if $self->bimi_object->options->verbose;
+  $self->verbose('Location is valid');
   return 1;
 }
 

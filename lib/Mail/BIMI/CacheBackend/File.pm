@@ -25,7 +25,7 @@ sub get_from_cache($self) {
 }
 
 sub put_to_cache($self,$data) {
-  warn 'Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename if $self->parent->bimi_object->options->verbose;
+  $self->parent->verbose('Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename);
   my $sereal_data = eval{ encode_sereal($data) };
   warn "Error writing to cachce: $@" if $@;
   return unless $sereal_data;

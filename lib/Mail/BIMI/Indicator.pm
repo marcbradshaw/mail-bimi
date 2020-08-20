@@ -50,7 +50,8 @@ sub http_client_max_fetch_size($self) { return $self->bimi_object->options->svg_
 sub _build_data_uncompressed($self) {
   my $data = $self->data;
   if ( $data =~ /^\037\213/ ) {
-    warn 'Uncompressing SVG' if $self->bimi_object->options->verbose;
+    $self->verbose('Uncompressing SVG');
+
     my $unzipped;
     eval {
       IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
@@ -93,7 +94,7 @@ sub _build_data_xml($self) {
     1;
   } || do {
     $self->add_error('SVG_INVALID_XML');
-    warn "Invalid XML :\n".$self->data_uncompressed if $self->bimi_object->options->verbose;
+    $self->verbose("Invalid XML :\n".$self->data_uncompressed);
     return;
   };
   return $xml;
@@ -110,10 +111,10 @@ sub _build_data($self) {
     return '';
   }
   if ($self->bimi_object->options->svg_from_file) {
-    warn 'Reading SVG from file '.$self->bimi_object->options->svg_from_file if $self->bimi_object->options->verbose;
+    $self->verbose('Reading SVG from file '.$self->bimi_object->options->svg_from_file);
     return scalar read_file $self->bimi_object->options->svg_from_file;
   }
-  warn 'HTTP Fetch: '.$self->url if $self->bimi_object->options->verbose;
+  $self->verbose('HTTP Fetch: '.$self->uri);
   my $response = $self->http_client->get( $self->uri );
   if ( !$response->{success} ) {
     if ( $response->{status} == 599 ) {
@@ -146,13 +147,13 @@ sub _build_is_valid($self) {
   else {
     if ( $self->bimi_object->options->no_validate_svg ) {
       $is_valid=1;
-      warn 'Skipping SVG validation' if $self->bimi_object->options->verbose;
+      $self->verbose('Skipping SVG validation');
     }
     else {
       eval {
         $self->parser->validate( $self->data_xml );
         $is_valid=1;
-        warn 'SVG is valid' if $self->bimi_object->options->verbose;
+        $self->verbose('SVG is valid');
         1;
       } || do {
         my $validation_error = $@;

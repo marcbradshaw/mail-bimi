@@ -35,5 +35,15 @@ sub authority_object($self) {
   return $self->record_object->authority;
 }
 
+=method I<verbose()>
+
+Output given text if in verbose mode.
+
+=cut
+
+sub verbose($self,$text) {
+  $self->bimi_object->verbose($text);
+}
+
 1;
 

@@ -62,12 +62,12 @@ sub add_error_object($self,$error) {
     }
   }
   else {
-    warn join(' : ',
+    $self->verbose(join(' : ',
       'Error',
       $error->code,
       $error->description,
       ( $error->detail ? $error->detail : () ),
-    ) if $self->bimi_object->options->verbose;
+    ));
     push $self->error->@*, $error;
   }
 }

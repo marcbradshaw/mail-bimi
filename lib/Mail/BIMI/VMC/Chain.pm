@@ -50,11 +50,11 @@ sub _build_is_valid($self) {
   foreach my $cert ( $self->cert_object_list->@* ) {
     my $i = $cert->index;
     if ($cert->is_expired) {
-      warn "Certificate $i is expired" if $self->bimi_object->options->verbose;
+      $self->verbose("Certificate $i is expired");
       next;
     }
     if ( !$cert->is_valid ) {
-      warn "Certificate $i is not valid" if $self->bimi_object->options->verbose;
+      $self->verbose("Certificate $i is not valid");
       next;
     }
     my $is_valid = 0;
@@ -63,11 +63,11 @@ sub _build_is_valid($self) {
       $is_valid = 1;
     };
     if ( !$is_valid ) {
-      warn "Certificate $i not directly validated to root" if $self->bimi_object->options->verbose;
+      $self->verbose("Certificate $i not directly validated to root");
       # NOP
     }
     else {
-      warn "Certificate $i directly validated to root" if $self->bimi_object->options->verbose;
+      $self->verbose("Certificate $i directly validated to root");
       $cert->validated_by($root_ca_ascii);
       $cert->validated_by_id(0);
       $cert->valid_to_root(1);
@@ -87,16 +87,16 @@ sub _build_is_valid($self) {
         next VALIDATING_CERT if $validating_cert->valid_to_root;
         my $validating_i = $validating_cert->index;
         if ($validating_cert->is_expired) {
-          warn "Certificate $validating_i is expired" if $self->bimi_object->options->verbose;
+          $self->verbose("Certificate $validating_i is expired");
           next;
         }
         if ( !$validating_cert->is_valid ) {
-          warn "Certificate $validating_i is not valid" if $self->bimi_object->options->verbose;
+          $self->verbose("Certificate $validating_i is not valid");
           next VALIDATING_CERT;
         }
         eval{
           $validated_cert->verifier->verify($validating_cert->object);
-          warn "Certificate $validating_i validated to root via certificate $validated_i" if $self->bimi_object->options->verbose;
+          $self->verbose("Certificate $validating_i validated to root via certificate $validated_i");
           $validating_cert->validated_by($validated_cert->full_chain);
           $validating_cert->validated_by_id($validated_i);
           $validating_cert->valid_to_root(1);
