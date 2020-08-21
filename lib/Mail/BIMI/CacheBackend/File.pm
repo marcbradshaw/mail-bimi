@@ -39,7 +39,7 @@ Put this classes data into the cache
 sub put_to_cache($self,$data) {
   $self->parent->verbose('Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename);
   my $sereal_data = eval{ encode_sereal($data) };
-  warn "Error writing to cachce: $@" if $@;
+  warn "Error writing to cachce: $@" if $@; # uncoverable statement
   return unless $sereal_data;
   write_file($self->_cache_filename,{atomic=>1},$sereal_data);
 }
