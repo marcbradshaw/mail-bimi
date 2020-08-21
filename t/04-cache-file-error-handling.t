@@ -5,7 +5,6 @@ use warnings FATAL => 'all';
 BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
 use lib 't';
 use Mail::BIMI::Prelude;
-use Capture::Tiny qw{ capture };
 use Test::More;
 use Test::Exception;
 use Mail::BIMI;
