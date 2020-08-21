@@ -81,8 +81,10 @@ around new => sub{
   my $data = $self->cache_backend->get_from_cache;
   return $self if !$data;
   $self->verbose('Build '.(ref $self).' from cache');
-
-  return if $data->{cache_key} ne $self->_cache_key;
+  if ($data->{cache_key} ne $self->_cache_key){
+    warn 'Cache is invalid';
+    return $self;
+  }
   if ($data->{timestamp}+$self->cache_valid_for < $self->bimi_object->time) {
     $self->cache_backend->delete_cache;
     return $self;
