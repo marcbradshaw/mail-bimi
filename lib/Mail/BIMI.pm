@@ -311,10 +311,4 @@ sub verbose($self,$text) {
   warn $text;
 }
 
-=method I<app_validate()>
-
-Output human readable validation status of this object
-
-=cut
-
 1;
