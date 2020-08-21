@@ -26,6 +26,7 @@ subtest 'Null Cache Is Null' => sub{
   $bimi->record->version('foo');
   is($bimi->record->version,'foo','Version is set ok');
   $bimi->finish();
+  lives_ok(sub{$backend->delete_cache},'NOP delete_cache lives');
 };
 
 subtest 'Null Cache Is Still Null' => sub{
