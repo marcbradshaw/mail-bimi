@@ -11,7 +11,7 @@ use Mail::BIMI::App;
 use App::Cmd::Tester;
 use Net::DNS::Resolver::Mock;
 
-my $write_data = 0; # Set to 1 to write new test data, then check it and commit
+my $write_data = $ENV{MAIL_BIMI_TEST_WRITE_DATA} // 0; # Set to 1 to write new test data, then check it and commit
 
 my $resolver = Net::DNS::Resolver::Mock->new;
 $resolver->zonefile_read('t/zonefile');
@@ -72,6 +72,18 @@ subtest 'checksvg' => sub {
   subtest 'Test SVG (File)' => sub{
     my $file = 'app-checksvg-file';
     my $result = test_app(Mail::BIMI::App->new => [ 'checksvg', '--fromfile', 't/data/FM-good.svg' ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'Test SVG (File Tiny 1.2)' => sub{
+    my $file = 'app-checksvg-file-tiny';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checksvg', '--profile', 'Tiny-1.2', '--fromfile', 't/data/FM-good.svg' ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'Test SVG (File Bad Profile)' => sub{
+    my $file = 'app-checksvg-file-badprofile';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checksvg', '--profile', 'Bogus-1.2', '--fromfile', 't/data/FM-good.svg' ]);
     do_tests($result,$file);
   };
 
