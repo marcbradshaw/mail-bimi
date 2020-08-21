@@ -115,6 +115,12 @@ sub _build_is_valid($self) {
   return 1;
 }
 
+=method I<vmc()>
+
+Locate and return the VMC object from this chain.
+
+=cut
+
 sub vmc($self) {
   my $vmc;
   foreach my $cert ( $self->cert_object_list->@* ) {
