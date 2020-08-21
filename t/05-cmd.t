@@ -17,7 +17,29 @@ my $resolver = Net::DNS::Resolver::Mock->new;
 $resolver->zonefile_read('t/zonefile');
 $Mail::BIMI::TestSuite::Resolver = $resolver;
 
+subtest 'Bare' => sub {
+
+  subtest 'Bare' => sub{
+    my $file = 'app-bare';
+    my $result = test_app(Mail::BIMI::App->new => [ qw{ } ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'Help' => sub{
+    my $file = 'app-bare-help';
+    my $result = test_app(Mail::BIMI::App->new => [ qw{ --help } ]);
+    do_tests($result,$file);
+  };
+
+};
+
 subtest 'checkdomain' => sub {
+
+  subtest 'Help' => sub{
+    my $file = 'app-checkdomain-help';
+    my $result = test_app(Mail::BIMI::App->new => [ qw{ checkdomain --help } ]);
+    do_tests($result,$file);
+  };
 
   subtest 'No Domain' => sub{
     my $file = 'app-checkdomain-nodomain';
@@ -41,6 +63,12 @@ subtest 'checkdomain' => sub {
 
 subtest 'checkrecord' => sub {
 
+  subtest 'Help' => sub{
+    my $file = 'app-checkrecord-help';
+    my $result = test_app(Mail::BIMI::App->new => [ qw{ checkrecord --help } ]);
+    do_tests($result,$file);
+  };
+
   subtest 'No Record' => sub{
     my $file = 'app-checkrecord-norecord';
     my $result = test_app(Mail::BIMI::App->new => [ qw{ checkrecord } ]);
@@ -62,6 +90,12 @@ subtest 'checkrecord' => sub {
 };
 
 subtest 'checksvg' => sub {
+
+  subtest 'Help' => sub{
+    my $file = 'app-checksvg-help';
+    my $result = test_app(Mail::BIMI::App->new => [ qw{ checksvg --help } ]);
+    do_tests($result,$file);
+  };
 
   subtest 'No SVG' => sub{
     my $file = 'app-checksvg-nosvg';
