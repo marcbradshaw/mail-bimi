@@ -308,7 +308,7 @@ Output given text if in verbose mode.
 
 sub verbose($self,$text) {
   return unless $self->options->verbose;
-  warn $text;
+  warn "$text\n";
 }
 
 1;
