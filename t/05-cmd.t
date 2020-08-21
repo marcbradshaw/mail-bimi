@@ -9,8 +9,13 @@ use Encode qw{encode};
 use Mail::BIMI::Prelude;
 use Mail::BIMI::App;
 use App::Cmd::Tester;
+use Net::DNS::Resolver::Mock;
 
 my $write_data = 0; # Set to 1 to write new test data, then check it and commit
+
+my $resolver = Net::DNS::Resolver::Mock->new;
+$resolver->zonefile_read('t/zonefile');
+$Mail::BIMI::TestSuite::Resolver = $resolver;
 
 subtest 'checkdomain' => sub {
 
@@ -20,7 +25,7 @@ subtest 'checkdomain' => sub {
     do_tests($result,$file);
   };
 
-  subtest 'No Domain' => sub{
+  subtest 'Has Domain' => sub{
     my $file = 'app-checkdomain-fastmaildmarc';
     my $result = test_app(Mail::BIMI::App->new => [ qw{ checkdomain fastmaildmarc.com } ]);
     do_tests($result,$file);

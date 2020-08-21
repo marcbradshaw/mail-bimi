@@ -97,6 +97,9 @@ Brand Indicators for Message Identification (BIMI) retrieval, validation, and pr
 
 sub _build_resolver($self) {
   my $timeout = 5;
+  if (defined $Mail::BIMI::TestSuite::Resolver) {
+    return $Mail::BIMI::TestSuite::Resolver;
+  }
   my $resolver = Net::DNS::Resolver->new(dnsrch => 0);
   $resolver->tcp_timeout( $timeout );
   $resolver->udp_timeout( $timeout );

@@ -17,3 +17,4 @@ nobimi.com A 1.2.3.4
 spfall.gallifreyburning.com TXT "v=spf1 ip4:1.2.3.4 +all"
 spfnall.gallifreyburning.com TXT "v=spf1 ip4:1.2.3.4 -all"
 test.example.com A 1.2.3.4
+default._bimi.fastmaildmarc.com TXT "v=BIMI1; l=https://fastmaildmarc.com/FM_BIMI.svg; a="
