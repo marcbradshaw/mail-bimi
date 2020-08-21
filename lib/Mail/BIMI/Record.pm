@@ -37,6 +37,12 @@ Class for representing, retrieving, validating, and processing a BIMI Record
 
 =cut
 
+=method I<cache_valid_for()>
+
+How long should the cache for this class be valid
+
+=cut
+
 sub cache_valid_for($self) { return 3600 }
 
 sub _build_version($self) {

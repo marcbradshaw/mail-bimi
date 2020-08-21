@@ -44,7 +44,20 @@ sub _build_validator_profile($self) {
   return $self->bimi_object->options->svg_profile;
 }
 
+=method I<cache_valid_for()>
+
+How long should the cache for this class be valid
+
+=cut
+
 sub cache_valid_for($self) { return 3600 }
+
+=method I<http_client_max_fetch_size()>
+
+Maximum permitted HTTP fetch
+
+=cut
+
 sub http_client_max_fetch_size($self) { return $self->bimi_object->options->svg_max_fetch_size };
 
 sub _build_data_uncompressed($self) {

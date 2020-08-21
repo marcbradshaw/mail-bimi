@@ -15,6 +15,12 @@ Cache worker role for File storage
 
 =cut
 
+=method I<get_from_cache()>
+
+Retrieve this class data from cache
+
+=cut
+
 sub get_from_cache($self) {
   my $cache_file = $self->_cache_filename;
   return if !-e $cache_file;
@@ -24,6 +30,12 @@ sub get_from_cache($self) {
   return $value;
 }
 
+=method I<put_to_cache($data)>
+
+Put this classes data into the cache
+
+=cut
+
 sub put_to_cache($self,$data) {
   $self->parent->verbose('Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename);
   my $sereal_data = eval{ encode_sereal($data) };
@@ -31,6 +43,12 @@ sub put_to_cache($self,$data) {
   return unless $sereal_data;
   write_file($self->_cache_filename,{atomic=>1},$sereal_data);
 }
+
+=method I<delete_cache>
+
+Delete the cache entry for this class
+
+=cut
 
 sub delete_cache($self) {
   unlink $self->_cache_filename;
