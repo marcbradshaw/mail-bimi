@@ -26,6 +26,12 @@ subtest 'checkdomain' => sub {
     do_tests($result,$file);
   };
 
+  subtest 'Multi Domain' => sub{
+    my $file = 'app-checkdomain-multi';
+    my $result = test_app(Mail::BIMI::App->new => [ qw{ checkdomain fastmaildmarc.com fastmail.com } ]);
+    do_tests($result,$file);
+  };
+
 };
 
 subtest 'checkrecord' => sub {
@@ -42,6 +48,12 @@ subtest 'checkrecord' => sub {
     do_tests($result,$file);
   };
 
+  subtest 'Multiple Records' => sub{
+    my $file = 'app-checkrecords-multi';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checkrecord', 'v=bimi1;l=http://bogus', 'v=bimi1;l=http://bogus2' ]);
+    do_tests($result,$file);
+  };
+
 };
 
 subtest 'checksvg' => sub {
@@ -55,6 +67,12 @@ subtest 'checksvg' => sub {
   subtest 'Test SVG (File)' => sub{
     my $file = 'app-checksvg-file';
     my $result = test_app(Mail::BIMI::App->new => [ 'checksvg', '--fromfile', 't/data/FM-good.svg' ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'Multiple URIs' => sub{
+    my $file = 'app-checksvg-file-multi';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checksvg', 'uri-one', 'uri-two' ]);
     do_tests($result,$file);
   };
 
