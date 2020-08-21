@@ -69,6 +69,13 @@ subtest 'checksvg' => sub {
     do_tests($result,$file);
   };
 
+  subtest 'Test SVG (URI)' => sub{
+    local $ENV{MAIL_BIMI_SVG_FROM_FILE} = 't/data/FM-good.svg'; # Fake getting SVG from internet
+    my $file = 'app-checksvg-uri';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checksvg', 'https://fastmaildmarc.com/FM_BIMI.svg' ]);
+    do_tests($result,$file);
+  };
+
   subtest 'Test SVG (File)' => sub{
     my $file = 'app-checksvg-file';
     my $result = test_app(Mail::BIMI::App->new => [ 'checksvg', '--fromfile', 't/data/FM-good.svg' ]);
