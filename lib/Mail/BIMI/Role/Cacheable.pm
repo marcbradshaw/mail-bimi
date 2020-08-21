@@ -106,18 +106,6 @@ around new => sub{
   return $self;
 };
 
-=method I<DEMOLISH($in_global_destruction>
-
-Run when class is DEMOLISHED, write cache data if not already
-saved, if possible.
-
-=cut
-
-sub DEMOLISH($self,$in_global_destruction) {
-  return if $in_global_destruction;
-  $self->_write_cache;
-}
-
 sub _write_cache($self) {
   return if $self->_do_not_cache;
   $self->_do_not_cache(1);
