@@ -110,7 +110,7 @@ sub _write_cache($self) {
   return if $self->_do_not_cache;
   $self->_do_not_cache(1);
   my $meta = $self->meta;
-  my $time = $self->bimi_object ? $self->bimi_object->time : time;
+  my $time = $self->bimi_object->time;
   my $data = {
     cache_key => $self->_cache_key,
     timestamp => $self->_cache_read_timestamp // $time,
