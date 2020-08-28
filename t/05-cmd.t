@@ -59,6 +59,24 @@ subtest 'checkdomain' => sub {
     do_tests($result,$file);
   };
 
+  subtest 'SVG Profile (Tiny 1.2)' => sub{
+    my $file = 'app-checkdomain-profile-tiny';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checkdomain', '--profile', 'Tiny-1.2', 'fastmaildmarc.com' ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'SVG Profile (BIMI 1.2)' => sub{
+    my $file = 'app-checkdomain-profile-bimi';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checkdomain', '--profile', 'SVG_1.2_BIMI', 'fastmaildmarc.com' ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'SVG Profile (Bad Profile)' => sub{
+    my $file = 'app-checkdomain-profile-bad';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checkdomain', '--profile', 'Bogus-1.2', 'fastmaildmarc.com' ]);
+    do_tests($result,$file);
+  };
+
 };
 
 subtest 'checkrecord' => sub {
