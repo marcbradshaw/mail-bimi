@@ -66,13 +66,7 @@ sub _build_data_uncompressed($self) {
     $self->verbose('Uncompressing SVG');
 
     my $unzipped;
-    eval {
-      IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
-      1;
-    } || do {
-      $self->add_error('SVG_UNZIP_ERROR');
-      return '';
-    };
+    IO::Uncompress::Gunzip::gunzip(\$data,\$unzipped);
     if ( !$unzipped ) {
       $self->add_error('SVG_UNZIP_ERROR');
       return '';

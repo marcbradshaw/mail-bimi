@@ -91,7 +91,7 @@ iFKlRd/9+lO0ky2U2RJEyHx8/you3923xuHlr7g/757ZrlmXfvvwpi4/f3cvbstz1/euXqhqGAQaG
 qulosS3ap2W5PvTD/vBLPA9N3f+vhIDtluXnm/Epq9XiddPvCklxh2QAvXJItdGEHqzC4MCy5oQQ
 rZq2o4XslVHkHARUPgGLA3kJseC4CwEwKXRAqBK4qAOD8bWOSSMzYNRkDTiviVBbJAg2q9fEMUfF');
   my $indicator = Mail::BIMI::Indicator->new( bimi_object=>$bimi, uri => 'test1', data=>$gzipped );
-  is($indicator->data_uncompressed, '', 'No uncompressed data returned when input is bad requesetd (data_uncompressed)');
+  is($indicator->data_uncompressed, '', 'No uncompressed data returned when input is bad requested (data_uncompressed)');
   is_deeply($indicator->error_codes,['SVG_UNZIP_ERROR'],'Error codes');
   is($indicator->data_xml,undef,'No XML returned (data_xml)');
 };
