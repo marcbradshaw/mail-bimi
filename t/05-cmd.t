@@ -105,6 +105,24 @@ subtest 'checkrecord' => sub {
     do_tests($result,$file);
   };
 
+  subtest 'SVG Profile (Tiny 1.2)' => sub{
+    my $file = 'app-checkrecord-profile-tiny';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checkrecord', '--profile', 'Tiny-1.2', 'v=bimi1;l=' ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'SVG Profile (BIMI 1.2)' => sub{
+    my $file = 'app-checkrecord-profile-bimi';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checkrecord', '--profile', 'SVG_1.2_BIMI', 'v=bimi1;l=' ]);
+    do_tests($result,$file);
+  };
+
+  subtest 'SVG Profile (Bad Profile)' => sub{
+    my $file = 'app-checkrecord-profile-bad';
+    my $result = test_app(Mail::BIMI::App->new => [ 'checkrecord', '--profile', 'Bogus-1.2', 'v=bimi1;l=' ]);
+    do_tests($result,$file);
+  };
+
 };
 
 subtest 'checksvg' => sub {
