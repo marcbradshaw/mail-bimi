@@ -64,7 +64,7 @@ sub _build_data($self) {
   if ($self->bimi_object->options->vmc_from_file) {
     return scalar read_file $self->bimi_object->options->vmc_from_file;
   }
-  $self->verbose('HTTP Fetch: '.$self->url);
+  $self->verbose('HTTP Fetch: '.$self->uri);
   my $response = $self->http_client->get( $self->uri );
   if ( !$response->{success} ) {
     if ( $response->{status} == 599 ) {
