@@ -19,6 +19,8 @@ with(
 );
 has uri => ( is => 'rw', isa => Str, traits => ['CacheKey'],
   documentation => 'inputs: URL to retrieve Indicator from', );
+has source => ( is => 'rw', isa => Str, traits => ['Cacheable'],
+  documentation => 'Human readable summary of where this indicator was retrieved from' );
 has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
   documentation => 'inputs: Raw data representing the Indicator; Fetches from uri if not given', );
 has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', traits => ['Cacheable'],
@@ -199,7 +201,7 @@ Output human readable validation status of this object
 =cut
 
 sub app_validate($self) {
-  say 'Indicator Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
+  say 'Indicator'.($self->source ? ' (From '.$self->source.')' : '' ).' Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
   say YELLOW.'  GZipped        '.WHITE.': '.CYAN.($self->data_uncompressed eq $self->data?'No':'Yes').RESET;
   say YELLOW.'  BIMI-Indicator '.WHITE.': '.CYAN.$self->header.RESET if $self->is_valid;
   say YELLOW.'  Profile Used   '.WHITE.': '.CYAN.$self->validator_profile.RESET;

@@ -56,7 +56,7 @@ sub _build_is_valid($self) {
 sub _build_indicator($self) {
   return if !$self->is_location_valid;
   return if !$self->is_relevant;
-  return Mail::BIMI::Indicator->new( uri => $self->uri, bimi_object => $self->bimi_object );
+  return Mail::BIMI::Indicator->new( uri => $self->uri, bimi_object => $self->bimi_object, source => 'Location' );
 }
 
 =method I<finish()>
