@@ -13,7 +13,7 @@ Record Returned: [32m✓[0m
 [33m  Location  [37m: [36mhttps://fastmaildmarc.com/FM_BIMI.svg[0m
 [33m  Is Valid  [37m: [32mYes[0m
 
-Indicator Returned: [32m✓[0m
+Indicator (From Location) Returned: [32m✓[0m
 [33m  GZipped        [37m: [36mNo[0m
 [33m  BIMI-Indicator [37m: [36mPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB4bWxucz0iaHR0cD
     ovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZp
