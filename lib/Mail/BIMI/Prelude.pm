@@ -14,6 +14,7 @@ Distribution wide pragmas and imports
 
 use open ':std', ':encoding(UTF-8)';
 use Import::Into;
+use Mail::BIMI::Constants;
 use Carp;
 use File::Slurp;
 use JSON;
@@ -23,7 +24,7 @@ sub import {
   warnings->import;
   feature->import($_) for ( qw{ postderef signatures } );
   warnings->unimport($_) for ( qw{ experimental::postderef experimental::signatures } );
-
+  Mail::BIMI::Constants->import::into(scalar caller);
   Carp->import::into(scalar caller);
   File::Slurp->import::into(scalar caller, qw{ read_file write_file } );
   JSON->import::into(scalar caller);

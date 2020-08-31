@@ -62,8 +62,8 @@ sub _build_indicator_asn($self) {
   return if !$self->object;
   my $exts = eval{ $self->object->extensions_by_oid() };
   return if !$exts;
-  return if !exists $exts->{'1.3.6.1.5.5.7.1.12'};
-  my $indhex = $exts->{'1.3.6.1.5.5.7.1.12'}->value;
+  return if !exists $exts->{&LOGOTYPE_OID};
+  my $indhex = $exts->{&LOGOTYPE_OID}->value;
   $indhex =~ s/^#//;
   my $indicator = pack("H*",$indhex);
   my $asn = Convert::ASN1->new;
@@ -129,7 +129,7 @@ sub has_valid_usage($self) {
   my $extended_usage = $exts->{'2.5.29.37'};
   return if !$extended_usage;
   my $extended_usage_string = $extended_usage->to_string;
-  return 1 if $extended_usage_string eq '1.3.6.1.5.5.7.3.31';
+  return 1 if $extended_usage_string eq USAGE_OID;
   return 0;
 }
 

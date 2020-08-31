@@ -128,7 +128,7 @@ sub vmc($self) {
     next if !$object;
     my $exts = eval{ $object->extensions_by_oid() };
     next if !$exts;
-    if ( $cert->has_valid_usage && exists $exts->{'1.3.6.1.5.5.7.1.12'}) {
+    if ( $cert->has_valid_usage && exists $exts->{&LOGOTYPE_OID}) {
       # Has both extended usage and embedded Indicator
       $self->add_error('VMC_VALIDATION_ERROR','Multiple VMCs found in chain') if $vmc;
       $vmc = $cert;
@@ -177,7 +177,7 @@ sub app_validate($self) {
       if ( $exts ) {
         my $alt_name = exists $exts->{'2.5.29.17'} ? $exts->{'2.5.29.17'}->to_string : '-none-';
         say YELLOW.'  Alt Name         '.WHITE.': '.CYAN.($alt_name//'-none-').RESET;
-        say YELLOW.'  Has LogotypeExtn '.WHITE.': '.CYAN.(exists($exts->{'1.3.6.1.5.5.7.1.12'})?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+        say YELLOW.'  Has LogotypeExtn '.WHITE.': '.CYAN.(exists($exts->{&LOGOTYPE_OID})?GREEN.'Yes':BRIGHT_RED.'No').RESET;
       }
       else {
         say YELLOW.'  Extensions       '.WHITE.': '.BRIGHT_RED.'NOT FOUND'.RESET;
