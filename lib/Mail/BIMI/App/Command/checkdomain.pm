@@ -6,6 +6,7 @@ BEGIN { $ENV{MAIL_BIMI_CACHE_DEFAULT_BACKEND} = 'Null' };
 use Mail::BIMI::Prelude;
 use Mail::BIMI::App -command;
 use Mail::BIMI;
+use Mail::BIMI::Indicator;
 use Mail::BIMI::Record;
 use Mail::DMARC;
 use Term::ANSIColor qw{ :constants };
