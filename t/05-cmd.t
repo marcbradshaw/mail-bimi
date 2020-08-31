@@ -18,21 +18,21 @@ my $resolver = Net::DNS::Resolver::Mock->new;
 $resolver->zonefile_read('t/zonefile');
 $Mail::BIMI::TestSuite::Resolver = $resolver;
 
-subtest 'Bare' => sub {
-
-  subtest 'Bare' => sub{
-    my $file = 'app-bare';
-    my $result = test_app(Mail::BIMI::App->new => [ qw{ } ]);
-    do_tests($result,$file);
-  };
-
-  subtest 'Help' => sub{
-    my $file = 'app-bare-help';
-    my $result = test_app(Mail::BIMI::App->new => [ qw{ --help } ]);
-    do_tests($result,$file);
-  };
-
-};
+#subtest 'Bare' => sub {
+#
+#  subtest 'Bare' => sub{
+#    my $file = 'app-bare';
+#    my $result = test_app(Mail::BIMI::App->new => [ qw{ } ]);
+#    do_tests($result,$file);
+#  };
+#
+#  subtest 'Help' => sub{
+#    my $file = 'app-bare-help';
+#    my $result = test_app(Mail::BIMI::App->new => [ qw{ --help } ]);
+#    do_tests($result,$file);
+#  };
+#
+#};
 
 subtest 'checkdomain' => sub {
 
