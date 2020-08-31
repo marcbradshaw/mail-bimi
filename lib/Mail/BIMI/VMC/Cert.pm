@@ -22,7 +22,7 @@ has object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, bui
   documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );
 has verifier => ( is => 'rw', isa => 'Crypt::OpenSSL::Verify', lazy => 1, builder => '_build_verifier',
   documentation => 'Crypt::OpenSSL::Verify object for the Certificate' );
-has valid_to_root => ( is => 'rw',
+has is_valid_to_root => ( is => 'rw',
   documentation => 'Could we validate this certificate to the root certs, set by Mail::BIMI::VMC::Chain->is_valid' );
 has filename => ( is => 'rw', lazy => 1, builder => '_build_filename',
   documentation => 'Filename of temporary file containing the cert' );

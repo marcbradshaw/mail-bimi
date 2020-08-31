@@ -69,7 +69,7 @@ sub _build_is_valid($self) {
       $self->log_verbose("Certificate $i directly validated to root");
       $cert->validated_by($root_ca_ascii);
       $cert->validated_by_id(0);
-      $cert->valid_to_root(1);
+      $cert->is_valid_to_root(1);
     }
   }
 
@@ -78,11 +78,11 @@ sub _build_is_valid($self) {
     $work_done = 0;
     VALIDATED_CERT:
     foreach my $validated_cert ( $self->cert_object_list->@* ) {
-      next VALIDATED_CERT if ! $validated_cert->valid_to_root;
+      next VALIDATED_CERT if ! $validated_cert->is_valid_to_root;
       my $validated_i = $validated_cert->index;
       VALIDATING_CERT:
       foreach my $validating_cert ( $self->cert_object_list->@* ) {
-        next VALIDATING_CERT if $validating_cert->valid_to_root;
+        next VALIDATING_CERT if $validating_cert->is_valid_to_root;
         my $validating_i = $validating_cert->index;
         if ($validating_cert->is_expired) {
           $self->log_verbose("Certificate $validating_i is expired");
@@ -97,13 +97,13 @@ sub _build_is_valid($self) {
           $self->log_verbose("Certificate $validating_i validated to root via certificate $validated_i");
           $validating_cert->validated_by($validated_cert->full_chain);
           $validating_cert->validated_by_id($validated_i);
-          $validating_cert->valid_to_root(1);
+          $validating_cert->is_valid_to_root(1);
           $work_done = 1;
         };
       }
     }
   } until !$work_done;
-  if ( !$self->vmc->valid_to_root ) {
+  if ( !$self->vmc->is_valid_to_root ) {
     $self->add_error('VMC_PARSE_ERROR','Could not verify VMC');
   }
 
@@ -184,7 +184,7 @@ sub app_validate($self) {
       }
       say YELLOW.'  Has Valid Usage  '.WHITE.': '.CYAN.($cert->has_valid_usage?GREEN.'Yes':BRIGHT_RED.'No').RESET;
     }
-    say YELLOW.'  Valid to Root    '.WHITE.': '.CYAN.($cert->valid_to_root?GREEN.($cert->validated_by_id == 0?'Direct':'Via cert '.$cert->validated_by_id):BRIGHT_RED.'No').RESET;
+    say YELLOW.'  Valid to Root    '.WHITE.': '.CYAN.($cert->is_valid_to_root?GREEN.($cert->validated_by_id == 0?'Direct':'Via cert '.$cert->validated_by_id):BRIGHT_RED.'No').RESET;
     say YELLOW.'  Is Valid         '.WHITE.': '.CYAN.($cert->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   }
 }
