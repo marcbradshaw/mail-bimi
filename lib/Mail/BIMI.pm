@@ -126,6 +126,33 @@ sub _build_record($self) {
   return Mail::BIMI::Record->new( domain => $self->domain, selector => $self->selector, bimi_object => $self );
 }
 
+sub _check_dmarc_enforcement_status($self,$dmarc,$result) {
+  # Set result and return true if there are any DMARC enforcement issues, Return false if there are none
+  if (exists $dmarc->result->{published}){
+    my $published_policy = $dmarc->result->published->p // '';
+    my $published_subdomain_policy = $dmarc->result->published->sp // '';
+    my $published_policy_pct = $dmarc->result->published->pct // 100;
+    my $effective_published_policy = ( $dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
+    if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
+      return 1;
+    }
+    if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
+      return 1;
+    }
+    if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
+      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
+      return 1;
+    }
+  }
+  else {
+    $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
+    return 1;
+  }
+  return 0;
+}
+
 sub _build_result($self) {
   croak 'Domain required' if ! $self->domain;
 
@@ -146,28 +173,7 @@ sub _build_result($self) {
 
   # Is DMARC enforcing?
   my $dmarc = $self->dmarc_pp_object;
-  if (exists $dmarc->result->{published}){
-    my $published_policy = $dmarc->result->published->p // '';
-    my $published_subdomain_policy = $dmarc->result->published->sp // '';
-    my $published_policy_pct = $dmarc->result->published->pct // 100;
-    my $effective_published_policy = ( $dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
-    if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
-      return $result;
-    }
-    if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
-      return $result;
-    }
-    if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
-      return $result;
-    }
-  }
-  else {
-    $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
-    return $result;
-  }
+  return $result if $self->_check_dmarc_enforcement_status($dmarc,$result);
 
   # Is Org DMARC Enforcing?
   my $org_domain   = Mail::DMARC::PurePerl->new->get_organizational_domain($self->domain);
@@ -176,28 +182,7 @@ sub _build_result($self) {
     $org_dmarc->set_resolver($self->resolver);
     $org_dmarc->header_from($org_domain);
     $org_dmarc->validate;
-    if (exists $org_dmarc->result->{published}){
-      my $published_policy = $org_dmarc->result->published->p // '';
-      my $published_subdomain_policy = $org_dmarc->result->published->sp // '';
-      my $published_policy_pct = $org_dmarc->result->published->pct // 100;
-      my $effective_published_policy = ( $org_dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
-      if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
-        $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
-        return $result;
-      }
-      if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
-        $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
-        return $result;
-      }
-      if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
-        $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
-        return $result;
-      }
-    }
-    else {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
-      return $result;
-    }
+    return $result if $self->_check_dmarc_enforcement_status($org_dmarc,$result);
   }
 
   # Optionally check Author Domain SPF
