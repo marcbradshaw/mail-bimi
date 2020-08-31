@@ -21,6 +21,8 @@ has force_record => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BI
   documentation => 'Fake record to use' );
 has http_client_timeout  => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_HTTP_CLIENT_TIMEOUT}//3},
   documentation => 'Timeout value for HTTP' );
+has dns_client_timeout  => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_DNS_CLIENT_TIMEOUT}//5},
+  documentation => 'Timeout value for DNS' );
 has no_location_with_vmc => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_LOCATION_WITH_VMC}},
   documentation => 'Do not check location if VMC was present' );
 has no_validate_cert => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_VALIDATE_CERT}},
