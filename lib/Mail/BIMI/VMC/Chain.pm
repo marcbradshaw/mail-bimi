@@ -71,7 +71,6 @@ sub _build_is_valid($self) {
       $cert->validated_by_id(0);
       $cert->valid_to_root(1);
     }
-    my $exts = eval{ $cert->object->extensions_by_oid() };
   }
 
   my $work_done;
