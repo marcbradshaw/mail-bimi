@@ -7,7 +7,6 @@ Available commands:
          help: display a command's help screen
 
   checkdomain: Validate the BIMI assertion record for a given domain
-  checklookup: Validate a given BIMI domain
   checkrecord: Validate a given BIMI assertion record
      checksvg: Check an SVG for validation
      checkvmc: Check an VMC for validation
