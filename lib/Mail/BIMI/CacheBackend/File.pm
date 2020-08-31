@@ -51,7 +51,7 @@ Delete the cache entry for this class
 =cut
 
 sub delete_cache($self) {
-  unlink $self->_cache_filename;
+  unlink $self->_cache_filename or warn "Unable to unlink cache file: $!";
 }
 
 sub _build_cache_filename($self) {

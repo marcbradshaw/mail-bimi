@@ -38,7 +38,6 @@ sub _build_is_valid($self) {
   if ( !$ssl_root_cert ) {
     my $mozilla_root = scalar read_file Mozilla::CA::SSL_ca_file;
     my $bimi_root = $self->get_data_from_file('CA.pem');
-    my $unlink_root_cert_file = 1;
     my $temp_fh = File::Temp->new(UNLINK=>0);
     $ssl_root_cert = $temp_fh->filename;
     print $temp_fh join("\n",$mozilla_root,$bimi_root);
@@ -109,7 +108,9 @@ sub _build_is_valid($self) {
     $self->add_error('VMC_PARSE_ERROR','Could not verify VMC');
   }
 
-  unlink $ssl_root_cert if $unlink_root_cert_file;
+  if ( $unlink_root_cert_file && -f $ssl_root_cert ) {
+    unlink $ssl_root_cert or warn "Unable to unlink temporary chain file: $!";
+  }
 
   return 0 if $self->error->@*;
   return 1;

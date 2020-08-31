@@ -26,6 +26,7 @@ has valid_to_root => ( is => 'rw',
   documentation => 'Could we validate this certificate to the root certs, set by Mail::BIMI::VMC::Chain->is_valid' );
 has filename => ( is => 'rw', lazy => 1, builder => '_build_filename',
   documentation => 'Filename of temporary file containing the cert' );
+has _delete_file_on_destroy => ( is => 'rw', lazy => 1, default => sub{return 0} );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
   documentation => 'Is this a valid Cert?' );
 has indicator_asn => ( is => 'rw', lazy => 1, builder => '_build_indicator_asn',
@@ -45,7 +46,10 @@ Class for representing, retrieving, validating, and processing a VMC Certificate
 
 sub DESTROY {
   my ($self) = @_;
-  unlink $self->{filename} if $self->{filename} && -f $self->{filename};
+  return unless $self->{_delete_file_on_destroy};
+  if ( $self->{filename} && -f $self->{filename} ) {
+    unlink $self->{filename} or warn "Unable to unlink temporary cert file: $!";
+  }
 }
 
 sub _build_is_valid($self) {
@@ -144,6 +148,7 @@ sub _build_filename($self) {
   my $temp_name = $temp_fh->filename;
   close $temp_fh;
   write_file($temp_name,$self->full_chain);
+  $self->_delete_file_on_destroy(1);
   return $temp_name;
 }
 
