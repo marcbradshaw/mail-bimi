@@ -5,6 +5,7 @@ use warnings FATAL => 'all';
 BEGIN { $ENV{MAIL_BIMI_CACHE_BACKEND} = 'Null' };
 use lib 't';
 use Test::More;
+use Test::Differences;
 use Encode qw{encode};
 use Mail::BIMI::Prelude;
 use Mail::BIMI::App;
@@ -187,9 +188,9 @@ sub do_tests{
   my $expected_error=scalar read_file('t/data/'.$file.'.error');
   my $expected_stderr=scalar read_file('t/data/'.$file.'.stderr');
   my $expected_stdout=scalar read_file('t/data/'.$file.'.stdout');
-  is($error, $expected_error, 'No Exceptions as expected');
-  is($stderr, $expected_stderr, 'STDERR as expected');
-  is($stdout, $expected_stdout,'STDOUT as expected');
+  eq_or_diff($error, $expected_error, 'No Exceptions as expected');
+  eq_or_diff($stderr, $expected_stderr, 'STDERR as expected');
+  eq_or_diff($stdout, $expected_stdout,'STDOUT as expected');
 };
 
 done_testing;
