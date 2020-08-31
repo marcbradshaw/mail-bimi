@@ -9,7 +9,7 @@ use Mail::BIMI::Trait::CacheSerial;
 use Mail::BIMI::Error;
 use Sub::Install;
 
-has error => ( is => 'rw', isa => ArrayRef, lazy => 1, default => sub{return []}, traits => ['Cacheable','CacheSerial'] );
+has error => ( is => 'rw', isa => 'ArrayRef', lazy => 1, default => sub{return []}, traits => ['Cacheable','CacheSerial'] );
 
 =head1 DESCRIPTION
 

@@ -10,7 +10,7 @@ use Mail::BIMI::CacheBackend::FastMmap;
 use Mail::BIMI::CacheBackend::File;
 use Mail::BIMI::CacheBackend::Null;
 
-has _do_not_cache => ( is => 'rw', isa => Int, required => 0 );
+has _do_not_cache => ( is => 'rw', isa => 'Bool', required => 0 );
 has _cache_read_timestamp => ( is => 'rw', required => 0 );
 has _cache_key => ( is => 'rw' );
 has _cache_fields => ( is => 'rw' );

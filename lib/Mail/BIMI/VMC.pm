@@ -15,11 +15,11 @@ with(
   'Mail::BIMI::Role::HasHTTPClient',
   'Mail::BIMI::Role::Cacheable',
 );
-has uri => ( is => 'rw', isa => Str, traits => ['CacheKey'],
+has uri => ( is => 'rw', isa => 'Str', traits => ['CacheKey'],
   documentation => 'inputs: URI of this VMC', );
-has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
+has data => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_data', traits => ['Cacheable'],
   documentation => 'inputs: Raw data of the VMC contents; Fetched from authority URI if not given', );
-has cert_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_list', traits => ['Cacheable'],
+has cert_list => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_cert_list', traits => ['Cacheable'],
   documentation => 'ArrayRef of individual Certificates in the chain' );
 has chain_object => ( is => 'rw', lazy => 1, builder => '_build_chain_object', traits => ['Cacheable'],
   documentation => 'Mail::BIMI::VMC::Chain object for this Chain' );

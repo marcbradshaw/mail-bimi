@@ -16,7 +16,7 @@ with(
 );
 has chain => ( is => 'rw', isa => 'Mail::BIMI::VMC::Chain', required => 1, weak_ref => 1,
   documentation => 'Back reference to the chain' );
-has ascii => ( is => 'rw', isa => ArrayRef, required => 1,
+has ascii => ( is => 'rw', isa => 'ArrayRef', required => 1,
   documentation => 'inputs: Raw data of the Cert contents', );
 has object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, builder => '_build_object',
   documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );

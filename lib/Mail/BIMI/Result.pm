@@ -9,13 +9,13 @@ use Mail::AuthenticationResults::Header::SubEntry;
 use Mail::AuthenticationResults::Header::Comment;
 
 extends 'Mail::BIMI::Base';
-has result => ( is => 'rw', isa => Str,
+has result => ( is => 'rw', isa => 'Str',
   documentation => 'Text result' );
-has comment => ( is => 'rw', isa => Str,
+has comment => ( is => 'rw', isa => 'Str',
   documentation => 'Text comment' );
 has error => ( is => 'rw',
   documentation => 'Optional Mail::BIMI::Error object detailing failure' );
-has headers => ( is => 'rw', isa => HashRef,
+has headers => ( is => 'rw', isa => 'HashRef',
   documentation => 'Hashref of headers to add to message' );
 
 =head1 DESCRIPTION

@@ -33,9 +33,9 @@ coerce 'Mail::BIMI::Options'
     return $options;
   };
 
-has domain => ( is => 'rw', isa => Str, required => 0,
+has domain => ( is => 'rw', isa => 'Str', required => 0,
   documentation => 'inputs: Domain to lookup/domain record was retrieved from', );
-has selector => ( is => 'rw', isa => Str, lazy => 1, default => sub{ return 'default' },
+has selector => ( is => 'rw', isa => 'Str', lazy => 1, default => sub{ return 'default' },
   documentation => 'inputs: Selector to lookup/selector record was retrieved from', );
 has dmarc_object => ( is => 'rw', isa => 'MaybeDMARC',
   documentation => 'inputs: Validated Mail::DMARC::PurePerl object from parsed message', );

@@ -17,7 +17,6 @@ use Import::Into;
 use Carp;
 use File::Slurp;
 use JSON;
-use Types::Standard qw{Str HashRef ArrayRef Enum Undef};
 
 sub import {
   strict->import;
@@ -28,7 +27,6 @@ sub import {
   Carp->import::into(scalar caller);
   File::Slurp->import::into(scalar caller, qw{ read_file write_file } );
   JSON->import::into(scalar caller);
-  Types::Standard->import::into(scalar caller, qw{ Str Int HashRef ArrayRef Enum Undef} );
 }
 
 1;

@@ -14,11 +14,11 @@ with(
   'Mail::BIMI::Role::HasError',
   'Mail::BIMI::Role::Cacheable',
 );
-has domain => ( is => 'rw', isa => Str, required => 1, traits => ['CacheKey'],
+has domain => ( is => 'rw', isa => 'Str', required => 1, traits => ['CacheKey'],
   documentation => 'inputs: Domain the for the record; will become fallback domain if used', );
 has retrieved_record => ( is => 'rw', traits => ['Cacheable'],
   documentation => 'Record as retrieved' );
-has selector => ( is => 'rw', isa => Str, traits => ['CacheKey'],
+has selector => ( is => 'rw', isa => 'Str', traits => ['CacheKey'],
   documentation => 'inputs: Selector used to retrieve the record; will become default if fallback was used', );
 has version => ( is => 'rw', isa => 'Maybe[Str]', lazy => 1, builder => '_build_version', traits => ['Cacheable'],
   documentation => 'BIMI Version tag' );
@@ -26,7 +26,7 @@ has authority => ( is => 'rw', isa => 'Mail::BIMI::Record::Authority', lazy => 1
   documentation => 'Mail::BIMI::Record::Authority object for this record' );
 has location => ( is => 'rw', isa => 'Mail::BIMI::Record::Location', lazy => 1, builder => '_build_location',
   documentation => 'Mail::BIMI::Record::Location object for this record' );
-has record_hashref => ( is => 'rw', isa => HashRef, lazy => 1, builder => '_build_record_hashref', traits => ['Cacheable'],
+has record_hashref => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_record_hashref', traits => ['Cacheable'],
   documentation => 'Hashref of record values' );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', traits => ['Cacheable'],
   documentation => 'Is this record valid' );

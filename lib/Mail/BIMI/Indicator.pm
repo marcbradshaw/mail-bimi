@@ -3,6 +3,7 @@ package Mail::BIMI::Indicator;
 # VERSION
 use 5.20.0;
 use Moose;
+use Moose::Util::TypeConstraints;
 use Mail::BIMI::Prelude;
 use IO::Uncompress::Gunzip;
 use MIME::Base64;
@@ -17,13 +18,13 @@ with(
   'Mail::BIMI::Role::Data',
   'Mail::BIMI::Role::Cacheable',
 );
-has uri => ( is => 'rw', isa => Str, traits => ['CacheKey'],
+has uri => ( is => 'rw', isa => 'Str', traits => ['CacheKey'],
   documentation => 'inputs: URL to retrieve Indicator from', );
-has source => ( is => 'rw', isa => Str, traits => ['Cacheable'],
+has source => ( is => 'rw', isa => 'Str', traits => ['Cacheable'],
   documentation => 'Human readable summary of where this indicator was retrieved from' );
-has data => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data', traits => ['Cacheable'],
+has data => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_data', traits => ['Cacheable'],
   documentation => 'inputs: Raw data representing the Indicator; Fetches from uri if not given', );
-has data_uncompressed => ( is => 'rw', isa => Str, lazy => 1, builder => '_build_data_uncompressed', traits => ['Cacheable'],
+has data_uncompressed => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_data_uncompressed', traits => ['Cacheable'],
   documentation => 'Raw data in uncompressed form' );
 has data_xml => ( is => 'rw', lazy => 1, builder => '_build_data_xml',
   documentation => 'XML::LibXML object representing the Indicator' );
@@ -33,7 +34,7 @@ has parser => ( is => 'rw', lazy => 1, builder => '_build_parser',
   documentation => 'XML::LibXML::RelaxNG parser object used to validate the Indicator XML' );
 has header => ( is => 'rw', lazy => 1, builder => '_build_header', traits => ['Cacheable'],
   documentation => 'Indicator data encoded as Base64 ready for insertion as BIMI-Indicator header' );
-has validator_profile => ( is => 'rw', isa => Enum[@VALIDATOR_PROFILES], lazy => 1, builder => '_build_validator_profile', traits => ['Cacheable'],
+has validator_profile => ( is => 'rw', isa => enum(\@VALIDATOR_PROFILES), lazy => 1, builder => '_build_validator_profile', traits => ['Cacheable'],
   documentation => 'inputs: Validator profile used to validate the Indicator', );
 
 =head1 DESCRIPTION

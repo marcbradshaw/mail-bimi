@@ -3,6 +3,7 @@ package Mail::BIMI::Error;
 # VERSION
 use 5.20.0;
 use Moose;
+use Moose::Util::TypeConstraints;
 use Mail::BIMI::Prelude;
 
 my %DESCRIPTIONS_MAP = (
@@ -42,9 +43,9 @@ my %DESCRIPTIONS_MAP = (
   VMC_VALIDATION_ERROR     => 'VMC did not validate',
 );
 
-has code => ( is => 'ro', isa => Enum[sort keys %DESCRIPTIONS_MAP], required => 1,
+has code => ( is => 'ro', isa => enum([sort keys %DESCRIPTIONS_MAP]), required => 1,
   documentation => 'inputs: Error code', );
-has detail => ( is => 'ro', isa => Str, required => 0,
+has detail => ( is => 'ro', isa => 'Str', required => 0,
   documentation => 'inputs: Human readable details', );
 
 =method I<description()>

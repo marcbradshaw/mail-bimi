@@ -16,9 +16,9 @@ with(
   'Mail::BIMI::Role::Data',
   'Mail::BIMI::Role::HasError',
 );
-has cert_list => ( is => 'rw', isa => ArrayRef,
+has cert_list => ( is => 'rw', isa => 'ArrayRef',
   documentation => 'ArrayRef of individual Certificates in the chain' );
-has cert_object_list => ( is => 'rw', isa => ArrayRef, lazy => 1, builder => '_build_cert_object_list',
+has cert_object_list => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_cert_object_list',
   documentation => 'ArrayRef of Crypt::OpenSSL::X509 objects for the Certificates in the chain' );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid',
   documentation => 'Does the VMC of this chain validate back to root?' );
