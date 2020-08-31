@@ -13,8 +13,8 @@ Record Returned: [91m⚠[0m
 [33m  Location  [37m: [36m[0m
 [33m  Is Valid  [37m: [91mNo[0m
 Errors:
-[91m  EMPTY_L_TAG [37m: [36mEmpty l tag[0m
+[91m  EMPTY_L_TAG [37m: [36mDomain declined to participate[0m
 
 An authenticated email with this record would receive the following BIMI results:
 
-Authentication-Results: authservid.example.com; bimi=fail (Empty l tag)
+Authentication-Results: authservid.example.com; bimi=declined (Domain declined to participate)

@@ -44,17 +44,22 @@ sub selector($self) {
   return $self->bimi_object->selector;
 }
 
-=method I<set_result($result,$error=undef)>
+=method I<set_result($result)>
 
 Set the result text and comment for this Result object
 
+If $result is a Mail::BIMI::Error object then the result will be built from
+its attributes, otherwise the result must be a string.
+
 =cut
 
-sub set_result($self,$result,$error=undef) {
-  $self->result($result);
-  if ($error) {
-    $self->error($error);
-    $self->comment($error->description);
+sub set_result($self,$result) {
+  if ( ref $result eq 'Mail::BIMI::Error' ) {
+    $self->result($result->result);
+    $self->comment($result->description);
+  }
+  else {
+    $self->result($result);
   }
 }
 

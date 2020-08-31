@@ -134,20 +134,20 @@ sub _check_dmarc_enforcement_status($self,$dmarc,$result) {
     my $published_policy_pct = $dmarc->result->published->pct // 100;
     my $effective_published_policy = ( $dmarc->is_subdomain && $published_subdomain_policy ) ? lc $published_subdomain_policy : lc $published_policy;
     if ( $effective_published_policy eq 'quarantine' && $published_policy_pct ne '100' ) {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
+      $result->set_result( Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
       return 1;
     }
     if ( $effective_published_policy ne 'quarantine' && $effective_published_policy ne 'reject' ) {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
+      $result->set_result( Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
       return 1;
     }
     if ( $published_subdomain_policy && $published_subdomain_policy eq 'none' ) {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
+      $result->set_result( Mail::BIMI::Error->new(code=>'DMARC_NOT_ENFORCING'));
       return 1;
     }
   }
   else {
-    $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
+    $result->set_result( Mail::BIMI::Error->new(code=>'NO_DMARC'));
     return 1;
   }
   return 0;
@@ -163,11 +163,11 @@ sub _build_result($self) {
 
   # does DMARC pass
   if ( ! $self->dmarc_result_object ) {
-    $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'NO_DMARC'));
+    $result->set_result( Mail::BIMI::Error->new(code=>'NO_DMARC'));
     return $result;
   }
   if ( $self->dmarc_result_object->result ne 'pass' ) {
-      $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'DMARC_NOT_PASS',detail=>$self->dmarc_result_object->result));
+      $result->set_result( Mail::BIMI::Error->new(code=>'DMARC_NOT_PASS',detail=>$self->dmarc_result_object->result));
       return $result;
   }
 
@@ -196,7 +196,7 @@ sub _build_result($self) {
           if ( @spf_terms ) {
             my $last_term = pop @spf_terms;
             if ( $last_term->name eq 'all' && $last_term->qualifier eq '+') {
-              $result->set_result( 'skipped', Mail::BIMI::Error->new(code=>'SPF_PLUS_ALL'));
+              $result->set_result( Mail::BIMI::Error->new(code=>'SPF_PLUS_ALL'));
               return $result;
             }
           }
@@ -207,54 +207,51 @@ sub _build_result($self) {
 
   if ( ! $self->record->is_valid ) {
     my $has_error;
-    if ( ($has_error) = $self->record->filter_errors( 'NO_BIMI_RECORD' ) ) {
-      $result->set_result( 'none', $has_error );
-    }
-    elsif ( ($has_error) = $self->record->filter_errors( 'DNS_ERROR' ) ) {
-      $result->set_result( 'none', $has_error );
-    }
-    else {
-      my @fail_errors = qw{
-        NO_DMARC
-        MULTI_BIMI_RECORD
-        DUPLICATE_KEY
-        EMPTY_L_TAG
-        EMPTY_V_TAG
-        INVALID_V_TAG
-        MISSING_L_TAG
-        MISSING_V_TAG
-        MULTIPLE_AUTHORITIES
-        MULTIPLE_LOCATIONS
-        INVALID_TRANSPORT_A
-        INVALID_TRANSPORT_L
-        SPF_PLUS_ALL
-        SVG_FETCH_ERROR
-        VMC_FETCH_ERROR
-        VMC_PARSE_ERROR
-        VMC_VALIDATION_ERROR
-        SVG_GET_ERROR
-        SVG_SIZE
-        SVG_UNZIP_ERROR
-        SVG_INVALID_XML
-        SVG_VALIDATION_ERROR
-        SVG_MISMATCH
-        VMC_REQUIRED
-      };
-      my $found_error = 0;
+    # Known errors, in order of importance
+    my @known_errors = qw{
+      NO_BIMI_RECORD
+      DNS_ERROR
+      NO_DMARC
+      MULTI_BIMI_RECORD
+      DUPLICATE_KEY
+      EMPTY_L_TAG
+      EMPTY_V_TAG
+      INVALID_V_TAG
+      MISSING_L_TAG
+      MISSING_V_TAG
+      MULTIPLE_AUTHORITIES
+      MULTIPLE_LOCATIONS
+      INVALID_TRANSPORT_A
+      INVALID_TRANSPORT_L
+      SPF_PLUS_ALL
+      SVG_FETCH_ERROR
+      VMC_FETCH_ERROR
+      VMC_PARSE_ERROR
+      VMC_VALIDATION_ERROR
+      SVG_GET_ERROR
+      SVG_SIZE
+      SVG_UNZIP_ERROR
+      SVG_INVALID_XML
+      SVG_VALIDATION_ERROR
+      SVG_MISMATCH
+      VMC_REQUIRED
+    };
+    my $found_error = 0;
 
-      foreach my $fail_error (@fail_errors) {
-        if ( my ($error) = $self->record->filter_errors( $fail_error ) ) {
-          $found_error = 1;
-          $result->set_result( 'fail', $error );
-          last;
-        }
+    foreach my $known_error (@known_errors) {
+      if ( my ($error) = $self->record->filter_errors( $known_error ) ) {
+        $found_error = 1;
+        $result->set_result( $error );
+        last;
       }
-      if ( !$found_error ) {
-        $result->set_result( 'fail', Mail::BIMI::Error->new(code=>'BIMI_INVALID'));
-      }
+    }
+    if ( !$found_error ) {
+      $result->set_result( Mail::BIMI::Error->new(code=>'BIMI_INVALID'));
     }
     return $result;
   }
+
+  $result->set_result( 'pass' );
 
   my @bimi_location;
   if ( $self->record->authority && $self->record->authority->is_relevant ) {
@@ -271,8 +268,6 @@ sub _build_result($self) {
     'v=BIMI1;',
     @bimi_location,
   );
-
-  $result->set_result( 'pass' );
 
   return $result;
 }
