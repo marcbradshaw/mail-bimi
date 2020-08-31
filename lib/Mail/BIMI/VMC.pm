@@ -64,7 +64,7 @@ sub _build_data($self) {
   if ($self->bimi_object->options->vmc_from_file) {
     return scalar read_file $self->bimi_object->options->vmc_from_file;
   }
-  $self->verbose('HTTP Fetch: '.$self->uri);
+  $self->log_verbose('HTTP Fetch: '.$self->uri);
   my $response = $self->http_client->get( $self->uri );
   if ( !$response->{success} ) {
     if ( $response->{status} == 599 ) {
@@ -166,7 +166,7 @@ sub is_expired($self) {
   return if !$self->vmc_object;
   my $seconds = 0;
   if ($self->vmc_object->object->checkend($seconds)) {
-    $self->verbose('Cert is expired');
+    $self->log_verbose('Cert is expired');
     return 1;
   }
   else {
@@ -186,7 +186,7 @@ sub alt_name($self) {
   return if !$exts;
   return if !exists $exts->{'2.5.29.17'};
   my $alt_name = $exts->{'2.5.29.17'}->to_string;
-  $self->verbose('Cert alt name '.$alt_name);
+  $self->log_verbose('Cert alt name '.$alt_name);
   return $alt_name;
 }
 
@@ -282,7 +282,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
-  $self->verbose('VMC is valid');
+  $self->log_verbose('VMC is valid');
   return 1;
 }
 

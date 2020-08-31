@@ -84,7 +84,7 @@ sub location_is_relevant($self) {
   # True if we don't have a relevant authority OR if we are checking VMC AND Location
   return 1 unless $self->bimi_object->options->no_location_with_vmc;
   if ( $self->authority && $self->authority->is_relevant ) {
-    $self->verbose('Location is not relevant');
+    $self->log_verbose('Location is not relevant');
     return 0;
   }
   return 1;
@@ -127,7 +127,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
-  $self->verbose('Record is valid');
+  $self->log_verbose('Record is valid');
   return 1;
 }
 
@@ -157,7 +157,7 @@ sub _build_record_hashref($self) {
       return {};
     }
 
-    $self->verbose('Trying fallback domain');
+    $self->log_verbose('Trying fallback domain');
     my @records;
     eval {
       @records = $self->_get_from_dns($fallback_selector,$fallback_domain);
@@ -201,7 +201,7 @@ sub _build_record_hashref($self) {
 sub _get_from_dns($self,$selector,$domain) {
   my @matches;
   if ($self->bimi_object->options->force_record) {
-    $self->verbose('Using fake record');
+    $self->log_verbose('Using fake record');
     push @matches, $self->bimi_object->options->force_record;
     return @matches;
   }

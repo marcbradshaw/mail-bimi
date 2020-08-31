@@ -49,7 +49,7 @@ sub _build_is_valid($self) {
   }
 
   return 0 if $self->error->@*;
-  $self->verbose('Location is valid');
+  $self->log_verbose('Location is valid');
   return 1;
 }
 

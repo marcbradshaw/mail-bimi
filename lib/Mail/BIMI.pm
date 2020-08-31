@@ -113,7 +113,7 @@ sub _build_dmarc_result_object($self) {
 
 sub _build_dmarc_pp_object($self) {
   return $self->dmarc_object if ref $self->dmarc_object eq 'Mail::DMARC::PurePerl';
-  $self->verbose('Building our own Mail::DMARC::PurePerl object');
+  $self->log_verbose('Building our own Mail::DMARC::PurePerl object');
   my $dmarc = Mail::DMARC::PurePerl->new;
   $dmarc->set_resolver($self->resolver);
   $dmarc->header_from($self->domain);
@@ -302,13 +302,13 @@ sub finish($self) {
   $self->record->finish if $self->record;
 }
 
-=method I<verbose()>
+=method I<log_verbose()>
 
 Output given text if in verbose mode.
 
 =cut
 
-sub verbose($self,$text) {
+sub log_verbose($self,$text) {
   return unless $self->options->verbose;
   warn "$text\n";
 }

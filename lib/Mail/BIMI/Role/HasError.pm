@@ -74,7 +74,7 @@ sub add_error_object($self,$error) {
     }
   }
   else {
-    $self->verbose(join(' : ',
+    $self->log_verbose(join(' : ',
       'Error',
       $error->code,
       $error->description,

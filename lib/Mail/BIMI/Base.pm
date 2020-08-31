@@ -35,14 +35,14 @@ sub authority_object($self) {
   return $self->record_object->authority;
 }
 
-=method I<verbose()>
+=method I<log_verbose()>
 
 Output given text if in verbose mode.
 
 =cut
 
-sub verbose($self,$text) {
-  $self->bimi_object->verbose($text);
+sub log_verbose($self,$text) {
+  $self->bimi_object->log_verbose($text);
 }
 
 1;

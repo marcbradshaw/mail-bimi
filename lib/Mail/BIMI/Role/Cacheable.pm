@@ -44,7 +44,7 @@ sub _build_cache_backend($self) {
               : $backend_type eq 'File' ? Mail::BIMI::CacheBackend::File->new( %opts )
               : $backend_type eq 'Null' ? Mail::BIMI::CacheBackend::Null->new( %opts )
               : croak 'Unknown Cache Backend';
-  $self->verbose('Using cache backend '.$backend_type);
+  $self->log_verbose('Using cache backend '.$backend_type);
   return $backend;
 }
 
@@ -80,7 +80,7 @@ around new => sub{
 
   my $data = $self->cache_backend->get_from_cache;
   return $self if !$data;
-  $self->verbose('Build '.(ref $self).' from cache');
+  $self->log_verbose('Build '.(ref $self).' from cache');
   if ($data->{cache_key} ne $self->_cache_key){
     warn 'Cache is invalid';
     return $self;

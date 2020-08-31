@@ -17,7 +17,7 @@ subtest 'Non Verbose' => sub{
   my $bimi = Mail::BIMI->new(domain=>'example.com',options=>{verbose=>0});
   $bimi->resolver($resolver);
   my($out,$err,$exit)=capture{
-    $bimi->verbose('This is verbose output');
+    $bimi->log_verbose('This is verbose output');
   };
   is($out,'','No STDOUT Output');
   is($err,'','No STDERR Output');
@@ -27,7 +27,7 @@ subtest 'Verbose' => sub{
   my $bimi = Mail::BIMI->new(domain=>'example.com',options=>{verbose=>1});
   $bimi->resolver($resolver);
   my($out,$err,$exit)=capture{
-    $bimi->verbose('This is verbose output');
+    $bimi->log_verbose('This is verbose output');
   };
   is($out,'','No STDOUT Output');
   is($err,"This is verbose output\n",'STDERR Output');

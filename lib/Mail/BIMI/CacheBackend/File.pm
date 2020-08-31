@@ -37,7 +37,7 @@ Put this classes data into the cache
 =cut
 
 sub put_to_cache($self,$data) {
-  $self->parent->verbose('Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename);
+  $self->parent->log_verbose('Writing '.(ref $self->parent).' to cache file '.$self->_cache_filename);
   my $sereal_data = eval{ encode_sereal($data) };
   warn "Error writing to cachce: $@" if $@; # uncoverable branch
   return unless $sereal_data; # uncoverable branch
