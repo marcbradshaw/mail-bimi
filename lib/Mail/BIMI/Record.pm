@@ -143,7 +143,7 @@ sub _build_record_hashref($self) {
     1;
   } || do {
     my $error = $@;
-    $error =~ s/ at \/.*$//;
+    $error =~ s/ at \/.*$//s;
     $self->add_error('DNS_ERROR',$error);
     return {};
   };
