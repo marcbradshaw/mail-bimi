@@ -147,7 +147,7 @@ sub _build_cert_object_list($self) {
     push @objects, Mail::BIMI::VMC::Cert->new(
       bimi_object => $self->bimi_object,
       chain => $self,
-      ascii => $cert,
+      ascii_lines => $cert,
       index => $i++,
     );
   }

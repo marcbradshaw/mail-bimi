@@ -16,7 +16,7 @@ with(
 );
 has chain => ( is => 'rw', isa => 'Mail::BIMI::VMC::Chain', required => 1, weak_ref => 1,
   documentation => 'Back reference to the chain' );
-has ascii => ( is => 'rw', isa => 'ArrayRef', required => 1,
+has ascii_lines => ( is => 'rw', isa => 'ArrayRef', required => 1,
   documentation => 'inputs: Raw data of the Cert contents', );
 has object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, builder => '_build_object',
   documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );
@@ -85,7 +85,7 @@ sub _build_indicator_asn($self) {
 sub _build_object($self) {
   my $cert;
   eval{
-    $cert = Crypt::OpenSSL::X509->new_from_string(join("\n",$self->ascii->@*));
+    $cert = Crypt::OpenSSL::X509->new_from_string(join("\n",$self->ascii_lines->@*));
     1;
   } || do {
     my $error = $@;
@@ -140,7 +140,7 @@ The full chain of this certificate as verified to root
 =cut
 
 sub full_chain($self) {
-  return join("\n",$self->ascii->@*,$self->validated_by);
+  return join("\n",$self->ascii_lines->@*,$self->validated_by);
 }
 
 sub _build_filename($self) {
