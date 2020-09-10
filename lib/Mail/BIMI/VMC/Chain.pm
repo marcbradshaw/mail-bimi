@@ -40,6 +40,7 @@ sub _build_is_valid($self) {
     my $bimi_root = $self->get_data_from_file('CA.pem');
     my $temp_fh = File::Temp->new(UNLINK=>0);
     $ssl_root_cert = $temp_fh->filename;
+    $unlink_root_cert_file = 1;
     print $temp_fh join("\n",$mozilla_root,$bimi_root);
     close $temp_fh;
   }
@@ -58,7 +59,7 @@ sub _build_is_valid($self) {
     }
     my $is_valid = 0;
     eval {
-      $root_ca->verify($cert->object);
+      $root_ca->verify($cert->x509_object);
       $is_valid = 1;
     };
     if ( !$is_valid ) {
@@ -93,7 +94,7 @@ sub _build_is_valid($self) {
           next VALIDATING_CERT;
         }
         eval{
-          $validated_cert->verifier->verify($validating_cert->object);
+          $validated_cert->verifier->verify($validating_cert->x509_object);
           $self->log_verbose("Certificate $validating_i validated to root via certificate $validated_i");
           $validating_cert->validated_by($validated_cert->full_chain);
           $validating_cert->validated_by_id($validated_i);
@@ -124,9 +125,9 @@ Locate and return the VMC object from this chain.
 sub vmc($self) {
   my $vmc;
   foreach my $cert ( $self->cert_object_list->@* ) {
-    my $object = $cert->object;
-    next if !$object;
-    my $exts = eval{ $object->extensions_by_oid() };
+    my $x509_object = $cert->x509_object;
+    next if !$x509_object;
+    my $exts = eval{ $x509_object->extensions_by_oid() };
     next if !$exts;
     if ( $cert->has_valid_usage && exists $exts->{&LOGOTYPE_OID}) {
       # Has both extended usage and embedded Indicator
@@ -164,7 +165,7 @@ sub app_validate($self) {
   say 'Certificate Chain Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
   foreach my $cert ( $self->cert_object_list->@* ) {
     my $i = $cert->index;
-    my $obj = $cert->object;
+    my $obj = $cert->x509_object;
     say '';
     say YELLOW.'  Certificate '.$i.WHITE.': '.($cert->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
     if ( $obj ) {

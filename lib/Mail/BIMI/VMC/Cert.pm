@@ -18,7 +18,7 @@ has chain => ( is => 'rw', isa => 'Mail::BIMI::VMC::Chain', required => 1, weak_
   documentation => 'Back reference to the chain' );
 has ascii_lines => ( is => 'rw', isa => 'ArrayRef', required => 1,
   documentation => 'inputs: Raw data of the Cert contents', );
-has object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, builder => '_build_object',
+has x509_object => ( is => 'rw', isa => 'Maybe[Crypt::OpenSSL::X509]', lazy => 1, builder => '_build_x509_object',
   documentation => 'Crypt::OpenSSL::X509 object for the Certificate' );
 has verifier => ( is => 'rw', isa => 'Crypt::OpenSSL::Verify', lazy => 1, builder => '_build_verifier',
   documentation => 'Crypt::OpenSSL::Verify object for the Certificate' );
@@ -53,14 +53,14 @@ sub DESTROY {
 }
 
 sub _build_is_valid($self) {
-  $self->object; # trigger object parse
+  $self->x509_object; # trigger object parse
   return 0 if $self->errors->@*;
   return 1;
 }
 
 sub _build_indicator_asn($self) {
-  return if !$self->object;
-  my $exts = eval{ $self->object->extensions_by_oid() };
+  return if !$self->x509_object;
+  my $exts = eval{ $self->x509_object->extensions_by_oid() };
   return if !$exts;
   return if !exists $exts->{&LOGOTYPE_OID};
   my $indhex = $exts->{&LOGOTYPE_OID}->value;
@@ -82,7 +82,7 @@ sub _build_indicator_asn($self) {
   return $decoded;
 }
 
-sub _build_object($self) {
+sub _build_x509_object($self) {
   my $cert;
   eval{
     $cert = Crypt::OpenSSL::X509->new_from_string(join("\n",$self->ascii_lines->@*));
@@ -108,9 +108,9 @@ Return true if this cert has expired
 =cut
 
 sub is_expired($self) {
-  return 0 if !$self->object;
+  return 0 if !$self->x509_object;
   my $seconds = 0;
-  if ($self->object->checkend($seconds)) {
+  if ($self->x509_object->checkend($seconds)) {
     return 1;
   }
   return 0;
@@ -123,8 +123,8 @@ Return true if this VMC has a valid usage extension for BIMI
 =cut
 
 sub has_valid_usage($self) {
-  return if !$self->object;
-  my $exts = eval{ $self->object->extensions_by_oid() };
+  return if !$self->x509_object;
+  my $exts = eval{ $self->x509_object->extensions_by_oid() };
   return if !$exts;
   my $extended_usage = $exts->{'2.5.29.37'};
   return if !$extended_usage;

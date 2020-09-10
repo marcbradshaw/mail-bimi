@@ -120,7 +120,7 @@ Return the subject of the VMC
 
 sub subject($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->object->subject;
+  return $self->vmc_object->x509_object->subject;
 }
 
 =method I<not_before()>
@@ -131,7 +131,7 @@ Return not before of the vmc
 
 sub not_before($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->object->notBefore;
+  return $self->vmc_object->x509_object->notBefore;
 }
 
 =method I<not_after()>
@@ -142,7 +142,7 @@ Return not after of the vmc
 
 sub not_after($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->object->notAfter;
+  return $self->vmc_object->x509_object->notAfter;
 }
 
 =method I<issuer()>
@@ -153,7 +153,7 @@ Return the issuer string of the VMC
 
 sub issuer($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->object->issuer;
+  return $self->vmc_object->x509_object->issuer;
 }
 
 =method I<is_expired()>
@@ -165,7 +165,7 @@ Return true if this VMC has expired
 sub is_expired($self) {
   return if !$self->vmc_object;
   my $seconds = 0;
-  if ($self->vmc_object->object->checkend($seconds)) {
+  if ($self->vmc_object->x509_object->checkend($seconds)) {
     $self->log_verbose('Cert is expired');
     return 1;
   }
@@ -182,7 +182,7 @@ Return the alt name string for the VMC
 
 sub alt_name($self) {
   return if !$self->vmc_object;
-  my $exts = eval{ $self->vmc_object->object->extensions_by_oid() };
+  my $exts = eval{ $self->vmc_object->x509_object->extensions_by_oid() };
   return if !$exts;
   return if !exists $exts->{'2.5.29.17'};
   my $alt_name = $exts->{'2.5.29.17'}->to_string;
@@ -220,7 +220,7 @@ Return true if this VMC is self signed
 
 sub is_self_signed($self) {
   return if !$self->vmc_object;
-  return $self->vmc_object->object->is_selfsigned ? 1 : 0;
+  return $self->vmc_object->x509_object->is_selfsigned ? 1 : 0;
 }
 
 =method I<has_valid_usage()>
