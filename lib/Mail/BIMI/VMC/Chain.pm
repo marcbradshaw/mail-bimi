@@ -74,9 +74,9 @@ sub _build_is_valid($self) {
     }
   }
 
-  my $work_done;
+  my $iteration_did_no_work;
   do {
-    $work_done = 0;
+    $iteration_did_no_work = 1;
     VALIDATED_CERT:
     foreach my $validated_cert ( $self->cert_object_list->@* ) {
       next VALIDATED_CERT if ! $validated_cert->is_valid_to_root;
@@ -99,11 +99,11 @@ sub _build_is_valid($self) {
           $validating_cert->validated_by($validated_cert->full_chain);
           $validating_cert->validated_by_id($validated_i);
           $validating_cert->is_valid_to_root(1);
-          $work_done = 1;
+          $iteration_did_no_work = 0;
         };
       }
     }
-  } until !$work_done;
+  } until $iteration_did_no_work;
   if ( !$self->vmc->is_valid_to_root ) {
     $self->add_error('VMC_PARSE_ERROR','Could not verify VMC');
   }
