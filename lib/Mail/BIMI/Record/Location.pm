@@ -38,17 +38,17 @@ sub _build_is_location_valid($self) {
   else {
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   return 1;
 }
 
 sub _build_is_valid($self) {
   return 0 if !$self->is_location_valid;
   if ( !$self->indicator->is_valid ) {
-    $self->add_error_object( $self->indicator->error );
+    $self->add_error_object( $self->indicator->errors );
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   $self->log_verbose('Location is valid');
   return 1;
 }

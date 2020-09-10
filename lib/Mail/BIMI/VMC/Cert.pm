@@ -54,7 +54,7 @@ sub DESTROY {
 
 sub _build_is_valid($self) {
   $self->object; # trigger object parse
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   return 1;
 }
 

@@ -30,7 +30,7 @@ sub _build_is_authority_valid($self) {
     $self->add_error('INVALID_TRANSPORT_A');
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   return 1;
 }
 
@@ -52,10 +52,10 @@ sub is_relevant($self) {
 sub _build_is_valid($self) {
   return 0 if !$self->is_authority_valid;
   if ( $self->is_relevant && !$self->vmc->is_valid ) {
-    $self->add_error_object( $self->vmc->error );
+    $self->add_error_object( $self->vmc->errors );
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   $self->log_verbose('Authority is valid');
   return 1;
 }

@@ -274,14 +274,14 @@ sub _build_is_valid($self) {
   $self->is_cert_valid;
 
   if ( $self->chain_object && !$self->chain_object->is_valid ) {
-    $self->add_error_object( $self->chain_object->error );
+    $self->add_error_object( $self->chain_object->errors );
   }
 
   if ( $self->indicator && !$self->indicator->is_valid ) {
-    $self->add_error_object( $self->indicator->error );
+    $self->add_error_object( $self->indicator->errors );
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   $self->log_verbose('VMC is valid');
   return 1;
 }
@@ -317,7 +317,7 @@ sub app_validate($self) {
   say YELLOW.'  Is Valid        '.WHITE.': '.CYAN.($self->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   if ( ! $self->is_valid ) {
     say "Errors:";
-    foreach my $error ( $self->error->@* ) {
+    foreach my $error ( $self->errors->@* ) {
       my $error_code = $error->code;
       my $error_text = $error->description;
       my $error_detail = $error->detail // '';

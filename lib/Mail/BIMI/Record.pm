@@ -100,16 +100,16 @@ sub _build_is_valid($self) {
   else {
     $self->add_error('EMPTY_V_TAG')   if lc $self->version eq '';
     $self->add_error('INVALID_V_TAG') if lc $self->version ne 'bimi1';
-    return 0 if $self->error->@*;
+    return 0 if $self->errors->@*;
   }
   if ($self->authority->is_relevant && !$self->authority->is_valid) {
-    $self->add_error_object( $self->authority->error );
+    $self->add_error_object( $self->authority->errors );
   }
   if ($self->location_is_relevant && !$self->location->is_valid) {
-    $self->add_error_object( $self->location->error );
+    $self->add_error_object( $self->location->errors );
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
 
   if ( $self->bimi_object->options->require_vmc ) {
       unless ( $self->authority && $self->authority->vmc && $self->authority->vmc->is_valid ) {
@@ -126,7 +126,7 @@ sub _build_is_valid($self) {
     }
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   $self->log_verbose('Record is valid');
   return 1;
 }
@@ -267,7 +267,7 @@ sub app_validate($self) {
 
   if ( ! $self->is_valid ) {
     say "Errors:";
-    foreach my $error ( $self->error->@* ) {
+    foreach my $error ( $self->errors->@* ) {
       my $error_code = $error->code;
       my $error_text = $error->description;
       my $error_detail = $error->detail // '';

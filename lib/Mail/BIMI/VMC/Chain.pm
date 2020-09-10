@@ -111,7 +111,7 @@ sub _build_is_valid($self) {
     unlink $ssl_root_cert or warn "Unable to unlink temporary chain file: $!";
   }
 
-  return 0 if $self->error->@*;
+  return 0 if $self->errors->@*;
   return 1;
 }
 
