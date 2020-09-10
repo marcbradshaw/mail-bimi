@@ -1,5 +1,5 @@
 package Mail::BIMI::Role::HasHTTPClient;
-# ABSTRACT: Class to model a DNS resolver
+# ABSTRACT: Class to model a HTTP client
 # VERSION
 use 5.20.0;
 use Moose::Role;
