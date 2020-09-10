@@ -130,7 +130,7 @@ sub _build_data($self) {
     if ( $response->{status} == 599 ) {
       $self->add_error('SVG_FETCH_ERROR',$response->{content});
     }
-      else {
+    else {
       $self->add_error('SVG_FETCH_ERROR',$response->{status});
     }
     return '';
