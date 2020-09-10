@@ -36,7 +36,7 @@ sub _build_is_authority_valid($self) {
 
 =method I<is_relevant()>
 
-Return trus if this Authority is relevant to validation
+Return true if this Authority is relevant to validation
 
 =cut
 
