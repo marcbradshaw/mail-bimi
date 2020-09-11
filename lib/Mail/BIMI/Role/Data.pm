@@ -4,6 +4,7 @@ package Mail::BIMI::Role::Data;
 use 5.20.0;
 use Moose::Role;
 use Mail::BIMI::Prelude;
+use File::Slurp qw{ read_file write_file };
 
 =head1 DESCRIPTION
 

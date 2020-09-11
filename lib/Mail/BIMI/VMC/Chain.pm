@@ -7,6 +7,7 @@ use Mail::BIMI::Prelude;
 use Mail::BIMI::VMC::Cert;
 use Crypt::OpenSSL::X509;
 use Crypt::OpenSSL::Verify 0.20;
+use File::Slurp qw{ read_file write_file };
 use File::Temp;
 use Mozilla::CA;
 use Term::ANSIColor qw{ :constants };

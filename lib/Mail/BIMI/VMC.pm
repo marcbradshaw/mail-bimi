@@ -4,6 +4,7 @@ package Mail::BIMI::VMC;
 use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
+use File::Slurp qw{ read_file write_file };
 use MIME::Base64;
 use Term::ANSIColor qw{ :constants };
 use Mail::BIMI::Indicator;

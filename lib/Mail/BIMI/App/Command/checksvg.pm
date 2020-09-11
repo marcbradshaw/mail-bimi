@@ -7,6 +7,7 @@ use Mail::BIMI::Prelude;
 use Mail::BIMI::App -command;
 use Mail::BIMI;
 use Mail::BIMI::Indicator;
+use File::Slurp qw{ read_file write_file };
 use Term::ANSIColor qw{ :constants };
 
 =head1 DESCRIPTION

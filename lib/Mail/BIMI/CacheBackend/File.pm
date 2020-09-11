@@ -4,6 +4,7 @@ package Mail::BIMI::CacheBackend::File;
 use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
+use File::Slurp qw{ read_file write_file };
 use Sereal qw{encode_sereal decode_sereal};
 
 with 'Mail::BIMI::Role::CacheBackend';

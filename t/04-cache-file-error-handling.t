@@ -10,6 +10,7 @@ use Test::Exception;
 use Mail::BIMI;
 use Mail::BIMI::CacheBackend::File;
 use Mail::BIMI::CacheBackend::FastMmap;
+use File::Slurp qw{ read_file write_file };
 use Net::DNS::Resolver::Mock 1.20200214;
 
 my $resolver = Net::DNS::Resolver::Mock->new;

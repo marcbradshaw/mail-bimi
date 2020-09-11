@@ -10,6 +10,7 @@ use Encode qw{encode};
 use Mail::BIMI::Prelude;
 use Mail::BIMI::App;
 use App::Cmd::Tester;
+use File::Slurp qw{ read_file write_file };
 use Net::DNS::Resolver::Mock;
 
 my $write_data = $ENV{MAIL_BIMI_TEST_WRITE_DATA} // 0; # Set to 1 to write new test data, then check it and commit

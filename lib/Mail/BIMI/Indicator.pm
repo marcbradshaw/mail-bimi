@@ -5,6 +5,7 @@ use 5.20.0;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Mail::BIMI::Prelude;
+use File::Slurp qw{ read_file write_file };
 use IO::Uncompress::Gunzip;
 use MIME::Base64;
 use Term::ANSIColor qw{ :constants };
