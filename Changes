@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+2.20200930.1 2020-09-30 UTC
   - Add cacheing for remote calls
   - Class to model a retrieved indicator
   - Add SVG download and verification against spec
