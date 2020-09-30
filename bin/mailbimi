@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+use 5.20.0;
+use strict;
+use warnings;
+use Mail::BIMI::Prelude;
+# ABSTRACT: BIMI Helper
+# PODNAME: mailbimi
+# VERSION
+use Mail::BIMI::App;
+
+Mail::BIMI::App->run;
