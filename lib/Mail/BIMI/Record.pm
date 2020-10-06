@@ -120,8 +120,23 @@ sub _build_is_valid($self) {
   if ( $self->authority && $self->authority->is_relevant ) {
     # Check the SVG payloads are identical
     ## Compare raw? or Uncompressed?
-    if ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed ne $self->location->indicator->data_uncompressed ) {
-    #if ( $self->authority->vmc->indicator->data_maybe_compressed ne $self->location->indicator->data_maybe_compressed ) {
+    if ( !$self->authority->vmc ) {
+      # We could not get a vmc to check, return an error.
+      $self->add_error('VMC_PARSE_ERROR');
+    }
+    elsif ( !$self->authority->vmc->indicator ) {
+      # We could not get an indicator from the vmc to check, return an error.
+      $self->add_error('VMC_PARSE_ERROR','Could not extract SVG from VMC');
+    }
+    elsif ( $self->location_is_relevant && !$self->location ) {
+      # We could not get a location to check against, return an error.
+      $self->add_error('SVG_MISMATCH');
+    }
+    elsif ( $self->location_is_relevant && !$self->location->indicator ) {
+      # We could not get an indicator from the location to check against, return an error.
+      $self->add_error('SVG_MISMATCH');
+    }
+    elsif ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed ne $self->location->indicator->data_uncompressed ) {
       $self->add_error('SVG_MISMATCH');
     }
   }
