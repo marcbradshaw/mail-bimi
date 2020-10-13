@@ -5,7 +5,7 @@ use 5.20.0;
 use Moose;
 use Mail::BIMI::Prelude;
 use Mail::BIMI::VMC::Cert;
-use Crypt::OpenSSL::X509 1.813;
+use Crypt::OpenSSL::X509 1.812;
 use Crypt::OpenSSL::Verify 0.20;
 use File::Slurp qw{ read_file write_file };
 use File::Temp;
