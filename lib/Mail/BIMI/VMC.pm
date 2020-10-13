@@ -22,11 +22,11 @@ has data => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_data', tra
   documentation => 'inputs: Raw data of the VMC contents; Fetched from authority URI if not given', );
 has cert_list => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_cert_list', traits => ['Cacheable'],
   documentation => 'ArrayRef of individual Certificates in the chain' );
-has chain_object => ( is => 'rw', lazy => 1, builder => '_build_chain_object', traits => ['Cacheable'],
+has chain_object => ( is => 'rw', lazy => 1, builder => '_build_chain_object',
   documentation => 'Mail::BIMI::VMC::Chain object for this Chain' );
 has is_valid => ( is => 'rw', lazy => 1, builder => '_build_is_valid', traits => ['Cacheable'],
   documentation => 'Is this VMC valid' );
-has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object', traits => ['Cacheable'],
+has vmc_object => ( is => 'rw', lazy => 1, builder => '_build_vmc_object',
   documentation => 'Mail::BIMI::VMC::Cert object for this VMC Set' );
 has is_cert_valid => ( is => 'rw', lazy => 1, builder => '_build_is_cert_valid', traits => ['Cacheable'],
   documentation => 'Is this Certificate Set valid' );
