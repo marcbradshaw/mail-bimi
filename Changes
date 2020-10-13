@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Fix bug in cacheing VMC Indicators
 
 2.20201013.1 2020-10-13 UTC
   - Crypt::OpenSSL::X509 1.812 is packaged in buster, and is good enough

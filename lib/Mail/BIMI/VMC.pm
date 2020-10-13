@@ -258,7 +258,7 @@ sub _build_indicator($self) {
   if ( $uri =~ /^data:image\/svg\+xml;base64,/ ) {
     my ( $null, $base64 ) = split( ',', $uri );
     my $data = MIME::Base64::decode($base64);
-    return Mail::BIMI::Indicator->new( location => $self->indicator_uri, data => $data, bimi_object => $self->bimi_object, source => 'VMC' );
+    return Mail::BIMI::Indicator->new( uri => $self->uri, data => $data, bimi_object => $self->bimi_object, source => 'VMC' );
   }
   else {
     $self->add_error('VMC_PARSE_ERROR','Could not extract SVG from VMC');
