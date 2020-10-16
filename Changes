@@ -1,4 +1,6 @@
 {{$NEXT}}
+  - Option to limit redirects followed by http client
+    http_client_max_redirect / MAIL_BIMI_HTTP_CLIENT_MAX_REDIRECT
 
 2.20201013.2 2020-10-13 UTC
   - Fix bug in cacheing VMC Indicators
