@@ -203,7 +203,6 @@ sub is_valid_alt_name($self) {
   return 1 if !$self->check_domain; # Nothing to check against, default to allow
   return 1 if $self->bimi_object->options->vmc_no_check_alt;
   return 0 if !$self->alt_name;
-  warn $self->check_domain;
   my @alt_names = split( ',', lc $self->alt_name );
   foreach my $alt_name ( @alt_names ) {
     $alt_name =~ s/^\s+//;
