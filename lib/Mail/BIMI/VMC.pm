@@ -65,13 +65,19 @@ sub _build_data($self) {
   if ($self->bimi_object->options->vmc_from_file) {
     return scalar read_file $self->bimi_object->options->vmc_from_file;
   }
+
+  if ( !( $self->uri =~ /\.pem\?/ || $self->uri =~ /\.pem$/ )) {
+    $self->add_error('VMC_FETCH_ERROR','VMC MUST have .pem extension');
+    return '';
+  }
+
   $self->log_verbose('HTTP Fetch: '.$self->uri);
   my $response = $self->http_client->get( $self->uri );
   if ( !$response->{success} ) {
     if ( $response->{status} == 599 ) {
       $self->add_error('VMC_FETCH_ERROR',$response->{content});
     }
-      else {
+    else {
       $self->add_error('VMC_FETCH_ERROR',$response->{status});
     }
     return '';
