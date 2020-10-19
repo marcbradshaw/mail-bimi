@@ -75,8 +75,8 @@ sub get_authentication_results_object($self) {
     $header->add_child( Mail::AuthenticationResults::Header::Comment->new()->safe_set_value( $self->comment ) );
   }
   if ( $self->result eq 'pass' ) {
-    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.d' )->safe_set_value( $self->bimi_object->record->domain ) );
-    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.selector' )->safe_set_value( $self->bimi_object->record->selector ) );
+    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.d' )->safe_set_value( $self->bimi_object->record->retrieved_domain ) );
+    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'header.selector' )->safe_set_value( $self->bimi_object->record->retrieved_selector ) );
   }
   if ( $self->bimi_object->record->authority->is_relevant ) {
     my $vmc = $self->bimi_object->record->authority->vmc;
