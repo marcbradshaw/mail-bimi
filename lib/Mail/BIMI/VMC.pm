@@ -69,7 +69,7 @@ sub _build_data($self) {
   }
 
   if ( !( $self->uri =~ /\.pem\?/ || $self->uri =~ /\.pem$/ )) {
-    $self->add_error('VMC_FETCH_ERROR','VMC MUST have .pem extension');
+    $self->add_error('INVALID_EXTENSION_A','VMC MUST have .pem extension');
     return '';
   }
 
