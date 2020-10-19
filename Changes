@@ -1,4 +1,7 @@
 {{$NEXT}}
+  - Better error for an invalid VMC extension
+
+2.20201019.2 2020-10-19 UTC
   - VMC MUST have a .pem extension
   - Option to limit redirects followed by http client
     http_client_max_redirect / MAIL_BIMI_HTTP_CLIENT_MAX_REDIRECT

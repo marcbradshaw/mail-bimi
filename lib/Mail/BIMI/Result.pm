@@ -80,7 +80,12 @@ sub get_authentication_results_object($self) {
   }
   if ( $self->bimi_object->record->authority->is_relevant ) {
     my $vmc = $self->bimi_object->record->authority->vmc;
-    $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority' )->safe_set_value( $vmc->is_valid ? 'pass' : 'fail' ) );
+    if ( $vmc ) {
+      $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority' )->safe_set_value( $vmc->is_valid ? 'pass' : 'fail' ) );
+    }
+    else {
+      $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority' )->safe_set_value( 'fail' ) );
+    }
     $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority-uri' )->safe_set_value( $self->bimi_object->record->authority->uri ) );
   }
 

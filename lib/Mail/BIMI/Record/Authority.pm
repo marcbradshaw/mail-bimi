@@ -30,6 +30,12 @@ sub _build_is_authority_valid($self) {
     $self->add_error('INVALID_TRANSPORT_A');
   }
 
+  # Currently .pem implies VMC, and is the only evidence document defined
+  # Expand this as more options become available
+  if ( !( $self->uri =~ /\.pem\?/ || $self->uri =~ /\.pem$/ )) {
+    $self->add_error('INVALID_EXTENSION_A','VMC MUST have .pem extension');
+  }
+
   return 0 if $self->errors->@*;
   return 1;
 }
