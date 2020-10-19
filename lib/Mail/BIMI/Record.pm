@@ -149,7 +149,7 @@ sub _build_is_valid($self) {
 sub _build_record_hashref($self) {
   my $domain            = $self->domain;
   my $selector          = $self->selector;
-  my $fallback_selector = 'default';
+  my $fallback_selector = $self->selector;
   my $fallback_domain   = Mail::DMARC::PurePerl->new->get_organizational_domain($domain);
 
   my @records;
