@@ -24,6 +24,7 @@ Role for classes which require a HTTP Client implementation
     $http_client = HTTP::Tiny::Paranoid->new(
       agent => $agent,
       max_size => $self->http_client_max_fetch_size,
+      max_redirect => $self->bimi_object->options->http_client_max_redirect,
       timeout => $self->bimi_object->options->http_client_timeout,
       verify_SSL => 1,     # Certificates MUST verify
     );

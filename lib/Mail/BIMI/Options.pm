@@ -19,8 +19,10 @@ has cache_file_directory => ( is => 'rw', lazy => 1, default => sub {return $ENV
   documentation => 'Directory to store Cache files in when using File backend' );
 has force_record => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_FORCE_RECORD}},
   documentation => 'Fake record to use' );
-has http_client_timeout  => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_HTTP_CLIENT_TIMEOUT}//3},
+has http_client_timeout => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_HTTP_CLIENT_TIMEOUT}//3},
   documentation => 'Timeout value for HTTP' );
+has http_client_max_redirect => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_HTTP_CLIENT_MAX_REDIRECT}//3},
+  documentation => 'Maximum redirects to follow for HTTP' );
 has dns_client_timeout  => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_DNS_CLIENT_TIMEOUT}//5},
   documentation => 'Timeout value for DNS' );
 has no_location_with_vmc => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_LOCATION_WITH_VMC}},
