@@ -18,6 +18,8 @@ with(
 );
 has uri => ( is => 'rw', isa => 'Str', traits => ['CacheKey'],
   documentation => 'inputs: URI of this VMC', );
+has check_domain => ( is => 'ro', isa => 'Str', required => 1, traits => ['CacheKey'],
+  documentation => 'inputs: Domain to check the alt_name against', );
 has data => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_data', traits => ['Cacheable'],
   documentation => 'inputs: Raw data of the VMC contents; Fetched from authority URI if not given', );
 has cert_list => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_cert_list', traits => ['Cacheable'],
@@ -204,9 +206,8 @@ Return true if the VMC has a valid alt name for the domain of the current operat
 =cut
 
 sub is_valid_alt_name($self) {
-  return 1 if ! $self->authority_object; # Cannot check without context
+  return 1 if !$self->check_domain; # Nothing to check against, default to allow
   return 1 if $self->bimi_object->options->vmc_no_check_alt;
-  my $domain = lc $self->authority_object->record_object->domain;
   return 0 if !$self->alt_name;
   my @alt_names = split( ',', lc $self->alt_name );
   foreach my $alt_name ( @alt_names ) {
@@ -214,7 +215,10 @@ sub is_valid_alt_name($self) {
     $alt_name =~ s/\s+$//;
     next if ! $alt_name =~ /^dns:/;
     $alt_name =~ s/^dns://;
-    return 1 if $alt_name eq $domain;
+    my $check_domain = lc $self->check_domain;
+    return 1 if $alt_name eq $check_domain;
+    my $alt_name_re = quotemeta($alt_name);
+    return 1 if $check_domain =~ /\.$alt_name_re$/;
   }
   return 0;
 }

@@ -7,6 +7,7 @@ use Mail::BIMI::Prelude;
 use Mail::BIMI::App -command;
 use Mail::BIMI;
 use Mail::BIMI::Indicator;
+use Mail::BIMI::VMC;
 use Term::ANSIColor qw{ :constants };
 
 =head1 DESCRIPTION
@@ -48,7 +49,7 @@ sub execute($self,$opt,$args) {
 
   my $bimi = Mail::BIMI->new(%bimi_opt);
 
-  my $vmc = Mail::BIMI::VMC->new( uri => $uri, bimi_object => $bimi );
+  my $vmc = Mail::BIMI::VMC->new( check_domain => $opt->domain//'', uri => $uri, bimi_object => $bimi );
   #  $indicator->validator_profile($opt->profile) if $opt->profile;
   say "BIMI VMC checker";
   say '';

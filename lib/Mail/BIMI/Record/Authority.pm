@@ -63,7 +63,8 @@ sub _build_is_valid($self) {
 sub _build_vmc($self) {
   return if !$self->is_authority_valid;
   return if !$self->is_relevant;
-  return Mail::BIMI::VMC->new( uri => $self->uri, bimi_object => $self->bimi_object );
+  my $check_domain = $self->bimi_object->domain;
+  return Mail::BIMI::VMC->new( check_domain => $check_domain, uri => $self->uri, bimi_object => $self->bimi_object );
 }
 
 =method I<finish()>
