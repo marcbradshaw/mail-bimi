@@ -279,6 +279,11 @@ sub _build_indicator($self) {
 
 sub _build_is_valid($self) {
 
+  if ($self->data eq '' && $self->errors->@*) {
+    # We already have a fetch error, do not validate further
+    return 0;
+  }
+
   $self->add_error('VMC_VALIDATION_ERROR','Expired') if $self->is_expired;
   $self->add_error('VMC_VALIDATION_ERROR','Missing usage flag') if !$self->has_valid_usage;
   $self->add_error('VMC_VALIDATION_ERROR','Invalid alt name') if !$self->is_valid_alt_name;
