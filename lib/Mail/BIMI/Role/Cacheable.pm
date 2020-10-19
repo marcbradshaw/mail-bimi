@@ -3,6 +3,7 @@ package Mail::BIMI::Role::Cacheable;
 # VERSION
 use 5.20.0;
 use Moose::Role;
+use Mail::BIMI;
 use Mail::BIMI::Prelude;
 use Mail::BIMI::Trait::Cacheable;
 use Mail::BIMI::Trait::CacheKey;
@@ -85,6 +86,13 @@ around new => sub{
     warn 'Cache is invalid';
     return $self;
   }
+  my $version = $Mail::BIMI::VERSION;
+  $version //= 'dev';
+  warn $version;
+  if ($data->{cache_version} ne $version){
+    warn 'Cache is invalid';
+    return $self;
+  }
   if ($data->{timestamp}+$self->cache_valid_for < $self->bimi_object->time) {
     $self->cache_backend->delete_cache;
     return $self;
@@ -113,8 +121,11 @@ sub _write_cache($self) {
   $self->_do_not_cache(1);
   my $meta = $self->meta;
   my $time = $self->bimi_object->time;
+  my $version = $Mail::BIMI::VERSION;
+  $version //= 'dev';
   my $data = {
     cache_key => $self->_cache_key,
+    cache_version => $version,
     timestamp => $self->_cache_read_timestamp // $time,
     data => {},
   };
