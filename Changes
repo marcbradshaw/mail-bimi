@@ -1,6 +1,7 @@
 {{$NEXT}}
   - Better error for an invalid VMC extension
   - Better attributes for requested vs retrieved domain/selector
+  - Invalidate cache on version change
 
 2.20201019.2 2020-10-19 UTC
   - VMC MUST have a .pem extension
