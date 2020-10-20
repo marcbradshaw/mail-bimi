@@ -88,7 +88,6 @@ around new => sub{
   }
   my $version = $Mail::BIMI::VERSION;
   $version //= 'dev';
-  warn $version;
   if ($data->{cache_version} ne $version){
     warn 'Cache is invalid';
     return $self;
