@@ -221,6 +221,7 @@ sub _build_record_hashref($self) {
 
 sub _get_from_dns($self,$selector,$domain) {
   my @matches;
+  my $cname;
   if ($self->bimi_object->options->force_record) {
     $self->log_verbose('Using fake record');
     push @matches, $self->bimi_object->options->force_record;
@@ -231,9 +232,22 @@ sub _get_from_dns($self,$selector,$domain) {
     return @matches;
   };
   for my $rr ( $query->answer ) {
+    $cname = $rr->cname if $rr->type eq 'CNAME';
     next if $rr->type ne 'TXT';
     push @matches, scalar $rr->txtdata;
   }
+
+  if (!@matches && $cname) {
+    # follow a single CNAME
+    $query   = $res->query( $cname, 'TXT' ) or do {
+      return @matches;
+    };
+    for my $rr ( $query->answer ) {
+      next if $rr->type ne 'TXT';
+      push @matches, scalar $rr->txtdata;
+    }
+  }
+
   return @matches;
 }
 
