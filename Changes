@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Ignore case when checking VMC extension
 
 2.20201020.2 2020-10-20 UTC
   - Better error for an invalid VMC extension
