@@ -46,6 +46,14 @@ subtest 'valid authority extension' => sub {
   is(scalar @error_search, 0, 'Error not found' );
 };
 
+subtest 'valid authority extension UPPER' => sub {
+  my $authority = Mail::BIMI::Record::Authority->new(bimi_object=>$bimi,uri=>'https://fastmaildmarc.com/bimi_test/vmc.PEM');
+  is($authority->is_valid,0,'Is not valid');
+  is($authority->is_relevant,1,'Is relevant');
+  my @error_search = grep { $_->code eq 'INVALID_EXTENSION_A' && $_->detail eq 'VMC MUST have .pem extension'} $authority->errors->@*;
+  is(scalar @error_search, 0, 'Error not found' );
+};
+
 subtest 'valid authority extension with params' => sub {
   my $authority = Mail::BIMI::Record::Authority->new(bimi_object=>$bimi,uri=>'https://fastmaildmarc.com/bimi_test/vmc.pem?foo=bar');
   is($authority->is_valid,0,'Is not valid');
