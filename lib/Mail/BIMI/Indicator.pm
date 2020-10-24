@@ -9,7 +9,7 @@ use File::Slurp qw{ read_file write_file };
 use IO::Uncompress::Gunzip;
 use MIME::Base64;
 use Term::ANSIColor qw{ :constants };
-use XML::LibXML;
+use XML::LibXML 2.0202;
 our @VALIDATOR_PROFILES = qw{ SVG_1.2_BIMI SVG_1.2_PS Tiny-1.2 };
 
 extends 'Mail::BIMI::Base';
@@ -112,7 +112,7 @@ sub _build_data_xml($self) {
 }
 
 sub _build_parser($self) {
-  state $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file($self->validator_profile.'.rng'));
+  state $parser = XML::LibXML::RelaxNG->new( string => $self->get_data_from_file($self->validator_profile.'.rng'), no_network => 1 );
   return $parser;
 }
 
