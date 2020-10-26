@@ -1,5 +1,7 @@
 {{$NEXT}}
-  - Better error for an invalid VMC extension
+
+2.20201020.2 2020-10-20 UTC
+  - Do not require a VMC to have a .pem extension
   - Better attributes for requested vs retrieved domain/selector
   - Invalidate cache on version change
 
