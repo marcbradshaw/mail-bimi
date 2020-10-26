@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - If the BIMI Assertion record returns a CNAME then follow it
 
 2.20201020.2 2020-10-20 UTC
   - Do not require a VMC to have a .pem extension
