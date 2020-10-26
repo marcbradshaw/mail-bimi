@@ -93,6 +93,18 @@ sub data_maybe_compressed($self) {
   return $self->data;
 }
 
+=method I<data_uncompressed_normalized()>
+
+Returns the uncompressed data with normalized line endings
+
+=cut
+
+sub data_uncompressed_normalized($self) {
+  my $data = $self->data_uncompressed;
+  $data =~ s/\r\n?/\n/g;
+  return $data;
+}
+
 sub _build_data_xml($self) {
   my $xml;
   my $data = $self->data_uncompressed;

@@ -140,7 +140,7 @@ sub _build_is_valid($self) {
       # We could not get an indicator from the location to check against, return an error.
       $self->add_error('SVG_MISMATCH');
     }
-    elsif ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed ne $self->location->indicator->data_uncompressed ) {
+    elsif ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed_normalized ne $self->location->indicator->data_uncompressed_normalized ) {
       $self->add_error('SVG_MISMATCH');
     }
   }
