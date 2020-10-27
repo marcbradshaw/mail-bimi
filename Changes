@@ -2,6 +2,7 @@
   - If the BIMI Assertion record returns a CNAME then follow it
   - Do not require a VMC to have a .pem extension
   - Allow for EOL differences in Indicator comparison
+  - Allow warnings to be reported
 
 2.20201020.2 2020-10-20 UTC
   - Better error for an invalid VMC extension
