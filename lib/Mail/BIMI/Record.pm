@@ -143,6 +143,9 @@ sub _build_is_valid($self) {
     elsif ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed_normalized ne $self->location->indicator->data_uncompressed_normalized ) {
       $self->add_error('SVG_MISMATCH');
     }
+    elsif ( $self->location_is_relevant && $self->authority->vmc->indicator->data_uncompressed ne $self->location->indicator->data_uncompressed ) {
+      $self->add_warning('Line encoding for SVG in bimi-location did not match SVG in VMC');
+    }
   }
 
   return 0 if $self->errors->@*;
@@ -298,6 +301,13 @@ sub app_validate($self) {
     say YELLOW.'  Authority '.WHITE.': '.CYAN.($self->authority->uri//'-none-').RESET if $self->authority;
     say YELLOW.'  Location  '.WHITE.': '.CYAN.($self->location->uri//'-none-').RESET if $self->location_is_relevant && $self->location;
     say YELLOW.'  Is Valid  '.WHITE.': '.($self->is_valid?GREEN.'Yes':BRIGHT_RED.'No').RESET;
+  }
+
+  if ( $self->warnings->@* ) {
+    say "Warnings:";
+    foreach my $warning ( $self->warnings->@* ) {
+      say CYAN.'  '.$warning.RESET;
+    }
   }
 
   if ( ! $self->is_valid ) {

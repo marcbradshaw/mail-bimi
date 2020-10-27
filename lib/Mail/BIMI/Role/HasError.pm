@@ -10,10 +10,11 @@ use Mail::BIMI::Error;
 use Sub::Install;
 
 has errors => ( is => 'rw', isa => 'ArrayRef', lazy => 1, default => sub{return []}, traits => ['Cacheable','CacheSerial'] );
+has warnings => ( is => 'rw', isa => 'ArrayRef', lazy => 1, default => sub{return []}, traits => ['Cacheable'] );
 
 =head1 DESCRIPTION
 
-Role for handling validation errors
+Role for handling validation errors and warnings
 
 =cut
 
@@ -59,6 +60,16 @@ sub add_error($self,$code,$detail=undef) {
     ($detail?(detail=>$detail):()),
   );
   $self->add_error_object($error);
+}
+
+=method I<add_warning($detail)>
+
+Add a warning which may be returned to a validator.
+
+=cut
+
+sub add_warning($self,$detail) {
+  push $self->warnings->@*, $detail;
 }
 
 =method I<add_error_object($error)>
