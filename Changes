@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+2.20201102.2 2020-11-02 UTC
   - Do not load external entities when validating SVG
     Requires XML::LibXML 2.0202
 
