@@ -1,4 +1,6 @@
 {{$NEXT}}
+  - Do not load external entities when validating SVG
+    Requires XML::LibXML 2.0202
 
 2.20201027.2 2020-10-27 UTC
   - If the BIMI Assertion record returns a CNAME then follow it
