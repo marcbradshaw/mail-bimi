@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Do not fail tests when internet is not available
 
 2.20201102.2 2020-11-02 UTC
   - Do not load external entities when validating SVG
