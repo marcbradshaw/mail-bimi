@@ -12,7 +12,7 @@ use Term::ANSIColor qw{ :constants };
 
 =head1 DESCRIPTION
 
-App::Cmd class implementing the 'mailbimi checksvg' command
+App::Cmd class implementing the 'mailbimi checkvmc' command
 
 =cut
 
@@ -23,6 +23,7 @@ sub opt_spec {
   return (
     [ 'profile=s', 'SVG Profile to validate against ('.join('|',@Mail::BIMI::Indicator::VALIDATOR_PROFILES).')' ],
     [ 'domain=s', 'Domain' ],
+    [ 'selector=s', 'Selector' ],
     [ 'fromfile', 'Fetch from file instead of from URI' ],
   );
 }
@@ -31,6 +32,7 @@ sub validate_args($self,$opt,$args) {
  $self->usage_error('No URI specified') if !@$args;
  $self->usage_error('Multiple URIs specified') if scalar @$args > 1;
  $self->usage_error('Unknown SVG Profile') if $opt->profile && !grep {;$_ eq $opt->profile} @Mail::BIMI::Indicator::VALIDATOR_PROFILES;
+ $self->usage_error('Selector requires domain') if $opt->selector && !$opt->selector;
 }
 
 sub execute($self,$opt,$args) {
@@ -49,7 +51,7 @@ sub execute($self,$opt,$args) {
 
   my $bimi = Mail::BIMI->new(%bimi_opt);
 
-  my $vmc = Mail::BIMI::VMC->new( check_domain => $opt->domain//'', uri => $uri, bimi_object => $bimi );
+  my $vmc = Mail::BIMI::VMC->new( check_domain => $opt->domain//'', check_selector => $opt->selector//'default', uri => $uri, bimi_object => $bimi );
   #  $indicator->validator_profile($opt->profile) if $opt->profile;
   say "BIMI VMC checker";
   say '';
