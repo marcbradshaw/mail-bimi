@@ -58,6 +58,10 @@ sub _build_is_valid($self) {
       $self->log_verbose("Certificate $i is not valid");
       next;
     }
+    if ( !$cert->has_valid_usage ) {
+      $self->log_verbose("Certificate $i does not have valid usage flags for BIMI");
+      next;
+    }
     my $is_valid = 0;
     eval {
       $root_ca->verify($cert->x509_object);
