@@ -27,6 +27,8 @@ has dns_client_timeout  => ( is => 'rw', lazy => 1, default => sub {return $ENV{
   documentation => 'Timeout value for DNS' );
 has no_location_with_vmc => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_LOCATION_WITH_VMC}},
   documentation => 'Do not check location if VMC was present' );
+has cert_subdomain_is_valid => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_CERT_SUBDOMAIN_IS_VALID}//0},
+  documentation => 'Should VMCs be valid for any subdomain of their altname' );
 has no_validate_cert => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_VALIDATE_CERT}},
   documentation => 'Do not validate VMC' );
 has no_validate_svg => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_VALIDATE_SVG}},
