@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Improve errors returned on SVG fetch fail
 
 2.20201117.2 2020-11-17 UTC
   - Do not fail tests when internet is not available

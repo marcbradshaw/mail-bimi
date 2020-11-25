@@ -153,13 +153,17 @@ sub _build_data($self) {
 
 sub _build_is_valid($self) {
 
-  if (!($self->data||$self->uri)) {
+  if (!(defined $self->data||$self->uri)) {
     $self->add_error('CODE_NOTHING_TO_VALIDATE');
     return 0;
   }
 
-  if (!$self->data) {
+  if (!defined $self->data) {
     $self->add_error('CODE_NO_DATA');
+    return 0;
+  }
+
+  if (!$self->data && $self->errors->@*) {
     return 0;
   }
 
