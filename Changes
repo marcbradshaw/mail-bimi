@@ -1,5 +1,6 @@
 {{$NEXT}}
   - Improve errors when SVG has invalid XML
+  - Properly report expired VMCs
 
 3.20210113 2021-01-13 UTC
   - Improve errors returned on SVG fetch fail

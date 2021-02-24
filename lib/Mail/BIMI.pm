@@ -226,6 +226,7 @@ sub _build_result($self) {
       SPF_PLUS_ALL
       SVG_FETCH_ERROR
       VMC_FETCH_ERROR
+      VMC_EXPIRED
       VMC_PARSE_ERROR
       VMC_VALIDATION_ERROR
       SVG_GET_ERROR
