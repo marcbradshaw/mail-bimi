@@ -178,9 +178,12 @@ sub _build_is_valid($self) {
     }
     else {
       eval {
-        $self->parser->validate( $self->data_xml );
-        $is_valid=1;
-        $self->log_verbose('SVG is valid');
+        my $data_xml = $self->data_xml;
+        if ($data_xml) {
+          $self->parser->validate( $data_xml );
+          $is_valid=1;
+          $self->log_verbose('SVG is valid');
+        }
         1;
       } || do {
         my $validation_error = $@;
