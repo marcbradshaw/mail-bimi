@@ -284,7 +284,7 @@ sub _build_is_valid($self) {
     return 0;
   }
 
-  $self->add_error('VMC_VALIDATION_ERROR','Expired') if $self->is_expired;
+  $self->add_error('VMC_EXPIRED','Expired') if $self->is_expired;
   $self->add_error('VMC_VALIDATION_ERROR','Missing usage flag') if !$self->has_valid_usage;
   $self->add_error('VMC_VALIDATION_ERROR','Invalid alt name') if !$self->is_valid_alt_name;
   $self->is_cert_valid;
