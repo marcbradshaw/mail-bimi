@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+3.20210225 2021-02-25 UTC
   - Improve errors when SVG has invalid XML
   - Properly report expired VMCs
 
