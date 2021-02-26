@@ -9,7 +9,6 @@ use Mail::BIMI;
 use Mail::BIMI::Indicator;
 use Mail::BIMI::VMC;
 use File::Slurp;
-use Term::ANSIColor qw{ :constants };
 
 =head1 DESCRIPTION
 
@@ -51,7 +50,6 @@ sub execute($self,$opt,$args) {
   $dmarc->header_from($domain);
   $dmarc->validate;
   $dmarc->result->result('pass');
-  my %bimi_opt;
   my %bimi_options = (
     dmarc_object => $dmarc,
     domain => $domain,
