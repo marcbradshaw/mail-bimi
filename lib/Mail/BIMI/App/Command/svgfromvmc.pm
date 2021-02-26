@@ -30,14 +30,14 @@ sub opt_spec {
 }
 
 sub validate_args($self,$opt,$args) {
- $self->usage_error('Extra args specified') if scalar @$args;
- my $options;
- $options++ if $opt->domain;
- $options++ if $opt->uri;
- $options++ if $opt->file;
- $self->usage_error('Must specify domain, uri, or file') if $options==0;
- $self->usage_error('Must specify ONLY ONE of domain, uri, or file') if $options>1;
- $self->usage_error('Selector cannot be specified without domain') if $opt->selector && !$opt->domain;
+  $self->usage_error('Extra args specified') if scalar @$args;
+  my $options;
+  $options++ if $opt->domain;
+  $options++ if $opt->uri;
+  $options++ if $opt->file;
+  $self->usage_error('Must specify domain, uri, or file') if $options==0;
+  $self->usage_error('Must specify ONLY ONE of domain, uri, or file') if $options>1;
+  $self->usage_error('Selector cannot be specified without domain') if $opt->selector && !$opt->domain;
 }
 
 sub execute($self,$opt,$args) {
