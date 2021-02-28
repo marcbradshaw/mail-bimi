@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Added svgfromvmc command to extract a SVG from a VMC
 
 3.20210225 2021-02-25 UTC
   - Improve errors when SVG has invalid XML
