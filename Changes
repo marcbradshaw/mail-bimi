@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+3.20210301 2021-03-01 UTC
   - Added svgfromvmc command to extract a SVG from a VMC
 
 3.20210225 2021-02-25 UTC
