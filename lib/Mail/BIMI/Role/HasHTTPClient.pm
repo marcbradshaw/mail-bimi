@@ -20,13 +20,16 @@ Role for classes which require a HTTP Client implementation
   my $http_client;
   sub _build_http_client($self) {
     return $http_client if $http_client;
-    my $agent = 'Mail::BIMI ' . ( $Mail::BIMI::Version // 'dev' );
+    my $agent = 'Mail::BIMI ' . ( $Mail::BIMI::Version // 'dev' ) . '/1.0';
     $http_client = HTTP::Tiny::Paranoid->new(
       agent => $agent,
       max_size => $self->http_client_max_fetch_size,
       max_redirect => $self->bimi_object->options->http_client_max_redirect,
       timeout => $self->bimi_object->options->http_client_timeout,
       verify_SSL => 1,     # Certificates MUST verify
+      default_headers => {
+        'accept-encoding' => 'identity',
+      },
     );
     return $http_client;
   }
