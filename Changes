@@ -1,5 +1,6 @@
 {{$NEXT}}
   - Tests: Skip cmd output tests during normal test run
+  - VMC: Update Entrust CA Certs
 
 3.20210301 2021-03-01 UTC
   - Added svgfromvmc command to extract a SVG from a VMC
