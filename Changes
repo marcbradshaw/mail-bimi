@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+3.20210512 2021-05-12 UTC
   - Tests: Skip cmd output tests during normal test run
   - VMC: Update Entrust CA Certs
 
