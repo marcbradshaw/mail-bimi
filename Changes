@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+3.20230607 2023-06-07 UTC
   - Option to make DKIM authentication required
     require_dkim / MAIL_BIMI_REQUIRE_DKIM
 
