@@ -33,6 +33,8 @@ has no_validate_cert => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAI
   documentation => 'Do not validate VMC' );
 has no_validate_svg => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_VALIDATE_SVG}},
   documentation => 'Do not validate SVG' );
+has require_dkim => ( is => 'rw', lazy => 0, default => sub {return $ENV{MAIL_BIMI_REQUIRE_DKIM}},
+  documentation => 'Require DKIM authentication' );
 has require_vmc => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_REQUIRE_VMC}},
   documentation => 'Require VMC validation' );
 has ssl_root_cert => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_SSL_ROOT_CERT}//undef},

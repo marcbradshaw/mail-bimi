@@ -28,6 +28,7 @@ my %ERROR_MAP = (
   MULTIPLE_LOCATIONS       => { description => 'Multiple entries for l found' },
   MULTI_BIMI_RECORD        => { description => 'Multiple BIMI records found' },
   NO_BIMI_RECORD           => { description => 'No BIMI records found', result => 'none' },
+  NO_DKIM                  => { description => 'Insufficient authentication, DKIM required', result => 'skipped' },
   NO_DMARC                 => { description => 'No DMARC', result => 'skipped' },
   SPF_PLUS_ALL             => { description => 'SPF +all detected', result => 'skipped' },
   SVG_FETCH_ERROR          => { description => 'Could not fetch SVG', result => 'temperror' },
