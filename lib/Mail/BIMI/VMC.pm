@@ -129,6 +129,34 @@ sub subject($self) {
   return $self->vmc_object->x509_object->subject;
 }
 
+=mathod I<mark_type()>
+
+Return the subject:markType if available
+
+=cut
+
+sub mark_type($self) {
+  return unless $self->vmc_object;
+
+  # Parse the subject:markType from the subject string
+  # Ideally we could parse the structure, from this
+  # my $subject_entries = $self->vmc_object->x509_object->subject_name->entries;
+  # however the X509 object does not make this easy for a type that is not
+  # compiled in, returning undef for an entry type it does not understand.
+  # So we parse the string instead.
+
+  my $subject = $self->subject;
+  return unless $subject;
+
+  my @subject_entries = split /, ?/, $subject;
+  for my $subject_entry (@subject_entries) {
+    my ($key, $value) = split /= ?/, $subject_entry, 2;
+    next unless $key eq SUBJECT_MARK_TYPE_OID || $key eq 'markType';
+    return $value;
+  }
+  return;
+}
+
 =method I<not_before()>
 
 Return not before of the vmc
@@ -337,6 +365,7 @@ Output human readable validation status of this object
 sub app_validate($self) {
   say 'VMC Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
   say YELLOW.'  Subject         '.WHITE.': '.CYAN.($self->subject//'-none-').RESET;
+  say YELLOW.'  Mark Type       '.WHITE.': '.CYAN.($self->mark_type//'-none-').RESET;
   say YELLOW.'  Not Before      '.WHITE.': '.CYAN.($self->not_before//'-none-').RESET;
   say YELLOW.'  Not After       '.WHITE.': '.CYAN.($self->not_after//'-none-').RESET;
   say YELLOW.'  Issuer          '.WHITE.': '.CYAN.($self->issuer//'-none-').RESET;
