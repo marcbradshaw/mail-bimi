@@ -245,6 +245,17 @@ sub has_valid_usage($self) {
   return $self->vmc_object->has_valid_usage;
 }
 
+=method I<is_experimental()>
+
+Return true if this (V)MC is experimental
+
+=cut
+
+sub is_experimental($self) {
+  return if !$self->vmc_object;
+  return $self->vmc_object->is_experimental;
+}
+
 sub _build_indicator_uri($self) {
   return if !$self->vmc_object;
   return if !$self->vmc_object->indicator_asn;
@@ -295,6 +306,10 @@ sub _build_is_valid($self) {
 
   if ( $self->indicator && !$self->indicator->is_valid ) {
     $self->add_error_object( $self->indicator->errors );
+  }
+
+  if ( $self->bimi_object->options->no_experimental_vmc && $self->is_experimental ) {
+    $self->add_error('VMC_NO_EXPERIMENTAL','Experimental (V)MCs are not accepted here');
   }
 
   return 0 if $self->errors->@*;

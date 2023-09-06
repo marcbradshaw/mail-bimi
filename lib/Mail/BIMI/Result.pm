@@ -82,6 +82,8 @@ sub get_authentication_results_object($self) {
     my $vmc = $self->bimi_object->record->authority->vmc;
     if ( $vmc ) {
       $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority' )->safe_set_value( $vmc->is_valid ? 'pass' : 'fail' ) );
+      $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.experimental' )->safe_set_value('yes') )
+        if $vmc->is_experimental;
     }
     else {
       $header->add_child( Mail::AuthenticationResults::Header::SubEntry->new()->set_key( 'policy.authority' )->safe_set_value( 'fail' ) );

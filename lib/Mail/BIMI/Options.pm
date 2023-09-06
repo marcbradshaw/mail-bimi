@@ -37,6 +37,8 @@ has require_dkim => ( is => 'rw', lazy => 0, default => sub {return $ENV{MAIL_BI
   documentation => 'Require DKIM authentication' );
 has require_vmc => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_REQUIRE_VMC}},
   documentation => 'Require VMC validation' );
+has no_experimental_vmc => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_NO_EXPERIMENTAL_VMC}//0},
+  documentation => 'Disallow VMCs marked as experimental' );
 has ssl_root_cert => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_SSL_ROOT_CERT}//undef},
   documentation => 'Location of SSL Root Cert Bundle - Defaults to Mozilla::CA bundle plus Known BIMI Root Certs' );
 has strict_spf => ( is => 'rw', lazy => 1, default => sub {return $ENV{MAIL_BIMI_STRICT_SPF}},

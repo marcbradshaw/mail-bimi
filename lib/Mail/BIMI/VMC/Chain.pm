@@ -179,6 +179,7 @@ sub app_validate($self) {
       say YELLOW.'  Not After        '.WHITE.': '.CYAN.($obj->notAfter//'-none-').RESET;
       say YELLOW.'  Issuer           '.WHITE.': '.CYAN.($obj->issuer//'-none-').RESET;
       say YELLOW.'  Expired          '.WHITE.': '.($obj->checkend(0)?BRIGHT_RED.'Yes':GREEN.'No').RESET;
+      say YELLOW.'  Experimental     '.WHITE.': '.($cert->is_experimental?BRIGHT_RED.'Yes':GREEN.'No').RESET;
       my $exts = eval{ $obj->extensions_by_oid() };
       if ( $exts ) {
         my $alt_name = exists $exts->{'2.5.29.17'} ? $exts->{'2.5.29.17'}->to_string : '-none-';
