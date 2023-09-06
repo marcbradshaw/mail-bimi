@@ -284,6 +284,20 @@ sub is_experimental($self) {
   return $self->vmc_object->is_experimental;
 }
 
+=method I<is_allowed_mark_type()>
+
+=cut
+
+sub is_allowed_mark_type($self) {
+  my $mark_type = lc $self->mark_type // '';
+  my $allowed_mark_types = lc $self->bimi_object->options->allowed_mark_types;
+  for my $allowed_mark_type (split /, ?/, $allowed_mark_types) {
+    return 1 if $allowed_mark_type eq '*';
+    return 1 if $allowed_mark_type eq $mark_type;
+  }
+  return 0;
+}
+
 sub _build_indicator_uri($self) {
   return if !$self->vmc_object;
   return if !$self->vmc_object->indicator_asn;
@@ -326,6 +340,7 @@ sub _build_is_valid($self) {
   $self->add_error('VMC_EXPIRED','Expired') if $self->is_expired;
   $self->add_error('VMC_VALIDATION_ERROR','Missing usage flag') if !$self->has_valid_usage;
   $self->add_error('VMC_VALIDATION_ERROR','Invalid alt name') if !$self->is_valid_alt_name;
+  $self->add_error('VMC_DISALLOWED_TYPE', 'VMC Mark Type not supported here' ) if !$self->is_allowed_mark_type;
   $self->is_cert_valid;
 
   if ( $self->chain_object && !$self->chain_object->is_valid ) {
@@ -366,6 +381,7 @@ sub app_validate($self) {
   say 'VMC Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
   say YELLOW.'  Subject         '.WHITE.': '.CYAN.($self->subject//'-none-').RESET;
   say YELLOW.'  Mark Type       '.WHITE.': '.CYAN.($self->mark_type//'-none-').RESET;
+  say YELLOW.'  Is Allowed Type '.WHITE.': '.CYAN.($self->is_allowed_mark_type?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   say YELLOW.'  Not Before      '.WHITE.': '.CYAN.($self->not_before//'-none-').RESET;
   say YELLOW.'  Not After       '.WHITE.': '.CYAN.($self->not_after//'-none-').RESET;
   say YELLOW.'  Issuer          '.WHITE.': '.CYAN.($self->issuer//'-none-').RESET;
