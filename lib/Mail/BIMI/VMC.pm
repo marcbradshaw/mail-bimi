@@ -129,7 +129,7 @@ sub subject($self) {
   return $self->vmc_object->x509_object->subject;
 }
 
-=mathod I<mark_type()>
+=method I<mark_type()>
 
 Return the subject:markType if available
 
