@@ -1,4 +1,8 @@
 {{$NEXT}}
+  - Add policy.mark-type to Authentication-Results
+  - Add policy.experimental to Authentication-Results
+  - Add options to limit which mark types a MBP accepts
+  - Add options to limit acceptance of experimental certificates
 
 3.20230607 2023-06-07 UTC
   - Option to make DKIM authentication required
