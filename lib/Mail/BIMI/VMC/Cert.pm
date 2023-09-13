@@ -117,6 +117,21 @@ sub is_expired($self) {
   return 0;
 }
 
+=method I<is_experimental()>
+
+Returns true if the cert is marked as experimental
+
+=cut
+
+sub is_experimental($self) {
+  return if !$self->x509_object;
+  my $exts = eval{ $self->x509_object->extensions_by_oid() };
+  return if !$exts;
+  my $key = IS_EXPERIMENTAL_OID;
+  return if !exists $exts->{$key};
+  return 1;
+}
+
 =method I<has_valid_usage()>
 
 Return true if this VMC has a valid usage extension for BIMI

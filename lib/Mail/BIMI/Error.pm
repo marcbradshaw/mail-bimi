@@ -43,6 +43,8 @@ my %ERROR_MAP = (
   VMC_PARSE_ERROR          => { description => 'Could not parse VMC' },
   VMC_REQUIRED             => { description => 'VMC is required' },
   VMC_VALIDATION_ERROR     => { description => 'VMC did not validate' },
+  VMC_NO_EXPERIMENTAL      => { description => 'Experimental VMC not accepted here' },
+  VMC_DISALLOWED_TYPE      => { description => 'VMC Mark Type not supported here' },
 );
 
 has code => ( is => 'ro', isa => enum([sort keys %ERROR_MAP]), required => 1,

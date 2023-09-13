@@ -242,6 +242,8 @@ sub _build_result($self) {
       SVG_VALIDATION_ERROR
       SVG_MISMATCH
       VMC_REQUIRED
+      VMC_NO_EXPERIMENTAL
+      VMC_DISALLOWED_TYPE
     };
     my $found_error = 0;
 

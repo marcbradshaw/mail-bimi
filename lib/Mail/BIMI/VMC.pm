@@ -129,6 +129,34 @@ sub subject($self) {
   return $self->vmc_object->x509_object->subject;
 }
 
+=method I<mark_type()>
+
+Return the subject:markType if available
+
+=cut
+
+sub mark_type($self) {
+  return unless $self->vmc_object;
+
+  # Parse the subject:markType from the subject string
+  # Ideally we could parse the structure, from this
+  # my $subject_entries = $self->vmc_object->x509_object->subject_name->entries;
+  # however the X509 object does not make this easy for a type that is not
+  # compiled in, returning undef for an entry type it does not understand.
+  # So we parse the string instead.
+
+  my $subject = $self->subject;
+  return unless $subject;
+
+  my @subject_entries = split /, ?/, $subject;
+  for my $subject_entry (@subject_entries) {
+    my ($key, $value) = split /= ?/, $subject_entry, 2;
+    next unless $key eq SUBJECT_MARK_TYPE_OID || $key eq 'markType';
+    return $value;
+  }
+  return;
+}
+
 =method I<not_before()>
 
 Return not before of the vmc
@@ -245,6 +273,31 @@ sub has_valid_usage($self) {
   return $self->vmc_object->has_valid_usage;
 }
 
+=method I<is_experimental()>
+
+Return true if this (V)MC is experimental
+
+=cut
+
+sub is_experimental($self) {
+  return if !$self->vmc_object;
+  return $self->vmc_object->is_experimental;
+}
+
+=method I<is_allowed_mark_type()>
+
+=cut
+
+sub is_allowed_mark_type($self) {
+  my $mark_type = lc $self->mark_type // '';
+  my $allowed_mark_types = lc $self->bimi_object->options->allowed_mark_types;
+  for my $allowed_mark_type (split /, ?/, $allowed_mark_types) {
+    return 1 if $allowed_mark_type eq '*';
+    return 1 if $allowed_mark_type eq $mark_type;
+  }
+  return 0;
+}
+
 sub _build_indicator_uri($self) {
   return if !$self->vmc_object;
   return if !$self->vmc_object->indicator_asn;
@@ -287,6 +340,7 @@ sub _build_is_valid($self) {
   $self->add_error('VMC_EXPIRED','Expired') if $self->is_expired;
   $self->add_error('VMC_VALIDATION_ERROR','Missing usage flag') if !$self->has_valid_usage;
   $self->add_error('VMC_VALIDATION_ERROR','Invalid alt name') if !$self->is_valid_alt_name;
+  $self->add_error('VMC_DISALLOWED_TYPE', 'VMC Mark Type not supported here' ) if !$self->is_allowed_mark_type;
   $self->is_cert_valid;
 
   if ( $self->chain_object && !$self->chain_object->is_valid ) {
@@ -295,6 +349,10 @@ sub _build_is_valid($self) {
 
   if ( $self->indicator && !$self->indicator->is_valid ) {
     $self->add_error_object( $self->indicator->errors );
+  }
+
+  if ( $self->bimi_object->options->no_experimental_vmc && $self->is_experimental ) {
+    $self->add_error('VMC_NO_EXPERIMENTAL','Experimental (V)MCs are not accepted here');
   }
 
   return 0 if $self->errors->@*;
@@ -322,6 +380,8 @@ Output human readable validation status of this object
 sub app_validate($self) {
   say 'VMC Returned: '.($self->is_valid ? GREEN."\x{2713}" : BRIGHT_RED."\x{26A0}").RESET;
   say YELLOW.'  Subject         '.WHITE.': '.CYAN.($self->subject//'-none-').RESET;
+  say YELLOW.'  Mark Type       '.WHITE.': '.CYAN.($self->mark_type//'-none-').RESET;
+  say YELLOW.'  Is Allowed Type '.WHITE.': '.CYAN.($self->is_allowed_mark_type?GREEN.'Yes':BRIGHT_RED.'No').RESET;
   say YELLOW.'  Not Before      '.WHITE.': '.CYAN.($self->not_before//'-none-').RESET;
   say YELLOW.'  Not After       '.WHITE.': '.CYAN.($self->not_after//'-none-').RESET;
   say YELLOW.'  Issuer          '.WHITE.': '.CYAN.($self->issuer//'-none-').RESET;
