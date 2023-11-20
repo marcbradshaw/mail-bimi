@@ -46,7 +46,7 @@ sub _build_is_valid($self) {
     close $temp_fh;
   }
 
-  my $root_ca = Crypt::OpenSSL::Verify->new($ssl_root_cert,{noCApath=>0});
+  my $root_ca = Crypt::OpenSSL::Verify->new($ssl_root_cert,{noCApath=>0,strict_certs=>0});
   my $root_ca_ascii = scalar read_file $ssl_root_cert;
   foreach my $cert ( $self->cert_object_list->@* ) {
     my $i = $cert->index;
