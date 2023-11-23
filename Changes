@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+3.20231123 2023-11-23 UTC
   - CA: Update certs from Entrust, DigiCert, and GlobalSign
   - VMC: Ability to verify new certs without needing to update OpenSSL extensions
 
