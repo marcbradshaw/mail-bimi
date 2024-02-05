@@ -46,7 +46,7 @@ to catch timeouts that the HTTP::Tiny timeout does not catch.
 sub http_client_get($self, $uri) {
   # Set an overall hard timeout 1/10 second longer than the timeout we
   # pass to the client object.
-  my $timeout = ($self->bimi_object->options->http_client_timeout * 1000000) + 100000;
+  my $timeout_microseconds = ($self->bimi_object->options->http_client_timeout * 1000000) + 100000;
 
   my $result;
   my $old_alarm;
@@ -68,7 +68,7 @@ sub http_client_get($self, $uri) {
   }
 
   eval{
-    $old_alarm = ualarm($timeout);
+    $old_alarm = ualarm($timeout_microseconds);
     local $SIG{ALRM} = sub { $timed_out = 1; die; };
     $result = $self->http_client->get($uri);
   };
