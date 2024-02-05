@@ -71,7 +71,7 @@ sub _build_data($self) {
   }
 
   $self->log_verbose('HTTP Fetch: '.$self->uri);
-  my $response = $self->http_client->get( $self->uri );
+  my $response = $self->http_client_get( $self->uri );
   if ( !$response->{success} ) {
     if ( $response->{status} == 599 ) {
       $self->add_error('VMC_FETCH_ERROR',$response->{content});
@@ -289,7 +289,7 @@ sub is_experimental($self) {
 =cut
 
 sub is_allowed_mark_type($self) {
-  my $mark_type = lc $self->mark_type // '';
+  my $mark_type = lc ($self->mark_type // '');
   my $allowed_mark_types = lc $self->bimi_object->options->allowed_mark_types;
   for my $allowed_mark_type (split /, ?/, $allowed_mark_types) {
     return 1 if $allowed_mark_type eq '*';

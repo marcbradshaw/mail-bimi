@@ -63,8 +63,8 @@ sub _build_indicator_asn($self) {
   return if !$self->x509_object;
   my $exts = eval{ $self->x509_object->extensions_by_oid() };
   return if !$exts;
-  return if !exists $exts->{&LOGOTYPE_OID};
-  my $indhex = $exts->{&LOGOTYPE_OID}->value;
+  return if !exists $exts->{&LOGOTYPE_OID()};
+  my $indhex = $exts->{&LOGOTYPE_OID()}->value;
   $indhex =~ s/^#//;
   my $indicator = pack("H*",$indhex);
   my $asn = Convert::ASN1->new;
