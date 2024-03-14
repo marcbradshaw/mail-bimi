@@ -146,6 +146,7 @@ sub has_valid_usage($self) {
   return if !$extended_usage;
   my $extended_usage_string = $extended_usage->to_string;
   return 1 if $extended_usage_string eq USAGE_OID;
+  return 1 if $extended_usage_string eq 'Brand Indicator for Message Identification';
   return 0;
 }
 
