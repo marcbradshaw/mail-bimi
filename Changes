@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+3.20240319 2024-03-19 UTC
   - VMC: Fix valid usage check for newer OpenSSL builds
 
 3.20240313 2024-03-13 UTC
