@@ -240,7 +240,7 @@ sub is_valid_alt_name($self) {
   foreach my $alt_name ( @alt_names ) {
     $alt_name =~ s/^\s+//;
     $alt_name =~ s/\s+$//;
-    next if ! $alt_name =~ /^dns:/;
+    next unless $alt_name =~ /^dns:/;
     $alt_name =~ s/^dns://;
     return 1 if $alt_name eq $check_domain;
     return 1 if $alt_name eq $check_full_record;
