@@ -30,6 +30,15 @@ Class for representing, retrieving, validating, and processing a VMC Certificate
 
 =cut
 
+sub _default_root_certs($self) {
+  my @ca;
+  my $manifest = $self->get_data_from_file('CA.manifest');
+  for my $ca_file (split "\n", $manifest) {
+    push @ca, $self->get_data_from_file("CA/$ca_file");
+  }
+  return join "\n", @ca;
+}
+
 sub _build_is_valid($self) {
   # Start with root cert validations
   return 0 if !$self->vmc;
@@ -38,7 +47,7 @@ sub _build_is_valid($self) {
   my $unlink_root_cert_file = 0;
   if ( !$ssl_root_cert ) {
     my $mozilla_root = scalar read_file Mozilla::CA::SSL_ca_file;
-    my $bimi_root = $self->get_data_from_file('CA.pem');
+    state $bimi_root = $self->_default_root_certs;
     my $temp_fh = File::Temp->new(UNLINK=>0);
     $ssl_root_cert = $temp_fh->filename;
     $unlink_root_cert_file = 1;
