@@ -129,6 +129,48 @@ sub subject($self) {
   return $self->vmc_object->x509_object->subject;
 }
 
+
+=method I<subject_entries>
+
+exposes the subject string as a hash of key/[value] pairs.
+
+=cut
+
+sub subject_entries($self, $subject) {
+  my %result;
+  return \%result unless defined $subject;
+  while ($subject) {
+    # Messy regex ahead.
+    # overall goal is to break apart a comma-separated list of key=value pairs,
+    # where value can contain a comma,
+    # The regex accepts a key (containing no commas or equals), (^,=)*
+    # then an equals, then a value. This is a little tangled.  To make it able to survive
+    # an equals in a value, it is allowed any character (inc. =) till it reaches a comma.
+    # once it gets to a comma, and equals would define a new section so we grab an equals,
+    # as many non-comma characters as we can then all the non-equals characters: =([^,]*[^=]*?)
+    # basically matching "key = value" - (note: *? to take the least characters possible) where
+    # value is allowed = as long as there is no comma, and commas till the last one before an equals.
+    # It then uses a look-ahead match to make sure that the next thing after the value
+    # is a ", key=" sequence or the end of the string (?:$|,\s*(?=[^,]*?=))
+    # It does this by matching either the end of the string or comma then a set of 
+    # characters not including comma or equals which are then followed by an equals.
+    # All the ?: are to avoid capturing unwanted segments.  We capture key in $1 and
+    # value in $2, and then use the uncaptured right side ($') to start the process
+    # for the next key/value pair.
+    $subject =~m/^(?:(?:(?:([^,=]*)=([^,]*[^=]*?))|) (?:$|,\s*(?=[^,]*?=)))/x;
+    my $remainder = $' // ''; # $' is the uncaptured part of the source to the right of the match
+    last unless length($remainder) < length($subject); # if the remainder isn't getting shorter then bail
+    $subject = $remainder;
+    my $key = $1;
+    my $value = $2;
+    next unless $key;
+    next unless $value;
+    $result{$key} = [] unless exists $result{$key};
+    push $result{$key}->@*, $value;
+  };
+  return \%result;
+}
+
 =method I<mark_type()>
 
 Return the subject:markType if available
@@ -144,15 +186,18 @@ sub mark_type($self) {
   # however the X509 object does not make this easy for a type that is not
   # compiled in, returning undef for an entry type it does not understand.
   # So we parse the string instead.
-
+  
   my $subject = $self->subject;
   return unless $subject;
 
-  my @subject_entries = split /, ?/, $subject;
-  for my $subject_entry (@subject_entries) {
-    my ($key, $value) = split /= ?/, $subject_entry, 2;
-    next unless $key eq SUBJECT_MARK_TYPE_OID || $key eq 'markType';
-    return $value;
+  my $subject_entries = $self->subject_entries($subject);
+
+  my $subject_mark_type_oid = SUBJECT_MARK_TYPE_OID; # can't use a constant as a hash key
+  if (exists $subject_entries->{$subject_mark_type_oid}) {
+    return $subject_entries->{$subject_mark_type_oid}->[0];
+  }
+  if (exists $subject_entries->{'markType'}) {
+    return $subject_entries->{'markType'}->[0];
   }
   return;
 }
