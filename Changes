@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+3.20260203 2026-02-04 Australia/Melbourne
   - VMC: Improved parser for X509 Subject lines which should silence some warnings
     when the old parser could not properly parse a Subject string.
     Thanks to Petra Ealanta
