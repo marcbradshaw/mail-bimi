@@ -1,6 +1,7 @@
 {{$NEXT}}
   - VMC: Improved parser for X509 Subject lines which should silence some warnings
     when the old parser could not properly parse a Subject string.
+    Thanks to Petra Ealanta
 
 3.20250130 2025-01-30 Australia/Melbourne
   - Tests: Add support 'Size' messages of Mail::BIMI::Indicator::app_validate().
